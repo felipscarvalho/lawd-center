@@ -1,7 +1,5 @@
+import { UnderDevelopment } from "./_components/under_development";
+
 export default function Home() {
-  return (
-    <main>
-      <div>Hello world!</div>
-    </main>
-  );
+  return <UnderDevelopment />;
 }
