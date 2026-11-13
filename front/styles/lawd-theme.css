@@ -1,0 +1,240 @@
+/*
+ * Identidade visual da LAWD aplicada sobre o tema do Untitled UI.
+ * Baseado no SimMAP (aplicação anterior): roxo vivo (hue 295), cinzas com tom violeta (hue 285),
+ * e fonte MuseoModerno. As formas (raios, tamanhos) continuam as do Untitled UI; só cores, transparências e efeitos mudam.
+ * O tema do Untitled UI monta todas as cores semânticas (bg-primary, text-primary, border-primary...)
+ * a partir das paletas brand e neutral, então trocar as paletas propaga o estilo para todos os componentes.
+ */
+
+@theme {
+    --font-body: var(--font-museo), "MuseoModerno", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-display: var(--font-museo), "MuseoModerno", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Roxo da LAWD; 500 é o primary do SimMAP (oklch 0.65 0.25 295) convertido para sRGB,
+       já que valores fora do gamut geram cores estranhas nas bordas com transparência */
+    --color-brand-25: #fcfbff;
+    --color-brand-50: #f8f5ff;
+    --color-brand-100: #eee9ff;
+    --color-brand-200: #e1d6ff;
+    --color-brand-300: #cdb8ff;
+    --color-brand-400: #b58dff;
+    --color-brand-500: #9f5fff;
+    --color-brand-600: #8b45fa;
+    --color-brand-700: #7330d4;
+    --color-brand-800: #5c29aa;
+    --color-brand-900: #462281;
+    --color-brand-950: #2c1455;
+
+    /* Cinzas com tom violeta; 950/900/800/700 são background, card, input e border do SimMAP */
+    --color-neutral-25: oklch(0.992 0.003 285);
+    --color-neutral-50: oklch(0.982 0.006 285);
+    --color-neutral-100: oklch(0.96 0.01 285);
+    --color-neutral-200: oklch(0.925 0.016 285);
+    --color-neutral-300: oklch(0.87 0.022 285);
+    --color-neutral-400: oklch(0.71 0.025 285);
+    --color-neutral-500: oklch(0.58 0.03 285);
+    --color-neutral-600: oklch(0.46 0.035 285);
+    --color-neutral-700: oklch(0.3 0.06 285);
+    --color-neutral-800: oklch(0.22 0.04 285);
+    --color-neutral-900: oklch(0.15 0.03 285);
+    --color-neutral-950: oklch(0.12 0.02 285);
+
+    /* Fundo da página; as superfícies (cards, inputs, popovers) usam bg-primary, um tom acima */
+    --color-bg-page: var(--color-neutral-50);
+
+
+    /* Bordas de cards e divisores levemente roxas, como o border-primary/20 do SimMAP */
+    --color-border-secondary: rgb(159 95 255 / 0.16);
+    --color-border-secondary_alt: rgb(159 95 255 / 0.18);
+}
+
+@layer base {
+    .dark-mode {
+        /* Cor usada como "branco" nos componentes em dark mode (ex.: fundo de inputs e popovers) */
+        --color-alpha-white: var(--color-neutral-900);
+
+        /* Fundo da página como o background do SimMAP e superfícies um tom acima, como os cards de lá */
+        --color-bg-page: var(--color-neutral-950);
+        /* Translúcido: chips, checkboxes, badges e itens pequenos viram vidro sobre os cards */
+        --color-bg-primary: oklch(0.17 0.035 290 / 0.55);
+        --color-bg-primary_alt: rgb(255 255 255 / 0.06);
+        --color-bg-secondary: oklch(0.18 0.035 285);
+        --color-bg-secondary_alt: var(--color-neutral-900);
+
+        /* Hover e áreas secundárias translúcidas (hover:bg-secondary/60, bg-secondary/20 no SimMAP) */
+        --color-bg-secondary: oklch(0.22 0.04 285 / 0.35);
+        --color-bg-primary_hover: oklch(0.22 0.04 285 / 0.6);
+        --color-bg-secondary_hover: oklch(0.26 0.05 285 / 0.6);
+        --color-bg-active: oklch(0.22 0.04 285 / 0.6);
+
+        /* Bordas: cards e popovers em roxo translúcido (border-primary/20), campos em cinza violeta (border-border/60) */
+        --color-border-secondary: rgb(159 95 255 / 0.2);
+        --color-border-secondary_alt: rgb(159 95 255 / 0.25);
+        --color-border-primary: oklch(0.3 0.06 285 / 0.75);
+
+        /* Destaques roxos translúcidos (bg-primary/10, bg-primary/15 e text-primary no SimMAP) */
+        --color-bg-brand-secondary: rgb(159 95 255 / 0.12);
+        --color-bg-brand-primary_alt: rgb(159 95 255 / 0.15);
+        --color-utility-brand-50: rgb(159 95 255 / 0.15);
+        --color-utility-brand-100: rgb(159 95 255 / 0.2);
+        --color-utility-brand-200: rgb(159 95 255 / 0.3);
+
+        /* Texto de destaque roxo, em vez do cinza claro padrão do Untitled UI */
+        --color-text-brand-secondary: var(--color-brand-400);
+        --color-text-brand-tertiary: var(--color-brand-400);
+    }
+
+    /*
+     * Variáveis do glassmorphism (utilitários glass-* mais abaixo).
+     * Light: vidro branco leitoso. Dark: vidro violeta escuro com reflexo roxo/ciano, como os cards do SimMAP.
+     */
+    :root {
+        --glass-blur: 12px;
+        --glass-bg: rgb(255 255 255 / 0.55);
+        --glass-gradient: linear-gradient(135deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.2) 60%, rgb(159 95 255 / 0.06));
+        --glass-highlight: rgb(255 255 255 / 0.9);
+        --glass-glow: rgb(124 58 237 / 0.16);
+
+        --glass-strong-bg: rgb(255 255 255 / 0.82);
+        --glass-strong-gradient: linear-gradient(135deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.3));
+
+        --glass-field-bg: rgb(255 255 255 / 0.6);
+        --glass-field-highlight: rgb(255 255 255 / 0.8);
+
+        --glass-control-bg: rgb(255 255 255 / 0.6);
+        --glass-control-gradient: linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.3));
+
+        --page-glow-1: rgb(159 95 255 / 0.16);
+        --page-glow-2: rgb(34 211 238 / 0.1);
+        --page-glow-3: rgb(217 70 239 / 0.08);
+    }
+
+    .dark-mode {
+        --glass-bg: oklch(0.17 0.04 290 / 0.42);
+        --glass-gradient: linear-gradient(135deg, rgb(159 95 255 / 0.12), rgb(34 211 238 / 0.03) 55%, rgb(255 255 255 / 0.02));
+        --glass-highlight: rgb(255 255 255 / 0.08);
+        --glass-glow: rgb(88 28 135 / 0.5);
+
+        --glass-strong-bg: oklch(0.15 0.035 290 / 0.85);
+        --glass-strong-gradient: linear-gradient(135deg, rgb(159 95 255 / 0.1), rgb(255 255 255 / 0.02));
+
+        --glass-field-bg: oklch(0.1 0.02 285 / 0.4);
+        --glass-field-highlight: rgb(255 255 255 / 0.04);
+
+        --glass-control-bg: rgb(255 255 255 / 0.04);
+        --glass-control-gradient: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.01));
+
+        --page-glow-1: rgb(159 95 255 / 0.22);
+        --page-glow-2: rgb(34 211 238 / 0.09);
+        --page-glow-3: rgb(217 70 239 / 0.1);
+    }
+
+    /* Fundo com brilhos coloridos (assinatura visual do SimMAP); é o que o vidro desfoca */
+    body {
+        background-color: var(--color-bg-page);
+        background-image:
+            radial-gradient(ellipse 60% 50% at 10% -5%, var(--page-glow-1), transparent 70%),
+            radial-gradient(ellipse 50% 45% at 100% 100%, var(--page-glow-2), transparent 70%),
+            radial-gradient(ellipse 40% 35% at 85% 35%, var(--page-glow-3), transparent 70%);
+        background-attachment: fixed;
+    }
+
+    /* Scrollbar roxa */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(159 95 255 / 0.05);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgb(159 95 255 / 0.3);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(159 95 255 / 0.5);
+    }
+}
+
+/*
+ * Utilitários de glassmorphism.
+ * Só definem fundo, desfoque e sombras (brilho interno no topo + halo roxo); a borda continua vindo
+ * do ring-* de cada componente. As sombras usam as mesmas variáveis do Tailwind (--tw-*), então
+ * convivem com ring-* sem se sobrescrever.
+ * Desempenho: backdrop-filter é caro, por isso só cards (glass) e overlays (glass-strong) desfocam;
+ * campos e botões usam apenas transparência e brilho, já que normalmente ficam dentro de um card.
+ */
+@utility glass {
+    background-color: var(--glass-bg);
+    background-image: var(--glass-gradient);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    --tw-inset-shadow: inset 0 1px 0 0 var(--glass-highlight);
+    --tw-shadow: 0 24px 64px -28px var(--glass-glow);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Vidro dentro de vidro não precisa desfocar de novo: o fundo já chega desfocado e cada camada extra custa desempenho */
+.glass .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+/* Menus, popovers, modal e toasts: mais opacos para manter a leitura sobre o conteúdo */
+@utility glass-strong {
+    background-color: var(--glass-strong-bg);
+    background-image: var(--glass-strong-gradient);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    --tw-inset-shadow: inset 0 1px 0 0 var(--glass-highlight);
+    --tw-shadow: 0 24px 64px -24px var(--glass-glow), 0 8px 24px -12px rgb(0 0 0 / 0.25);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Inputs, selects e textareas (sem desfoque) */
+@utility glass-field {
+    background-color: var(--glass-field-bg);
+    --tw-inset-shadow: inset 0 1px 0 0 var(--glass-field-highlight);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000);
+}
+
+/* Botões secundários, botões de ícone e grupos de botões (sem desfoque) */
+@utility glass-control {
+    background-color: var(--glass-control-bg);
+    background-image: var(--glass-control-gradient);
+    --tw-inset-shadow: inset 0 1px 0 0 var(--glass-highlight);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000);
+}
+
+/* Botão primário: reflexo no topo e halo roxo */
+@utility glass-brand {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 55%);
+    --tw-inset-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.22);
+    --tw-shadow: 0 8px 20px -10px rgb(159 95 255 / 0.6);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Botão destrutivo: mesmo reflexo do primário, com halo vermelho */
+@utility glass-destructive {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 55%);
+    --tw-inset-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.22);
+    --tw-shadow: 0 8px 20px -10px rgb(240 68 56 / 0.6);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
