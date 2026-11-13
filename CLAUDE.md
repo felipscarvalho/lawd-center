@@ -123,6 +123,11 @@ router
 - **HTTP**: axios, encapsulado em um client único
 - **Dados do servidor**: TanStack Query (cache, revalidação, mutations)
 - **Estado global do cliente**: Zustand
+- **Identidade visual**: segue o SimMAP (aplicação anterior da LAWD). Cores, fontes (MuseoModerno/JetBrains Mono), fundo com brilhos coloridos (sem grade) e scrollbar ficam em `styles/lawd-theme.css`, que sobrescreve as paletas `brand` e `neutral` do Untitled UI; não editar `styles/theme.css`. Usar sempre os tokens semânticos (`bg-primary`, `text-secondary`, `border-secondary`...) para funcionar nos dois modos. As formas (raios, tamanhos, pílulas) seguem o Untitled UI; do SimMAP vêm só cores, transparências e efeitos. Glassmorphism via utilitários de `lawd-theme.css`: `glass` (cards), `glass-strong` (menus, popovers, modal, toast), `glass-field` (campos), `glass-control` (botões secundários) e `glass-brand` / `glass-destructive` (botões primário e destrutivo); a borda vem do `ring-*` do componente. Desempenho: só `glass` e `glass-strong` usam `backdrop-filter` (vidro dentro de vidro não desfoca de novo); não adicionar `backdrop-blur` em elementos pequenos ou repetidos
+- **Light/dark mode**: `next-themes` em `components/providers.tsx` (classes `light-mode`/`dark-mode` do Untitled UI, padrão dark); alternância com `ThemeToggle` de `components/theme/theme_toggle.tsx`
+- **Alert e toast**: componentes próprios em `components/feedback/` (os do Untitled UI são PRO). Toasts sempre via `toast` de `@/components/feedback/toast`, nunca importando `sonner` diretamente
+- **Ícones**: somente `@untitledui/icons` (mesma biblioteca usada internamente pelos componentes); não adicionar outras bibliotecas de ícones
+- **Datas**: moment, sempre importado de `@/lib/moment` (já configura o locale `pt-br`); exibição no formato `DD/MM/YYYY` via `formatDate`. Componentes do react-aria usam o locale `pt-BR` do `I18nProvider` em `components/providers.tsx`
 - **Formulários**: react-hook-form
 - **Validação**: Zod (integrado ao react-hook-form via `zodResolver` de `@hookform/resolvers`)
 
@@ -176,6 +181,16 @@ Tipos das respostas e payloads da API, espelhando os DTOs/transformers do backen
 - Componentes do Untitled UI ficam nas pastas criadas pelo CLI dentro de `components/` (ex.: `components/base/`, `components/application/`)
 - Componentes próprios reutilizáveis em mais de uma página ficam em `components/`, fora das pastas do Untitled UI
 - Antes de criar um componente, verificar se o Untitled UI já oferece um equivalente
+
+### ⚠️ Componentes base são congelados
+
+Os componentes base já estão definidos e **não podem ser modificados sem permissão direta e explícita do usuário**, mesmo para correções, ajustes de estilo, refatorações ou tradução de textos. Isso vale para:
+
+- Tudo em `components/base/`, `components/application/`, `components/foundations/` e `components/shared-assets/` (Untitled UI adaptado)
+- Componentes próprios: `components/feedback/`, `components/navigation/`, `components/brand/`, `components/theme/` e `components/providers.tsx`
+- Estilos globais: `styles/theme.css`, `styles/lawd-theme.css`, `styles/globals.css` e `app/globals.css`
+
+Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorização descrevendo a alteração. Telas devem usar os componentes como estão, ajustando apenas via props e `className` no local de uso. Adicionar um componente novo do Untitled UI (via CLI) também precisa de autorização.
 
 ### Locais (`app/<route>/_components/`)
 
