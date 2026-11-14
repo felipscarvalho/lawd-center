@@ -68,6 +68,9 @@
         --color-bg-secondary_hover: oklch(0.26 0.05 285 / 0.6);
         --color-bg-active: oklch(0.22 0.04 285 / 0.6);
 
+        /* Fundo do tooltip: no Untitled UI aponta para bg-secondary, que aqui é translúcido; precisa ser opaco */
+        --color-bg-primary-solid: var(--color-neutral-800);
+
         /* Bordas: cards e popovers em roxo translúcido (border-primary/20), campos em cinza violeta (border-border/60) */
         --color-border-secondary: rgb(159 95 255 / 0.2);
         --color-border-secondary_alt: rgb(159 95 255 / 0.25);
