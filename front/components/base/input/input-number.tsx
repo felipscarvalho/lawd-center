@@ -12,6 +12,7 @@ import {
     type NumberFieldProps as AriaNumberFieldProps,
     type DateValue,
 } from "react-aria-components";
+import { useIsClient } from "@/hooks/use-is-client";
 import { cx } from "@/utils/cx";
 import { Button } from "../buttons/button";
 import { HintText } from "./hint-text";
@@ -104,6 +105,9 @@ export const InputNumberBase = ({
             {/* Input field */}
             <AriaInput
                 {...(inputProps as AriaInputProps)}
+                // O react-aria escolhe o inputMode conforme o aparelho (ex.: "decimal" no Android), o que o servidor
+                // não sabe; a diferença na hidratação é esperada e o InputNumber remonta em seguida com o valor certo
+                suppressHydrationWarning
                 ref={ref}
                 placeholder={placeholder}
                 className={cx(
@@ -162,8 +166,12 @@ export const InputNumber = ({
     orientation = "vertical",
     ...props
 }: InputProps) => {
+    // Remonta após a hidratação para aplicar os atributos que dependem do aparelho (ver AriaInput acima)
+    const isClient = useIsClient();
+
     return (
         <AriaNumberField
+            key={isClient ? "client" : "server"}
             {...props}
             className={(state) =>
                 cx("group flex h-max w-full flex-col items-start justify-start gap-1.5", typeof className === "function" ? className(state) : className)

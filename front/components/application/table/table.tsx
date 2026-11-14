@@ -25,6 +25,7 @@ import { Badge } from "@/components/base/badges/badges";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
 import { Dropdown } from "@/components/base/dropdown/dropdown";
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
+import { useIsClient } from "@/hooks/use-is-client";
 import { cx } from "@/utils/cx";
 
 const TableContext = createContext<{ size: "sm" | "md" }>({ size: "md" });
@@ -98,11 +99,14 @@ interface TableRootProps extends AriaTableProps, Omit<ComponentPropsWithRef<"tab
 
 const TableRoot = ({ className, size = "md", ...props }: TableRootProps) => {
     const context = useContext(TableContext);
+    // Remonta após a hidratação: o react-aria omite o aria-sort dos cabeçalhos em alguns aparelhos (ex.: Android),
+    // o que o servidor não sabe (ver suppressHydrationWarning no TableHead)
+    const isClient = useIsClient();
 
     return (
         <TableContext.Provider value={{ size: context?.size ?? size }}>
             <div className="overflow-x-auto">
-                <AriaTable className={(state) => cx("w-full overflow-x-hidden", typeof className === "function" ? className(state) : className)} {...props} />
+                <AriaTable key={isClient ? "client" : "server"} className={(state) => cx("w-full overflow-x-hidden", typeof className === "function" ? className(state) : className)} {...props} />
             </div>
         </TableContext.Provider>
     );
@@ -169,6 +173,8 @@ const TableHead = ({ className, tooltip, label, children, ...props }: TableHeadP
     return (
         <AriaColumn
             {...props}
+            // aria-sort varia conforme o aparelho; a diferença na hidratação é esperada e o TableRoot remonta em seguida
+            suppressHydrationWarning
             className={(state) =>
                 cx(
                     "relative p-0 py-2 outline-hidden focus-visible:z-1 focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-bg-primary focus-visible:ring-inset",
