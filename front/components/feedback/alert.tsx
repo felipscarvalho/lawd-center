@@ -37,13 +37,14 @@ export const Alert = ({ title, description, color = "brand", icon, actions, onCl
       // Erros e avisos interrompem o leitor de tela; os demais são anunciados sem interromper
       role={color === "error" || color === "warning" ? "alert" : "status"}
       className={cx(
-        "relative flex w-full flex-col gap-3 rounded-xl glass p-4 ring-1 ring-secondary sm:flex-row sm:gap-4",
+        // Ícone sempre ao lado do texto (inclusive no celular), com o título alinhado ao ícone
+        "relative flex w-full items-start gap-3 rounded-xl glass p-4 ring-1 ring-secondary sm:gap-4",
         className,
       )}
     >
       <FeaturedIcon icon={Icon} color={color} theme="outline" size="md" className="shrink-0" />
 
-      <div className={cx("flex flex-1 flex-col gap-3", onClose && "pr-8")}>
+      <div className={cx("flex min-w-0 flex-1 flex-col gap-3", onClose && "pr-8")}>
         <div className="flex flex-col gap-1">
           <p className="text-sm font-semibold text-secondary">{title}</p>
           {description && <div className="text-sm text-tertiary">{description}</div>}
