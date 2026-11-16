@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { responseData } from '#tests/helpers/http'
 import {
   createUser,
   createUserWithPosition,
@@ -23,7 +24,7 @@ test.group('Memberships', (group) => {
 
     response.assertStatus(201)
     assert.equal(response.body().data.position, 'director')
-    assert.equal((response.body() as any).data.directorate.key, 'events')
+    assert.equal(responseData<{ directorate: { key: string } }>(response).directorate.key, 'events')
   })
 
   test('diretor adiciona membro na própria diretoria', async ({ client }) => {
@@ -133,9 +134,9 @@ test.group('Memberships', (group) => {
     const history = await client
       .get(`/api/v1/administration/users/${member.id}/memberships`)
       .loginAs(admin)
-    const items = (
-      history.body() as { data: { position: string; directorateId: number }[] }
-    ).data.map((item) => [item.position, item.directorateId])
+    const items = responseData<{ position: string; directorateId: number }[]>(history).map(
+      (item) => [item.position, item.directorateId]
+    )
 
     assert.deepEqual(items, [
       ['director', events.id],
@@ -176,10 +177,8 @@ test.group('Memberships', (group) => {
     const response = await client.get('/api/v1/administration/organization-chart').loginAs(member)
     response.assertStatus(200)
 
-    const body = response.body() as unknown as {
-      data: { key: string; memberships: { user: { id: number } }[] }[]
-    }
-    const projectsNode = body.data.find((d) => d.key === 'projects')!
+    const chart = responseData<{ key: string; memberships: { user: { id: number } }[] }[]>(response)
+    const projectsNode = chart.find((d) => d.key === 'projects')!
     const ids = projectsNode.memberships.map((m) => m.user.id)
     assert.includeMembers(ids, [director.id, member.id])
     // Diretor aparece antes dos membros

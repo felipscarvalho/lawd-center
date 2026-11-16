@@ -37,7 +37,6 @@ router
         router
           .get('users/:id', [controllers.administration.Users, 'show'])
           .as('users.show')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.user.view'))
         router
           .post('users', [controllers.administration.Users, 'store'])
@@ -46,12 +45,10 @@ router
         router
           .put('users/:id', [controllers.administration.Users, 'update'])
           .as('users.update')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.user.update'))
         router
           .post('users/:id/deactivate', [controllers.administration.Users, 'deactivate'])
           .as('users.deactivate')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.user.deactivate'))
 
         // Diretorias
@@ -66,7 +63,6 @@ router
         router
           .put('directorates/:id', [controllers.administration.Directorates, 'update'])
           .as('directorates.update')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.directorate.manage'))
 
         // Vínculos e organograma
@@ -77,32 +73,26 @@ router
         router
           .get('users/:id/memberships', [controllers.administration.Memberships, 'history'])
           .as('memberships.history')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.membership.view'))
         // Perfis: a própria pessoa sempre vê e edita o seu (mesmo sem vínculo); o service confere o resto
         router
           .get('users/:id/profile', [controllers.administration.Profiles, 'show'])
           .as('profiles.show')
-          .where('id', router.matchers.number())
         router
           .put('users/:id/profile', [controllers.administration.Profiles, 'update'])
           .as('profiles.update')
-          .where('id', router.matchers.number())
         router
           .post('users/:id/profile/photo', [controllers.administration.Profiles, 'updatePhoto'])
           .as('profiles.updatePhoto')
-          .where('id', router.matchers.number())
         router
           .delete('users/:id/profile/photo', [controllers.administration.Profiles, 'removePhoto'])
           .as('profiles.removePhoto')
-          .where('id', router.matchers.number())
         router
           .put('users/:id/technical-score', [
             controllers.administration.Profiles,
             'updateTechnicalScore',
           ])
           .as('profiles.updateTechnicalScore')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.profile.evaluate'))
         router
           .get('technologies', [controllers.administration.ProfileCatalogs, 'technologies'])
@@ -119,10 +109,11 @@ router
         router
           .post('memberships/:id/end', [controllers.administration.Memberships, 'end'])
           .as('memberships.end')
-          .where('id', router.matchers.number())
           .use(middleware.can('administration.membership.manage'))
       })
       .use(middleware.auth())
   })
+  // Todo parâmetro :id do módulo é numérico
+  .where('id', router.matchers.number())
   .prefix('/api/v1/administration')
   .as('administration')

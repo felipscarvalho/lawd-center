@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import sharp from 'sharp'
 import drive from '@adonisjs/drive/services/main'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { responseData } from '#tests/helpers/http'
 import {
   createUser,
   createUserWithPosition,
@@ -40,7 +41,7 @@ test.group('Profiles', (group) => {
       .loginAs(member)
 
     response.assertStatus(200)
-    const data = (response.body() as { data: Record<string, unknown> }).data
+    const data = responseData<Record<string, unknown>>(response)
     assert.equal(data.course, 'advertising')
     assert.equal(data.birthDate, '2002-05-10')
     assert.deepEqual(data.careerPaths, ['frontend', 'ui_ux'])
@@ -106,7 +107,7 @@ test.group('Profiles', (group) => {
       .loginAs(member)
     saved.assertStatus(200)
     assert.equal(
-      (saved.body() as { data: { registrationNumber: string } }).data.registrationNumber,
+      responseData<{ registrationNumber: string }>(saved).registrationNumber,
       '202200012345'
     )
 
@@ -130,9 +131,7 @@ test.group('Profiles', (group) => {
     invalid.assertStatus(422)
 
     const asColleague = await client.get(profileUrl(member.id)).loginAs(colleague)
-    assert.isNull(
-      (asColleague.body() as { data: { registrationNumber: null } }).data.registrationNumber
-    )
+    assert.isNull(responseData<{ registrationNumber: null }>(asColleague).registrationNumber)
   })
 
   test('membro não edita o perfil de outra pessoa', async ({ client }) => {
@@ -184,11 +183,10 @@ test.group('Profiles', (group) => {
       .json({ technicalScore: 8.5 })
       .loginAs(director)
 
-    type ProfileBody = { data: Record<string, unknown> }
     const viewAs = async (viewer: typeof member) => {
       const response = await client.get(profileUrl(member.id)).loginAs(viewer)
 
-      return (response.body() as ProfileBody).data
+      return responseData(response)
     }
 
     const asColleague = await viewAs(colleague)
@@ -244,7 +242,7 @@ test.group('Profiles', (group) => {
       .file('photo', photoPath)
       .loginAs(user)
     first.assertStatus(200)
-    const firstUrl = (first.body() as { data: { photoUrl: string } }).data.photoUrl
+    const firstUrl = responseData<{ photoUrl: string }>(first).photoUrl
     const firstKey = firstUrl.split('/uploads/')[1]
 
     const stored = await fakeDisk.getBytes(firstKey)
@@ -279,14 +277,12 @@ test.group('Profiles', (group) => {
       .post(`${profileUrl(user.id)}/photo`)
       .file('photo', photoPath)
       .loginAs(user)
-    const key = (upload.body() as { data: { photoUrl: string } }).data.photoUrl.split(
-      '/uploads/'
-    )[1]
+    const key = responseData<{ photoUrl: string }>(upload).photoUrl.split('/uploads/')[1]
 
     const response = await client.delete(`${profileUrl(user.id)}/photo`).loginAs(user)
 
     response.assertStatus(200)
-    assert.isNull((response.body() as { data: { photoUrl: null } }).data.photoUrl)
+    assert.isNull(responseData<{ photoUrl: null }>(response).photoUrl)
     assert.isFalse(await fakeDisk.exists(key))
     drive.restore('fs')
   })
@@ -319,6 +315,6 @@ test.group('Profiles', (group) => {
       .loginAs(user)
 
     response.assertStatus(200)
-    assert.include((response.body() as { data: string[] }).data, 'PostgreSQL')
+    assert.include(responseData<string[]>(response), 'PostgreSQL')
   })
 })

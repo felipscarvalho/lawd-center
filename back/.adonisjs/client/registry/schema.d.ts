@@ -275,10 +275,10 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#validators/administration/profile').searchCatalogValidator)>>
+      query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>> | { status: 422; response: { errors: SimpleError[] } }
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>>
     }
   }
   'administration.profileCatalogs.interestAreas': {
@@ -288,10 +288,10 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#validators/administration/profile').searchCatalogValidator)>>
+      query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>> | { status: 422; response: { errors: SimpleError[] } }
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>>
     }
   }
   'administration.memberships.store': {

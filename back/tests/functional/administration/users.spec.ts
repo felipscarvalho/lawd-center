@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { responseData } from '#tests/helpers/http'
 import {
   createUser,
   createUserWithPosition,
@@ -20,7 +21,7 @@ test.group('Users', (group) => {
       .loginAs(admin)
 
     response.assertStatus(201)
-    const created = (response.body() as { data: Record<string, unknown> }).data
+    const created = responseData<Record<string, unknown>>(response)
     assert.equal(created.email, 'novo.membro@test.lawd')
     assert.notProperty(created, 'password')
   })
@@ -44,9 +45,7 @@ test.group('Users', (group) => {
       profile: Record<string, unknown> | null
       memberships: { position: string; directorate: { name: string } }[]
     }
-    const listed = (response.body() as { data: ListedUser[] }).data.find(
-      (user) => user.id === member.id
-    )!
+    const listed = responseData<ListedUser[]>(response).find((user) => user.id === member.id)!
     assert.deepEqual(listed.profile, {
       course: 'design',
       universityEntryPeriod: null,
