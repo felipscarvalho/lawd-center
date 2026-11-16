@@ -1,23 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Dataflow03, UserPlus01 } from "@untitledui/icons";
+import { Dataflow03, LayoutGrid01, UserPlus01 } from "@untitledui/icons";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
 import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { Alert } from "@/components/feedback/alert";
 import { Button } from "@/components/base/buttons/button";
+import { ButtonGroup, ButtonGroupItem } from "@/components/base/button-group/button-group";
 import { AssignMembershipModal } from "@/components/administration/assign_membership_modal";
 import { PageHeader } from "@/components/layout/page_header";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useOrganizationChart } from "@/hooks/administration/use_memberships";
 import type { Directorate } from "@/types/administration";
-import { DirectorateCard } from "./directorate_card";
+import { DirectorateSection } from "./directorate_section";
+import { OrganizationGraph } from "./organization_graph";
+
+type View = "graph" | "list";
 
 export function OrganizationChart() {
   const chart = useOrganizationChart();
   const { can, canAnywhere } = usePermissions();
   const [assignTo, setAssignTo] = useState<Directorate | null>(null);
   const [isAssignOpen, setIsAssignOpen] = useState(false);
+  // Grafo por padrão, em qualquer tela; a lista fica no botão ao lado
+  const [view, setView] = useState<View>("graph");
+
+  const canManageDirectorate = (directorate: Directorate) =>
+    canAnywhere("administration.membership.manage") && can("administration.membership.manage", directorate.id);
 
   const openAssign = (directorate: Directorate | null) => {
     setAssignTo(directorate);
@@ -29,11 +38,31 @@ export function OrganizationChart() {
       <PageHeader
         title="Organograma"
         actions={
-          can("administration.membership.manage") && (
-            <Button iconLeading={UserPlus01} onClick={() => openAssign(null)}>
-              Atribuir cargo
-            </Button>
-          )
+          <>
+            <ButtonGroup
+              size="sm"
+              aria-label="Visualização"
+              selectedKeys={new Set([view])}
+              onSelectionChange={(keys) => {
+                const [next] = [...keys];
+                if (next) setView(next as View);
+              }}
+              disallowEmptySelection
+            >
+              <ButtonGroupItem id="graph" iconLeading={Dataflow03}>
+                Grafo
+              </ButtonGroupItem>
+              <ButtonGroupItem id="list" iconLeading={LayoutGrid01}>
+                Lista
+              </ButtonGroupItem>
+            </ButtonGroup>
+
+            {can("administration.membership.manage") && (
+              <Button iconLeading={UserPlus01} onClick={() => openAssign(null)}>
+                Atribuir cargo
+              </Button>
+            )}
+          </>
         }
       />
 
@@ -60,15 +89,18 @@ export function OrganizationChart() {
         </div>
       )}
 
-      {chart.data && chart.data.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2">
+      {chart.data && chart.data.length > 0 && view === "graph" && (
+        <OrganizationGraph directorates={chart.data} canManage={canManageDirectorate} onAddMember={openAssign} />
+      )}
+
+      {chart.data && chart.data.length > 0 && view === "list" && (
+        // Um card só, com uma seção por diretoria (núcleo primeiro, como vem do backend)
+        <div className="glass divide-y divide-secondary overflow-hidden rounded-2xl ring-1 ring-secondary">
           {chart.data.map((directorate) => (
-            <DirectorateCard
+            <DirectorateSection
               key={directorate.id}
               directorate={directorate}
-              // O núcleo institucional ocupa a largura toda, como no topo de um organograma
-              className={directorate.kind === "core" ? "md:col-span-2" : undefined}
-              canManage={canAnywhere("administration.membership.manage") && can("administration.membership.manage", directorate.id)}
+              canManage={canManageDirectorate(directorate)}
               canManageAllPositions={can("administration.membership.manage")}
               onAddMember={() => openAssign(directorate)}
             />

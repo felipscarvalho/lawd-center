@@ -16,7 +16,7 @@ export const PageHeader = ({ title, actions, children }: PageHeaderProps) => (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <h1 className="text-display-xs font-semibold text-primary">{title}</h1>
 
-      {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
     </div>
   </header>
 );

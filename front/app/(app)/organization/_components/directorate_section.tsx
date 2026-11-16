@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Plus, XClose } from "@untitledui/icons";
-import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
+import { Avatar } from "@/components/base/avatar/avatar";
 import { Badge } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
@@ -14,22 +14,23 @@ import { directorateKindLabels, getInitials } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
 import type { Directorate, Membership } from "@/types/administration";
-import { cx } from "@/utils/cx";
+import { DirectorateIcon } from "./directorate_icon";
 
-interface DirectorateCardProps {
+interface DirectorateSectionProps {
   directorate: Directorate;
   /** Pode atribuir e encerrar cargos nesta diretoria */
   canManage: boolean;
   /** Gestão global: pode mexer em qualquer cargo; sem ela, só em membros efetivos */
   canManageAllPositions: boolean;
   onAddMember: () => void;
-  className?: string;
 }
 
-export function DirectorateCard({ directorate, canManage, canManageAllPositions, onAddMember, className }: DirectorateCardProps) {
+/** Seção de uma diretoria na visualização em lista: cabeçalho e uma linha por pessoa com cargo ativo */
+export function DirectorateSection({ directorate, canManage, canManageAllPositions, onAddMember }: DirectorateSectionProps) {
   const endMembership = useEndMembership();
   const [membershipToEnd, setMembershipToEnd] = useState<Membership | null>(null);
   const memberships = directorate.memberships ?? [];
+  const isCore = directorate.kind === "core";
 
   const canEnd = (membership: Membership) => canManage && (canManageAllPositions || membership.position === "member");
 
@@ -48,19 +49,18 @@ export function DirectorateCard({ directorate, canManage, canManageAllPositions,
     );
   };
 
+  const peopleCount = `${memberships.length} ${memberships.length === 1 ? "pessoa" : "pessoas"}`;
+
   return (
-    <section className={cx("glass flex flex-col gap-4 rounded-2xl p-5 ring-1 ring-secondary", className)}>
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-primary">{directorate.name}</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge type="modern" size="sm">
-              {directorateKindLabels[directorate.kind]}
-            </Badge>
-            <Badge color="brand" size="sm">
-              {memberships.length} {memberships.length === 1 ? "pessoa" : "pessoas"}
-            </Badge>
-          </div>
+    <section>
+      <header className="flex items-center gap-3 border-b border-secondary bg-brand-solid/5 px-4 py-3 sm:px-5">
+        <DirectorateIcon kind={directorate.kind} className="size-9 rounded-lg" />
+
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-md font-semibold text-primary">{directorate.name}</h2>
+          <p className="text-xs text-tertiary">
+            {isCore ? `${directorateKindLabels.core} · ${peopleCount}` : peopleCount}
+          </p>
         </div>
 
         {canManage && (
@@ -71,40 +71,52 @@ export function DirectorateCard({ directorate, canManage, canManageAllPositions,
       </header>
 
       {memberships.length === 0 ? (
-        <p className="text-sm text-tertiary">Nenhum cargo ativo nesta diretoria.</p>
+        <p className="px-4 py-4 text-sm text-quaternary sm:px-5">Nenhum cargo ativo</p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="divide-y divide-secondary">
           {memberships.map((membership) => (
             <li
               key={membership.id}
-              className="flex items-center justify-between gap-3 rounded-xl bg-primary px-3 py-2.5 ring-1 ring-secondary"
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-primary_hover sm:grid-cols-[minmax(0,1fr)_11rem_8rem_2rem] sm:px-5"
             >
               <Link
                 href={`/users/${membership.userId}`}
-                className="min-w-0 flex-1 rounded-lg outline-focus-ring focus-visible:outline-2"
-                aria-label={`Ver perfil de ${membership.user?.fullName}`}
+                className="flex min-w-0 items-center gap-3 rounded-lg outline-focus-ring focus-visible:outline-2"
               >
-                <AvatarLabelGroup
+                <Avatar
                   size="md"
                   src={membership.user?.photoUrl}
                   alt={membership.user?.fullName}
                   initials={getInitials(membership.user?.fullName ?? "")}
-                  title={membership.user?.fullName}
-                  subtitle={`${membership.positionLabel} · desde ${formatDate(membership.startsAt)}`}
-                  className="transition-opacity hover:opacity-80"
                 />
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate text-sm font-semibold text-primary">{membership.user?.fullName}</span>
+                  <span className="truncate text-sm text-tertiary">{membership.user?.email}</span>
+                </span>
               </Link>
 
-              {canEnd(membership) && (
-                <ButtonUtility
-                  size="xs"
-                  color="tertiary"
-                  icon={XClose}
-                  tooltip="Encerrar vínculo"
-                  aria-label={`Encerrar vínculo de ${membership.user?.fullName}`}
-                  onClick={() => setMembershipToEnd(membership)}
-                />
-              )}
+              <span className="hidden sm:block">
+                <Badge size="sm" color={membership.position === "member" ? "gray" : "brand"}>
+                  {membership.positionLabel}
+                </Badge>
+              </span>
+
+              <span className="hidden text-sm whitespace-nowrap text-tertiary sm:block">
+                desde {formatDate(membership.startsAt)}
+              </span>
+
+              <span className="flex justify-end">
+                {canEnd(membership) && (
+                  <ButtonUtility
+                    size="xs"
+                    color="tertiary"
+                    icon={XClose}
+                    tooltip="Encerrar vínculo"
+                    aria-label={`Encerrar vínculo de ${membership.user?.fullName}`}
+                    onClick={() => setMembershipToEnd(membership)}
+                  />
+                )}
+              </span>
             </li>
           ))}
         </ul>
