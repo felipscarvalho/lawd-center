@@ -10,6 +10,7 @@ import { Button } from "@/components/base/buttons/button";
 import { Alert } from "@/components/feedback/alert";
 import { toast } from "@/components/feedback/toast";
 import { AssignMembershipModal } from "@/components/administration/assign_membership_modal";
+import { ProfilePanel } from "@/components/administration/profile_panel";
 import { UserFormModal } from "@/components/administration/user_form_modal";
 import { PageHeader } from "@/components/layout/page_header";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
@@ -93,7 +94,14 @@ export function UserDetail() {
 
       <section className="glass flex flex-col gap-5 rounded-2xl p-5 ring-1 ring-secondary sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <AvatarLabelGroup size="lg" initials={getInitials(data.fullName)} title={data.fullName} subtitle={data.email} />
+          <AvatarLabelGroup
+            size="lg"
+            src={data.photoUrl}
+            alt={data.fullName}
+            initials={getInitials(data.fullName)}
+            title={data.fullName}
+            subtitle={data.email}
+          />
           <BadgeWithDot size="md" type="modern" color={data.isActive ? "success" : "gray"}>
             {data.isActive ? "Ativo" : `Desativado em ${formatDate(data.deactivatedAt ?? "")}`}
           </BadgeWithDot>
@@ -121,6 +129,8 @@ export function UserDetail() {
           </div>
         </dl>
       </section>
+
+      <ProfilePanel userId={data.id} />
 
       <MembershipHistory memberships={memberships} />
 

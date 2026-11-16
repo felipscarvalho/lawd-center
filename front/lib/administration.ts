@@ -1,4 +1,12 @@
-import type { DirectorateKind, Position } from "@/types/administration";
+import type {
+  CareerPath,
+  Course,
+  DirectorateKind,
+  MaturityLevel,
+  Position,
+  SoftSkill,
+  WeeklyAvailability,
+} from "@/types/administration";
 
 // Rótulos e regras de cargos, espelhando app/permissions/positions.ts do backend
 
@@ -29,3 +37,72 @@ export const getInitials = (name: string) =>
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+
+// Rótulos do perfil (os valores vêm do backend em inglês)
+
+export const courseLabels: Record<Course, string> = {
+  information_systems: "Sistemas de Informação",
+  computer_science: "Ciência da Computação",
+  computer_engineering: "Engenharia da Computação",
+  design: "Design",
+  advertising: "Publicidade e Propaganda",
+  other: "Outro",
+};
+
+export const weeklyAvailabilityLabels: Record<WeeklyAvailability, string> = {
+  under_6h: "Menos de 6 horas semanais",
+  from_6_to_8h: "De 6 a 8 horas semanais",
+  from_9_to_12h: "De 9 a 12 horas semanais",
+  over_12h: "Mais de 12 horas semanais",
+};
+
+export const maturityLabels: Record<MaturityLevel, string> = {
+  beginner: "Iniciante",
+  developing: "Em desenvolvimento",
+  autonomous: "Autônomo",
+  mentor: "Mentor",
+};
+
+export const maturityDescriptions: Record<MaturityLevel, string> = {
+  beginner: "Ainda aprendendo os fundamentos",
+  developing: "Já executa tarefas com apoio",
+  autonomous: "Resolve problemas sozinho",
+  mentor: "Ajuda outros membros",
+};
+
+export const careerPathLabels: Record<CareerPath, string> = {
+  full_stack: "Full Stack",
+  frontend: "Desenvolvimento Front-end",
+  backend: "Desenvolvimento Back-end",
+  devops: "DevOps",
+  ui_ux: "UI/UX",
+  project_management: "Gestão de Projetos / Scrum",
+  research: "Pesquisa / Documentação",
+};
+
+export const softSkillLabels: Record<SoftSkill, string> = {
+  communication: "Comunicação",
+  teamwork: "Trabalho em equipe",
+  leadership: "Liderança",
+  organization: "Organização",
+  proactivity: "Proatividade",
+  autonomy: "Autonomia",
+};
+
+/** Transforma um mapa de rótulos em opções de Select ({ id, label }) */
+export const toOptions = <T extends string>(labels: Record<T, string>) =>
+  (Object.entries(labels) as [T, string][]).map(([id, label]) => ({ id, label }));
+
+// Foto de perfil: mesma regra do validator do backend (que comprime para WebP 512×512)
+
+export const profilePhotoTypes = ["image/jpeg", "image/png", "image/webp"];
+
+const maxProfilePhotoSize = 5 * 1024 * 1024;
+
+/** Mensagem de erro da foto escolhida, ou null se ela pode ser enviada */
+export const getProfilePhotoError = (photo: File) => {
+  if (!profilePhotoTypes.includes(photo.type)) return "Envie uma imagem JPG, PNG ou WebP.";
+  if (photo.size > maxProfilePhotoSize) return "A imagem pode ter no máximo 5 MB.";
+
+  return null;
+};

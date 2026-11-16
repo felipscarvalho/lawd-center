@@ -53,3 +53,46 @@ export const assignMembershipSchema = z.object({
 });
 
 export type AssignMembershipForm = z.infer<typeof assignMembershipSchema>;
+
+const optional = <T extends z.ZodTypeAny>(schema: T) => schema.nullable().optional();
+
+export const profileSchema = z.object({
+  /** YYYY-MM-DD */
+  birthDate: optional(z.string()),
+  course: optional(z.enum(["information_systems", "computer_science", "computer_engineering", "design", "advertising", "other"])),
+  universityEntryPeriod: optional(
+    z.union([z.literal(""), z.string().regex(/^\d{4}\.[12]$/, "Use o formato ano.semestre (ex.: 2022.1)")]),
+  ),
+  graduated: z.boolean(),
+  weeklyAvailability: optional(z.enum(["under_6h", "from_6_to_8h", "from_9_to_12h", "over_12h"])),
+  maturity: optional(z.enum(["beginner", "developing", "autonomous", "mentor"])),
+  careerPaths: z.array(z.enum(["full_stack", "frontend", "backend", "devops", "ui_ux", "project_management", "research"])),
+  softSkills: z.array(z.enum(["communication", "teamwork", "leadership", "organization", "proactivity", "autonomy"])),
+  goal: optional(z.string().max(2000, "Use até 2000 caracteres")),
+  technologies: z.array(z.string()).max(50, "Use até 50 tecnologias"),
+  interestAreas: z.array(z.string()).max(50, "Use até 50 áreas"),
+});
+
+export type ProfileForm = z.infer<typeof profileSchema>;
+
+/** Nota de 0 a 10 com até duas casas (vírgula ou ponto); vazio remove a nota */
+export const technicalScoreSchema = z.object({
+  technicalScore: z.union([
+    z.literal(""),
+    z.string().regex(/^(10([.,]0{1,2})?|\d([.,]\d{1,2})?)$/, "Informe uma nota de 0 a 10"),
+  ]),
+});
+
+export type TechnicalScoreForm = z.infer<typeof technicalScoreSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Informe a senha atual"),
+    newPassword: password,
+  })
+  .refine((values) => values.newPassword !== values.currentPassword, {
+    path: ["newPassword"],
+    message: "A nova senha precisa ser diferente da atual",
+  });
+
+export type ChangePasswordForm = z.infer<typeof changePasswordSchema>;

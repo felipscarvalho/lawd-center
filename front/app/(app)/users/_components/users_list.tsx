@@ -104,7 +104,14 @@ export function UsersList() {
               {(user) => (
                 <Table.Row id={user.id} className="cursor-pointer">
                   <Table.Cell>
-                    <AvatarLabelGroup size="md" initials={getInitials(user.fullName)} title={user.fullName} subtitle={user.email} />
+                    <AvatarLabelGroup
+                      size="md"
+                      src={user.photoUrl}
+                      alt={user.fullName}
+                      initials={getInitials(user.fullName)}
+                      title={user.fullName}
+                      subtitle={user.email}
+                    />
                   </Table.Cell>
                   <Table.Cell>
                     <BadgeWithDot size="sm" type="modern" color={user.isActive ? "success" : "gray"}>

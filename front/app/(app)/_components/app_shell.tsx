@@ -3,7 +3,7 @@
 import { use, useEffect, useState, type ReactNode } from "react";
 import { browser } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
-import { Building07, LogOut01, Users01, Dataflow03 } from "@untitledui/icons";
+import { Building07, LogOut01, Users01, Dataflow03, UserCircle } from "@untitledui/icons";
 import type { NavItemType } from "@/components/application/app-navigation/config";
 import { SidebarNavigationSimple } from "@/components/application/app-navigation/sidebar-navigation/sidebar-simple";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
@@ -16,7 +16,9 @@ import { useUserStore } from "@/stores/user_store";
 import type { PermissionKey } from "@/types/administration";
 import { FullPageLoading } from "./full_page_loading";
 
-const navigation: (NavItemType & { permission: PermissionKey })[] = [
+// Itens sem permissão aparecem para todos os usuários logados
+const navigation: (NavItemType & { permission?: PermissionKey })[] = [
+  { label: "Meu perfil", href: "/profile", icon: UserCircle },
   { label: "Organograma", href: "/organization", icon: Dataflow03, permission: "administration.membership.view" },
   { label: "Usuários", href: "/users", icon: Users01, permission: "administration.user.view" },
   { label: "Diretorias", href: "/directorates", icon: Building07, permission: "administration.directorate.view" },
@@ -72,13 +74,20 @@ export function AppShell({ children }: { children: ReactNode }) {
     return <FullPageLoading />;
   }
 
-  const items = navigation.filter((item) => canAnywhere(item.permission));
+  const items = navigation.filter((item) => !item.permission || canAnywhere(item.permission));
   // Destaca o item da seção atual também nas subpáginas (ex.: /users/5 → /users)
   const activeUrl = items.find((item) => item.href && pathname.startsWith(item.href))?.href;
 
   const accountCard = (
     <div className="glass flex flex-col gap-3 rounded-xl p-3 ring-1 ring-secondary">
-      <AvatarLabelGroup size="md" initials={getInitials(user.fullName)} title={user.fullName} subtitle={user.email} />
+      <AvatarLabelGroup
+        size="md"
+        src={user.photoUrl}
+        alt={user.fullName}
+        initials={getInitials(user.fullName)}
+        title={user.fullName}
+        subtitle={user.email}
+      />
 
       <div className="flex items-center gap-2">
         <ThemeToggle />

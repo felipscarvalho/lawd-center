@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Plus, XClose } from "@untitledui/icons";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
 import { Badge } from "@/components/base/badges/badges";
@@ -78,12 +79,21 @@ export function DirectorateCard({ directorate, canManage, canManageAllPositions,
               key={membership.id}
               className="flex items-center justify-between gap-3 rounded-xl bg-primary px-3 py-2.5 ring-1 ring-secondary"
             >
-              <AvatarLabelGroup
-                size="md"
-                initials={getInitials(membership.user?.fullName ?? "")}
-                title={membership.user?.fullName}
-                subtitle={`${membership.positionLabel} · desde ${formatDate(membership.startsAt)}`}
-              />
+              <Link
+                href={`/users/${membership.userId}`}
+                className="min-w-0 flex-1 rounded-lg outline-focus-ring focus-visible:outline-2"
+                aria-label={`Ver perfil de ${membership.user?.fullName}`}
+              >
+                <AvatarLabelGroup
+                  size="md"
+                  src={membership.user?.photoUrl}
+                  alt={membership.user?.fullName}
+                  initials={getInitials(membership.user?.fullName ?? "")}
+                  title={membership.user?.fullName}
+                  subtitle={`${membership.positionLabel} · desde ${formatDate(membership.startsAt)}`}
+                  className="transition-opacity hover:opacity-80"
+                />
+              </Link>
 
               {canEnd(membership) && (
                 <ButtonUtility
