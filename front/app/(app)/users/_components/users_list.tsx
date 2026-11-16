@@ -145,7 +145,7 @@ export function UsersList() {
           <Table aria-label="Usuários" onRowAction={(key) => router.push(`/users/${key}`)}>
             <Table.Header>
               <Table.Head id="name" label="Nome" isRowHeader />
-              <Table.Head id="memberships" label="Cargos" />
+              <Table.Head id="memberships" label="Cargos" className="hidden md:table-cell" />
               <Table.Head id="course" label="Curso" className="hidden md:table-cell" />
               <Table.Head id="maturity" label="Maturidade" className="hidden lg:table-cell" />
               <Table.Head id="availability" label="Disponibilidade" className="hidden 2xl:table-cell" />
@@ -162,7 +162,7 @@ export function UsersList() {
                       subtitle={user.email}
                     />
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className="hidden md:table-cell">
                     {user.memberships?.length ? (
                       <div className="flex flex-wrap gap-1">
                         {user.memberships.map((membership) => (

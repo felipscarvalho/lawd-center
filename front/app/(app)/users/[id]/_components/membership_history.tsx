@@ -40,19 +40,23 @@ export function MembershipHistory({ memberships }: MembershipHistoryProps) {
           <Table aria-label="Histórico de cargos">
             <Table.Header>
               <Table.Head id="directorate" label="Diretoria" isRowHeader />
-              <Table.Head id="position" label="Cargo" className="w-full" />
-              <Table.Head id="startsAt" label="Início" />
-              <Table.Head id="endsAt" label="Término" />
+              <Table.Head id="position" label="Cargo" className="hidden w-full sm:table-cell" />
+              <Table.Head id="startsAt" label="Início" className="hidden sm:table-cell" />
+              <Table.Head id="endsAt" label="Término" className="hidden sm:table-cell" />
               <Table.Head id="status" label="Situação" />
               <Table.Head id="actions" />
             </Table.Header>
             <Table.Body items={memberships.data}>
               {(membership) => (
                 <Table.Row id={membership.id}>
-                  <Table.Cell className="font-medium whitespace-nowrap text-primary">{membership.directorate?.name}</Table.Cell>
-                  <Table.Cell className="whitespace-nowrap">{membership.positionLabel}</Table.Cell>
-                  <Table.Cell className="whitespace-nowrap">{formatDate(membership.startsAt)}</Table.Cell>
-                  <Table.Cell className="whitespace-nowrap">{membership.endsAt ? formatDate(membership.endsAt) : "—"}</Table.Cell>
+                  <Table.Cell className="font-medium whitespace-nowrap text-primary">
+                    {membership.directorate?.name}
+                    {/* No celular a coluna de cargo some: o cargo aparece embaixo da diretoria */}
+                    <span className="block text-sm font-normal text-tertiary sm:hidden">{membership.positionLabel}</span>
+                  </Table.Cell>
+                  <Table.Cell className="hidden whitespace-nowrap sm:table-cell">{membership.positionLabel}</Table.Cell>
+                  <Table.Cell className="hidden whitespace-nowrap sm:table-cell">{formatDate(membership.startsAt)}</Table.Cell>
+                  <Table.Cell className="hidden whitespace-nowrap sm:table-cell">{membership.endsAt ? formatDate(membership.endsAt) : "—"}</Table.Cell>
                   <Table.Cell>
                     <BadgeWithDot size="sm" type="modern" color={membership.isActive ? "success" : "gray"}>
                       {membership.isActive ? "Ativo" : "Encerrado"}

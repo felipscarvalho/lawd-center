@@ -56,7 +56,7 @@ export function DirectoratesList() {
             <Table aria-label="Diretorias">
               <Table.Header>
                 <Table.Head id="name" label="Nome" isRowHeader className="w-full" />
-                <Table.Head id="key" label="Chave" />
+                <Table.Head id="key" label="Chave" className="hidden sm:table-cell" />
                 <Table.Head id="kind" label="Tipo" />
                 <Table.Head id="actions" />
               </Table.Header>
@@ -64,7 +64,7 @@ export function DirectoratesList() {
                 {(directorate) => (
                   <Table.Row id={directorate.id}>
                     <Table.Cell className="font-medium whitespace-nowrap text-primary">{directorate.name}</Table.Cell>
-                    <Table.Cell className="font-mono whitespace-nowrap">{directorate.key}</Table.Cell>
+                    <Table.Cell className="hidden font-mono whitespace-nowrap sm:table-cell">{directorate.key}</Table.Cell>
                     <Table.Cell>
                       <Badge type="modern" size="sm">
                         {directorateKindLabels[directorate.kind]}

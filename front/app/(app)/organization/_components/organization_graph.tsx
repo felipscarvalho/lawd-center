@@ -13,7 +13,8 @@ import { DirectorateIcon } from "./directorate_icon";
 
 /*
  * Linhas da árvore só com CSS (pseudo-elementos), sem biblioteca de grafos: cada diretoria desenha o seu
- * trecho da linha horizontal e a descida até o card; a primeira e a última arredondam os cantos
+ * trecho da linha horizontal e a descida até o card; a primeira e a última arredondam os cantos;
+ * o -ml-px/-mr-px centraliza a borda de 2px na mesma linha da linha central
  * (first/last-of-type: a linha central da fileira é um <span> e não pode contar como primeiro filho).
  * (Módulos CSS não funcionam aqui: o next.config passa todo .css pelo Tailwind como CSS global.)
  */
@@ -21,15 +22,15 @@ const lineColor = "var(--color-border-brand)";
 
 const branchClass = cx(
   "relative flex justify-center px-5 pt-12",
-  "before:absolute before:top-4 before:right-1/2 before:h-8 before:w-1/2 before:border-t-2 before:border-brand before:content-['']",
-  "after:absolute after:top-4 after:left-1/2 after:h-8 after:w-1/2 after:border-t-2 after:border-l-2 after:border-brand after:content-['']",
+  "before:absolute before:top-4 before:right-1/2 before:-mr-px before:h-8 before:w-1/2 before:border-t-2 before:border-brand before:content-['']",
+  "after:absolute after:top-4 after:left-1/2 after:-ml-px after:h-8 after:w-1/2 after:border-t-2 after:border-l-2 after:border-brand after:content-['']",
   "first-of-type:before:border-t-0 first-of-type:after:rounded-tl-[14px]",
   "last-of-type:after:hidden last-of-type:before:border-r-2 last-of-type:before:rounded-tr-[14px]",
 );
 
 /** Diretoria única: só a descida, sem linha horizontal */
 const singleBranchClass =
-  "relative flex justify-center px-5 pt-12 before:absolute before:top-0 before:left-1/2 before:h-12 before:border-l-2 before:border-brand before:content-['']";
+  "relative flex justify-center px-5 pt-12 before:absolute before:top-0 before:left-1/2 before:-ml-px before:h-12 before:border-l-2 before:border-brand before:content-['']";
 
 const dotClass = "absolute left-1/2 z-1 size-2.5 -translate-x-1/2 rounded-full ring-[3px] ring-bg-primary";
 
@@ -52,8 +53,10 @@ export function OrganizationGraph({ directorates, canManage, onAddMember }: Orga
   const standards = directorates.filter((directorate) => directorate.kind === "standard");
   // Quebra as diretorias em linhas que cabem na tela, sem rolagem: número par por linha para a linha
   // central passar no vão entre os cards
+  // (no celular, uma por fileira: duas não cabem na largura)
   const isWide = useBreakpoint("2xl");
-  const perRow = isWide ? 4 : 2;
+  const isTablet = useBreakpoint("md");
+  const perRow = isWide ? 4 : isTablet ? 2 : 1;
   const rows = Array.from({ length: Math.ceil(standards.length / perRow) }, (_, index) =>
     standards.slice(index * perRow, (index + 1) * perRow),
   );
@@ -70,7 +73,7 @@ export function OrganizationGraph({ directorates, canManage, onAddMember }: Orga
 
   return (
     // Fundo pontilhado, como uma tela de diagrama
-    <Card className="bg-[radial-gradient(var(--color-border-secondary)_1px,transparent_1px)] bg-size-[20px_20px] px-6 py-10">
+    <Card className="bg-[radial-gradient(var(--color-border-secondary)_1px,transparent_1px)] bg-size-[20px_20px] px-2 py-10 sm:px-6">
       <div className="mx-auto flex w-max flex-col items-center">
         {cores.map((core) => (
           <div key={core.id}>{renderNode(core, "root")}</div>
@@ -85,8 +88,8 @@ export function OrganizationGraph({ directorates, canManage, onAddMember }: Orga
               <span className="absolute top-0 left-1/2 h-4 w-0.5 -translate-x-1/2" style={{ background: lineColor }} />
             )}
 
-            {/* Linha central descendo até a próxima linha de diretorias (passa no vão entre os cards) */}
-            {cores.length > 0 && index < rows.length - 1 && (
+            {/* Linha central descendo até a próxima linha de diretorias (passa no vão entre os cards; com uma por fileira, a ligação é direta) */}
+            {cores.length > 0 && perRow > 1 && index < rows.length - 1 && (
               <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2" style={{ background: lineColor }} />
             )}
 
