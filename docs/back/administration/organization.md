@@ -43,7 +43,7 @@ Cada linha é uma pessoa ocupando um cargo numa diretoria por um período. `ends
 | `position` | cargo (valor do enum `Position`) |
 | `starts_at` / `ends_at` | período (datas); `ends_at` nulo = ativo |
 
-Exemplo de histórico: uma pessoa que foi membro de Projetos, depois diretora de Projetos e depois presidente tem três linhas, e só a última está ativa. A situação atual, a trajetória, o organograma de uma data passada e o tempo de liga saem dessas linhas.
+Exemplo de histórico: uma pessoa que foi membro de Projetos, depois diretora de Projetos e depois presidente tem três linhas, e só a última está ativa. A situação atual, a trajetória, o organograma de uma data passada e o tempo de liga saem dessas linhas. O histórico de uma pessoa (`GET /users/:id/memberships`) vem do vínculo mais recente ao mais antigo; no mesmo dia, o cadastrado por último vem primeiro.
 
 ## Regras (`MembershipService`)
 

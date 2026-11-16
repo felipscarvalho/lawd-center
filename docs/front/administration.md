@@ -10,7 +10,7 @@ Telas sobre o que o backend oferece em `/api/v1/administration` (ver [docs/back/
 | `/login` | login por e-mail e senha; quem já tem sessão vai direto ao organograma | pública |
 | `/organization` | organograma | `membership.view` |
 | `/users` | lista de usuários | `user.view` |
-| `/users/[id]` | detalhe do usuário, perfil e histórico de cargos | `user.view` |
+| `/users/[id]` | detalhe do usuário (conta e perfil, editáveis direto) e histórico de cargos | `user.view` |
 | `/profile` | meu perfil | qualquer usuário logado |
 | `/directorates` | diretorias | `directorate.view` |
 
@@ -27,17 +27,20 @@ Um card por diretoria (o núcleo institucional ocupa a largura toda), com as pes
 
 ## Usuários
 
-- Lista com filtro **Ativos / Desativados / Todos** e busca local por nome ou e-mail; clicar na linha abre o detalhe
+- Busca por nome ou e-mail no canto direito; o botão **Filtros** abre um painel com situação (Ativos, Desativados, Todos; padrão Ativos), diretoria (cargo ativo) e curso. O botão mostra quantos filtros fogem do padrão e o painel tem **Limpar filtros**. Busca e filtros de diretoria e curso são locais; clicar na linha abre o detalhe
+- Colunas: nome com foto, cargos ativos (cargo · diretoria), curso com o período de entrada, maturidade e disponibilidade (as três últimas somem em telas menores). A coluna de situação só aparece com o filtro em **Todos**, já que nos outros ela é o próprio filtro
+- O `GET /users` traz, junto de cada usuário, o resumo público do perfil (`profile`: curso, entrada, disponibilidade e maturidade) e os cargos ativos com a diretoria (`memberships`); dados privados não entram na lista
 - **Novo usuário** (`user.create`): nome, e-mail e senha. O cargo é atribuído depois
 
 ### Detalhe do usuário
 
-- Cargos atuais, data de cadastro e situação
-- **Editar** (`user.update`): nome, e-mail e senha (em branco mantém a atual)
-- **Desativar** (`user.deactivate`, não aparece para o próprio usuário): confirmação explicando que o login é bloqueado e os cargos são encerrados
-- **Atribuir cargo** (gestão de vínculos em alguma diretoria)
-- **Perfil** (`ProfilePanel`, ver abaixo)
-- **Histórico de cargos**: todos os vínculos com início, término e situação; os ativos podem ser encerrados por quem gerencia a diretoria
+Um único card no mesmo layout de **Meu perfil** (sem dados repetidos em cards separados):
+
+- **Esquerda**: foto (enviar e remover com `abilities.canUpdate`), situação, cargos atuais, data de cadastro, **Senha** (com `user.update`: nova senha sem pedir a atual, como a coluna de conta de Meu perfil) e, com `canViewPrivate`, a **nota técnica**. Com `canEvaluate` a nota já é um campo editável com **Salvar nota** (0 a 10, vírgula ou ponto, vazio remove); sem ela, só leitura
+- **Direita**: com `abilities.canUpdate`, um formulário só (`UserEditForm`) com conta e perfil: nome e e-mail em **Dados pessoais** (editáveis com `user.update`; o diretor vê só leitura) e as seções do perfil. Um único **Salvar alterações** envia só as partes alteradas, cada uma para o seu endpoint (usuário e perfil). Sem `canUpdate`, a mesma estrutura só para leitura (`UserProfileDetails`)
+- Não há botão **Editar**: quem pode editar já entra com os campos editáveis
+- **Desativar** (`user.deactivate`, não aparece para o próprio usuário) e **Atribuir cargo** ficam no topo da página
+- **Histórico de cargos** abaixo do card: todos os vínculos, do mais recente ao mais antigo; os ativos podem ser encerrados por quem gerencia a diretoria
 
 ## Meu perfil (`/profile`)
 
@@ -47,18 +50,9 @@ Página em duas colunas dentro de um único card (no celular, uma embaixo da out
 - **Formulário do perfil** (direita), direto na página em vez de modal, em seções com título, descrição e linha divisória: **Dados pessoais** (nome e e-mail só leitura, pois quem altera é a gestão, nascimento e matrícula), **Formação** (curso e entrada na UFS), **Dedicação e nível** (disponibilidade e maturidade), **Interesses** (carreira e áreas de interesse), **Habilidades** (atributos e tecnologias) e **Objetivo na LAWD**. **Salvar alterações** e **Descartar** só ficam ativos quando algo mudou
 - A nota técnica não aparece: a própria pessoa não vê a sua
 
-Os campos do perfil ficam em `ProfileFormFields` (`components/administration/profile_form_fields.tsx`), usados pela página e pelo `ProfileFormModal`, para os dois formulários não divergirem. Na maturidade técnica a descrição do nível aparece como dica abaixo do select: como texto de apoio do item, o `Select` do Untitled cortava o nome do nível.
+Os campos do perfil ficam em `ProfileFormFields` (`components/administration/profile_form_fields.tsx`), usados por Meu perfil e pelo detalhe do usuário, para os dois formulários não divergirem. As descrições das seções falam com a pessoa ("você") e só aparecem no próprio perfil. Na maturidade técnica a descrição do nível aparece como dica abaixo do select: como texto de apoio do item, o `Select` do Untitled cortava o nome do nível. Carreira e atributos aceitam até 3 opções cada: um contador mostra quantas foram escolhidas e, ao chegar em 3, as demais ficam desabilitadas.
 
-## Perfil (`ProfilePanel`)
-
-Componente de `components/administration/`, usado no detalhe do usuário (o próprio perfil tem a página acima, item fixo da sidebar). Regras de acesso em [docs/back/administration/profile.md](../back/administration/profile.md); o front segue o `abilities` que vem na resposta:
-
-- Foto grande no topo; fotos também aparecem nos avatares da sidebar, da lista de usuários, do detalhe e do organograma
-- **Enviar/Trocar foto** e **Editar perfil** com `abilities.canUpdate`. A foto é conferida no navegador (JPG, PNG ou WebP, até 5 MB) antes do envio; o backend comprime
-- Nascimento, matrícula e objetivo só aparecem (e só entram no formulário) para a própria pessoa ou com `canViewPrivate`
-- **Nota técnica** em bloco à parte, só com `canViewPrivate`; o botão **Avaliar** aparece com `canEvaluate` e abre o `TechnicalScoreModal` (0 a 10, vírgula ou ponto, vazio remove)
-- O `ProfileFormModal` usa selects para curso, disponibilidade e maturidade, checkboxes para carreira e atributos (até 3 em cada: um contador mostra quantas foram escolhidas e, ao chegar em 3, as demais ficam desabilitadas) e tags livres para tecnologias e áreas de interesse, com sugestões vindas do catálogo do backend
-- Toda alteração invalida perfil, usuários e organograma (por causa da foto) e, quando é o próprio perfil, chama `revalidate()` do `user_store`
+Regras de acesso do perfil em [docs/back/administration/profile.md](../back/administration/profile.md); o front segue o `abilities` que vem na resposta. Nascimento, matrícula e objetivo só aparecem para a própria pessoa ou com `canViewPrivate`. A foto (`ProfilePhotoEditor`) é conferida no navegador (JPG, PNG ou WebP, até 5 MB) antes do envio, e o backend comprime. Toda alteração de perfil invalida perfil, usuários e organograma (por causa da foto) e, quando é o próprio perfil, chama `revalidate()` do `user_store`.
 
 ## Diretorias
 

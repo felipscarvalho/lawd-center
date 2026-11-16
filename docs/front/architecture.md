@@ -16,6 +16,8 @@ Next.js 16 (App Router, `cacheComponents` ligado), TypeScript e Tailwind CSS 4, 
 
 Erros de mutation passam por `handleApiError` (`lib/form_errors.ts`): erros de validação do backend vão para os campos do formulário; os demais viram toast.
 
+Formulários sempre começam limpos. Nos modais, o componente exportado conta as aberturas com `useOpenSession` e usa a contagem como `key` do conteúdo: cada abertura monta um `useForm` novo com os valores iniciais em `defaultValues`. A versão anterior chamava `reset` num `useEffect` ao abrir, mas os campos controlados montavam antes do efeito e mantinham os valores do preenchimento anterior (ex.: a diretoria aparecia selecionada com o cargo desabilitado). Fechar não muda a contagem, então o formulário não pisca durante a animação de saída. Formulários de página que criam algo (ex.: troca de senha) chamam `reset` no `onSuccess`.
+
 ## Usuário autenticado (`stores/user_store.ts`)
 
 Os dados do backend ficam no cache do TanStack Query, com uma exceção: o usuário logado, que é usado em quase toda tela (menus, permissões, nome no rodapé da sidebar). Ele fica num store Zustand persistido no `localStorage`:

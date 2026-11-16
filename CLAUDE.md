@@ -238,9 +238,9 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 
 ### Componentes de tela compartilhados (não congelados)
 
-- `components/layout/`: estrutura de página (`PageHeader`)
+- `components/layout/`: estrutura de página (`PageHeader`), listas (`ListToolbar`: botão de filtros com painel + busca à direita; `ListContent`: carregando, erro, vazio e conteúdo) e `FormActions` (Descartar/Salvar dos formulários de edição direta)
 - `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
-- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfilePanel`)
+- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfileFormFields`, `ProfilePhotoEditor`)
 - `components/query_provider.tsx`: `QueryClientProvider` do TanStack Query, aplicado no layout raiz
 
 ### Locais (`app/<route>/_components/`)
@@ -255,3 +255,8 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 - Schemas compartilhados em `schemas/<module>/`; schema usado por um único formulário pode ficar junto da página
 - Tipos derivados com `z.infer<typeof schema>`, sem duplicar tipo manualmente
 - A validação do front é para UX; a validação de verdade continua no backend (VineJS)
+- **Telas de detalhe são editáveis direto**: quem tem permissão já entra com os campos editáveis, sem botão "Editar" nem modal de edição; um único formulário por tela com `FormActions` (Descartar/Salvar ativos só quando algo mudou), e quem não pode editar vê a mesma estrutura só para leitura. Modais ficam para criar registros e ações pontuais (atribuir cargo, confirmar)
+- **Sem informação repetida em cards separados**: dados de uma mesma entidade ficam num card só (ex.: uma única foto por tela)
+- **Campos limpos a cada submissão**: o formulário nunca reaparece com o que foi preenchido antes
+  - Em modal: o componente exportado só chama `useOpenSession(isOpen)` (`hooks/use_open_session.ts`) e renderiza o conteúdo com `key={session}`; os valores iniciais vão em `defaultValues` do `useForm`. Não usar `reset` em `useEffect` ao abrir (os campos montam antes do efeito e guardam os valores antigos)
+  - Na página: formulário que cria algo chama `reset` com os valores vazios no `onSuccess`; formulário que edita um registro volta a mostrar os dados salvos
