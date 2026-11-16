@@ -2,11 +2,17 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  drive: {
+    fs: {
+      serve: typeof routes['drive.fs.serve']
+    }
+  }
   administration: {
     auth: {
       login: typeof routes['administration.auth.login']
       logout: typeof routes['administration.auth.logout']
       me: typeof routes['administration.auth.me']
+      changePassword: typeof routes['administration.auth.changePassword']
     }
     users: {
       index: typeof routes['administration.users.index']
@@ -25,6 +31,17 @@ export interface ApiDefinition {
       history: typeof routes['administration.memberships.history']
       store: typeof routes['administration.memberships.store']
       end: typeof routes['administration.memberships.end']
+    }
+    profiles: {
+      show: typeof routes['administration.profiles.show']
+      update: typeof routes['administration.profiles.update']
+      updatePhoto: typeof routes['administration.profiles.updatePhoto']
+      removePhoto: typeof routes['administration.profiles.removePhoto']
+      updateTechnicalScore: typeof routes['administration.profiles.updateTechnicalScore']
+    }
+    profileCatalogs: {
+      technologies: typeof routes['administration.profileCatalogs.technologies']
+      interestAreas: typeof routes['administration.profileCatalogs.interestAreas']
     }
   }
 }

@@ -4,9 +4,11 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'administration.auth.login': { paramsTuple?: []; params?: {} }
     'administration.auth.logout': { paramsTuple?: []; params?: {} }
     'administration.auth.me': { paramsTuple?: []; params?: {} }
+    'administration.auth.changePassword': { paramsTuple?: []; params?: {} }
     'administration.users.index': { paramsTuple?: []; params?: {} }
     'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'administration.users.store': { paramsTuple?: []; params?: {} }
@@ -17,8 +19,39 @@ export type ScannedRoutes = {
     'administration.directorates.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'administration.organizationChart': { paramsTuple?: []; params?: {} }
     'administration.memberships.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.updatePhoto': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.removePhoto': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.updateTechnicalScore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profileCatalogs.technologies': { paramsTuple?: []; params?: {} }
+    'administration.profileCatalogs.interestAreas': { paramsTuple?: []; params?: {} }
     'administration.memberships.store': { paramsTuple?: []; params?: {} }
     'administration.memberships.end': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  GET: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'administration.auth.me': { paramsTuple?: []; params?: {} }
+    'administration.users.index': { paramsTuple?: []; params?: {} }
+    'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.directorates.index': { paramsTuple?: []; params?: {} }
+    'administration.organizationChart': { paramsTuple?: []; params?: {} }
+    'administration.memberships.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profileCatalogs.technologies': { paramsTuple?: []; params?: {} }
+    'administration.profileCatalogs.interestAreas': { paramsTuple?: []; params?: {} }
+  }
+  HEAD: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'administration.auth.me': { paramsTuple?: []; params?: {} }
+    'administration.users.index': { paramsTuple?: []; params?: {} }
+    'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.directorates.index': { paramsTuple?: []; params?: {} }
+    'administration.organizationChart': { paramsTuple?: []; params?: {} }
+    'administration.memberships.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profileCatalogs.technologies': { paramsTuple?: []; params?: {} }
+    'administration.profileCatalogs.interestAreas': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'administration.auth.login': { paramsTuple?: []; params?: {} }
@@ -26,28 +59,19 @@ export type ScannedRoutes = {
     'administration.users.store': { paramsTuple?: []; params?: {} }
     'administration.users.deactivate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'administration.directorates.store': { paramsTuple?: []; params?: {} }
+    'administration.profiles.updatePhoto': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'administration.memberships.store': { paramsTuple?: []; params?: {} }
     'administration.memberships.end': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
-  GET: {
-    'administration.auth.me': { paramsTuple?: []; params?: {} }
-    'administration.users.index': { paramsTuple?: []; params?: {} }
-    'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'administration.directorates.index': { paramsTuple?: []; params?: {} }
-    'administration.organizationChart': { paramsTuple?: []; params?: {} }
-    'administration.memberships.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  HEAD: {
-    'administration.auth.me': { paramsTuple?: []; params?: {} }
-    'administration.users.index': { paramsTuple?: []; params?: {} }
-    'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'administration.directorates.index': { paramsTuple?: []; params?: {} }
-    'administration.organizationChart': { paramsTuple?: []; params?: {} }
-    'administration.memberships.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
   PUT: {
+    'administration.auth.changePassword': { paramsTuple?: []; params?: {} }
     'administration.users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'administration.directorates.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'administration.profiles.updateTechnicalScore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'administration.profiles.removePhoto': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

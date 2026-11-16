@@ -8,6 +8,12 @@ export type { Route, Path } from './schema.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"],
+    pattern: '/uploads/*',
+    tokens: [[0,"uploads"],[2,"*"]],
+    types: placeholder as Registry['drive.fs.serve']['types'],
+  },
   'administration.auth.login': {
     methods: ["POST"],
     pattern: '/api/v1/administration/auth/login',
@@ -25,6 +31,12 @@ const routes = {
     pattern: '/api/v1/administration/auth/me',
     tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"auth"],[0,"me"]],
     types: placeholder as Registry['administration.auth.me']['types'],
+  },
+  'administration.auth.changePassword': {
+    methods: ["PUT"],
+    pattern: '/api/v1/administration/auth/password',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"auth"],[0,"password"]],
+    types: placeholder as Registry['administration.auth.changePassword']['types'],
   },
   'administration.users.index': {
     methods: ["GET","HEAD"],
@@ -85,6 +97,48 @@ const routes = {
     pattern: '/api/v1/administration/users/:id/memberships',
     tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"memberships"]],
     types: placeholder as Registry['administration.memberships.history']['types'],
+  },
+  'administration.profiles.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/administration/users/:id/profile',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"profile"]],
+    types: placeholder as Registry['administration.profiles.show']['types'],
+  },
+  'administration.profiles.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/administration/users/:id/profile',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"profile"]],
+    types: placeholder as Registry['administration.profiles.update']['types'],
+  },
+  'administration.profiles.updatePhoto': {
+    methods: ["POST"],
+    pattern: '/api/v1/administration/users/:id/profile/photo',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"profile"],[0,"photo"]],
+    types: placeholder as Registry['administration.profiles.updatePhoto']['types'],
+  },
+  'administration.profiles.removePhoto': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/administration/users/:id/profile/photo',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"profile"],[0,"photo"]],
+    types: placeholder as Registry['administration.profiles.removePhoto']['types'],
+  },
+  'administration.profiles.updateTechnicalScore': {
+    methods: ["PUT"],
+    pattern: '/api/v1/administration/users/:id/technical-score',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"users"],[1,"id"],[0,"technical-score"]],
+    types: placeholder as Registry['administration.profiles.updateTechnicalScore']['types'],
+  },
+  'administration.profileCatalogs.technologies': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/administration/technologies',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"technologies"]],
+    types: placeholder as Registry['administration.profileCatalogs.technologies']['types'],
+  },
+  'administration.profileCatalogs.interestAreas': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/administration/interest-areas',
+    tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"interest-areas"]],
+    types: placeholder as Registry['administration.profileCatalogs.interestAreas']['types'],
   },
   'administration.memberships.store': {
     methods: ["POST"],

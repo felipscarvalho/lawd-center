@@ -24,3 +24,6 @@ yarn-error.log
 
 # Platform specific
 .DS_Store
+
+# Arquivos enviados pelos usuários (Drive, disco local)
+storage

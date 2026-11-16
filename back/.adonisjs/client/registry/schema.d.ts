@@ -8,6 +8,19 @@ import type { routes } from './index.ts'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"]
+    pattern: '/uploads/*'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { '*': ParamValue[] }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+      rawResponse: ExtractRawResponse<unknown>
+    }
+  }
   'administration.auth.login': {
     methods: ["POST"]
     pattern: '/api/v1/administration/auth/login'
@@ -45,6 +58,19 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['me']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['me']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['me']>>>
+    }
+  }
+  'administration.auth.changePassword': {
+    methods: ["PUT"]
+    pattern: '/api/v1/administration/auth/password'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/administration/auth').changePasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/administration/auth').changePasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['changePassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['changePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/auth_controller').default['changePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'administration.users.index': {
@@ -175,6 +201,97 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/memberships_controller').default['history']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/memberships_controller').default['history']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/memberships_controller').default['history']>>>
+    }
+  }
+  'administration.profiles.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/administration/users/:id/profile'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['show']>>>
+    }
+  }
+  'administration.profiles.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/administration/users/:id/profile'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/administration/profile').updateProfileValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/administration/profile').updateProfileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'administration.profiles.updatePhoto': {
+    methods: ["POST"]
+    pattern: '/api/v1/administration/users/:id/profile/photo'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/administration/profile').updatePhotoValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/administration/profile').updatePhotoValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updatePhoto']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updatePhoto']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updatePhoto']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'administration.profiles.removePhoto': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/administration/users/:id/profile/photo'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['removePhoto']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['removePhoto']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['removePhoto']>>>
+    }
+  }
+  'administration.profiles.updateTechnicalScore': {
+    methods: ["PUT"]
+    pattern: '/api/v1/administration/users/:id/technical-score'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/administration/profile').updateTechnicalScoreValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/administration/profile').updateTechnicalScoreValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updateTechnicalScore']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updateTechnicalScore']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profiles_controller').default['updateTechnicalScore']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'administration.profileCatalogs.technologies': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/administration/technologies'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/administration/profile').searchCatalogValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['technologies']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'administration.profileCatalogs.interestAreas': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/administration/interest-areas'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/administration/profile').searchCatalogValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/profile_catalogs_controller').default['interestAreas']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'administration.memberships.store': {

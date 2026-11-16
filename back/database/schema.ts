@@ -49,6 +49,19 @@ export class DirectorateSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class InterestAreaSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'name', 'updatedAt'] as const
+  $columns = InterestAreaSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class MembershipSchema extends BaseModel {
   static $columns = ['createdAt', 'directorateId', 'endsAt', 'id', 'position', 'startsAt', 'updatedAt', 'userId'] as const
   $columns = MembershipSchema.$columns
@@ -67,6 +80,70 @@ export class MembershipSchema extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
+  declare userId: number
+}
+
+export class ProfileSchema extends BaseModel {
+  static $columns = ['birthDate', 'course', 'createdAt', 'goal', 'graduated', 'id', 'maturity', 'photoPath', 'technicalScoreUpdatedAt', 'technicalScoreUpdatedBy', 'universityEntryPeriod', 'updatedAt', 'userId', 'weeklyAvailability'] as const
+  $columns = ProfileSchema.$columns
+  @column.date()
+  declare birthDate: DateTime | null
+  @column()
+  declare course: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare goal: string | null
+  @column()
+  declare graduated: boolean
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare maturity: string | null
+  @column()
+  declare photoPath: string | null
+  @column.dateTime()
+  declare technicalScoreUpdatedAt: DateTime | null
+  @column()
+  declare technicalScoreUpdatedBy: number | null
+  @column()
+  declare universityEntryPeriod: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+  @column()
+  declare weeklyAvailability: string | null
+}
+
+export class TechnologySchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'name', 'updatedAt'] as const
+  $columns = TechnologySchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class UserInterestAreaSchema extends BaseModel {
+  static $columns = ['interestAreaId', 'userId'] as const
+  $columns = UserInterestAreaSchema.$columns
+  @column()
+  declare interestAreaId: number
+  @column({ isPrimary: true })
+  declare userId: number
+}
+
+export class UserTechnologySchema extends BaseModel {
+  static $columns = ['technologyId', 'userId'] as const
+  $columns = UserTechnologySchema.$columns
+  @column()
+  declare technologyId: number
+  @column({ isPrimary: true })
   declare userId: number
 }
 

@@ -60,6 +60,35 @@ export default class PermissionService {
     return this.can(userId, permission)
   }
 
+  /**
+   * Verifica a permissão sobre outra pessoa: vale se for global ou se tiver sido concedida
+   * numa diretoria onde a pessoa alvo tem vínculo ativo (ex.: diretor sobre os membros da diretoria).
+   */
+  async canOnUser(
+    actorId: number,
+    permission: PermissionKey,
+    targetUserId: number
+  ): Promise<boolean> {
+    const allPermissions = await this.getEffectivePermissions(actorId)
+    const effective = allPermissions.filter((item) => item.permission === permission)
+
+    if (effective.some((item) => item.scope === 'global')) return true
+
+    const scopedDirectorateIds = effective
+      .map((item) => item.directorateId)
+      .filter((id): id is number => id !== null)
+
+    if (scopedDirectorateIds.length === 0) return false
+
+    const targetMembership = await Membership.query()
+      .withScopes((scopes) => scopes.active())
+      .where('user_id', targetUserId)
+      .whereIn('directorate_id', scopedDirectorateIds)
+      .first()
+
+    return targetMembership !== null
+  }
+
   /** Igual a `can`, mas lança ForbiddenException quando não pode */
   async authorize(
     userId: number,

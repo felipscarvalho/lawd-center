@@ -56,4 +56,38 @@ test.group('Auth', (group) => {
     const me = await client.get('/api/v1/administration/auth/me').bearerToken(token)
     me.assertStatus(401)
   })
+
+  test('troca de senha confere a atual e encerra as outras sessões', async ({ client }) => {
+    const user = await createUser()
+    const login = (email: string, password: string) =>
+      client.post('/api/v1/administration/auth/login').json({ email, password })
+
+    const first = await login(user.email, TEST_PASSWORD)
+    const second = await login(user.email, TEST_PASSWORD)
+    const currentToken = first.body().data.token
+    const otherToken = second.body().data.token
+
+    const wrong = await client
+      .put('/api/v1/administration/auth/password')
+      .json({ currentPassword: 'errada-123', newPassword: 'nova-senha-123' })
+      .bearerToken(currentToken)
+    wrong.assertStatus(422)
+    wrong.assertBodyContains({ errors: [{ field: 'currentPassword' }] })
+
+    const changed = await client
+      .put('/api/v1/administration/auth/password')
+      .json({ currentPassword: TEST_PASSWORD, newPassword: 'nova-senha-123' })
+      .bearerToken(currentToken)
+    changed.assertStatus(204)
+
+    const stillLogged = await client.get('/api/v1/administration/auth/me').bearerToken(currentToken)
+    stillLogged.assertStatus(200)
+    const revoked = await client.get('/api/v1/administration/auth/me').bearerToken(otherToken)
+    revoked.assertStatus(401)
+
+    const oldPassword = await login(user.email, TEST_PASSWORD)
+    oldPassword.assertStatus(400)
+    const newPassword = await login(user.email, 'nova-senha-123')
+    newPassword.assertStatus(200)
+  })
 })

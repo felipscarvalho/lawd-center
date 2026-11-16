@@ -37,4 +37,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   ADMIN_NAME: Env.schema.string.optional(),
   ADMIN_EMAIL: Env.schema.string.optional({ format: 'email' }),
   ADMIN_PASSWORD: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(['fs'] as const),
 })

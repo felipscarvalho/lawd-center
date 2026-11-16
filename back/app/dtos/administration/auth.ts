@@ -12,6 +12,11 @@ export interface LoginOutput {
   token: string
 }
 
+export interface ChangePasswordInput {
+  currentPassword: string
+  newPassword: string
+}
+
 export interface CurrentUserOutput {
   user: User
   permissions: EffectivePermission[]

@@ -10,6 +10,8 @@ export default class UserTransformer extends BaseTransformer<User> {
       isActive: this.resource.isActive,
       deactivatedAt: this.resource.deactivatedAt?.toISO() ?? null,
       createdAt: this.resource.createdAt.toISO(),
+      // Disponível quando o perfil é carregado junto (listas, organograma, sessão)
+      photoUrl: this.resource.profile?.photoUrl ?? null,
     }
   }
 }

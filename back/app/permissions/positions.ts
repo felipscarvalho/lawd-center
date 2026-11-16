@@ -57,7 +57,8 @@ const inDirectorate = (...keys: PermissionKey[]): PermissionGrant[] =>
 const baseView = global(
   'administration.user.view',
   'administration.directorate.view',
-  'administration.membership.view'
+  'administration.membership.view',
+  'administration.profile.view'
 )
 
 /** Administradores gerais (presidente, vice e secretário-geral): todo o módulo administration */
@@ -71,7 +72,15 @@ export const positionPermissions: Record<Position, PermissionGrant[]> = {
   president: administrationAdmin,
   vice_president: administrationAdmin,
   general_secretary: administrationAdmin,
-  // Diretor gerencia os membros da própria diretoria
-  director: [...baseView, ...inDirectorate('administration.membership.manage')],
+  // Diretor gerencia os membros da própria diretoria: vínculos, perfis e avaliação técnica
+  director: [
+    ...baseView,
+    ...inDirectorate(
+      'administration.membership.manage',
+      'administration.profile.view_private',
+      'administration.profile.update',
+      'administration.profile.evaluate'
+    ),
+  ],
   member: baseView,
 }

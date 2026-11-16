@@ -4,17 +4,21 @@ import type { HttpContext } from '@adonisjs/core/http'
 /**
  * Violação de regra de negócio (HTTP 422). Compartilhada por todos os módulos:
  * services lançam com uma mensagem legível e um código específico da regra.
+ * Quando a regra se refere a um campo do formulário, `field` faz o front mostrar o erro nele.
  */
 export default class BusinessRuleException extends Exception {
   static status = 422
 
-  constructor(message: string, code = 'E_BUSINESS_RULE') {
+  field?: string
+
+  constructor(message: string, code = 'E_BUSINESS_RULE', field?: string) {
     super(message, { code })
+    this.field = field
   }
 
   async handle(error: this, ctx: HttpContext) {
     ctx.response
       .status(error.status)
-      .send({ errors: [{ message: error.message, code: error.code }] })
+      .send({ errors: [{ message: error.message, code: error.code, field: error.field }] })
   }
 }

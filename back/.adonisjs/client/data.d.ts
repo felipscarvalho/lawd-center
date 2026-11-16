@@ -8,6 +8,7 @@ import type { InferData, InferVariants } from '@adonisjs/core/types/transformers
 import type AdministrationAuthTransformer from '#transformers/administration/auth_transformer'
 import type AdministrationDirectorateTransformer from '#transformers/administration/directorate_transformer'
 import type AdministrationMembershipTransformer from '#transformers/administration/membership_transformer'
+import type AdministrationProfileTransformer from '#transformers/administration/profile_transformer'
 import type AdministrationUserTransformer from '#transformers/administration/user_transformer'
 
 export namespace Data {
@@ -23,6 +24,10 @@ export namespace Data {
     export type Membership = InferData<AdministrationMembershipTransformer>
     export namespace Membership {
       export type Variants = InferVariants<AdministrationMembershipTransformer>
+    }
+    export type Profile = InferData<AdministrationProfileTransformer>
+    export namespace Profile {
+      export type Variants = InferVariants<AdministrationProfileTransformer>
     }
     export type User = InferData<AdministrationUserTransformer>
     export namespace User {

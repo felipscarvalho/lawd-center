@@ -21,6 +21,9 @@ router
       .group(() => {
         router.post('auth/logout', [controllers.administration.Auth, 'logout']).as('auth.logout')
         router.get('auth/me', [controllers.administration.Auth, 'me']).as('auth.me')
+        router
+          .put('auth/password', [controllers.administration.Auth, 'changePassword'])
+          .as('auth.changePassword')
       })
       .use(middleware.auth())
 
@@ -76,6 +79,38 @@ router
           .as('memberships.history')
           .where('id', router.matchers.number())
           .use(middleware.can('administration.membership.view'))
+        // Perfis: a própria pessoa sempre vê e edita o seu (mesmo sem vínculo); o service confere o resto
+        router
+          .get('users/:id/profile', [controllers.administration.Profiles, 'show'])
+          .as('profiles.show')
+          .where('id', router.matchers.number())
+        router
+          .put('users/:id/profile', [controllers.administration.Profiles, 'update'])
+          .as('profiles.update')
+          .where('id', router.matchers.number())
+        router
+          .post('users/:id/profile/photo', [controllers.administration.Profiles, 'updatePhoto'])
+          .as('profiles.updatePhoto')
+          .where('id', router.matchers.number())
+        router
+          .delete('users/:id/profile/photo', [controllers.administration.Profiles, 'removePhoto'])
+          .as('profiles.removePhoto')
+          .where('id', router.matchers.number())
+        router
+          .put('users/:id/technical-score', [
+            controllers.administration.Profiles,
+            'updateTechnicalScore',
+          ])
+          .as('profiles.updateTechnicalScore')
+          .where('id', router.matchers.number())
+          .use(middleware.can('administration.profile.evaluate'))
+        router
+          .get('technologies', [controllers.administration.ProfileCatalogs, 'technologies'])
+          .as('profileCatalogs.technologies')
+        router
+          .get('interest-areas', [controllers.administration.ProfileCatalogs, 'interestAreas'])
+          .as('profileCatalogs.interestAreas')
+
         // membership.manage pode ser só da própria diretoria (diretor); o service confere a diretoria do vínculo
         router
           .post('memberships', [controllers.administration.Memberships, 'store'])

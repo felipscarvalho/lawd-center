@@ -11,7 +11,7 @@ export default class UserService {
   constructor(protected membershipService: MembershipService) {}
 
   async list(input: ListUsersInput = {}): Promise<User[]> {
-    const query = User.query().orderBy('full_name', 'asc')
+    const query = User.query().preload('profile').orderBy('full_name', 'asc')
 
     if (input.active === true) query.whereNull('deactivated_at')
     if (input.active === false) query.whereNotNull('deactivated_at')
@@ -20,7 +20,7 @@ export default class UserService {
   }
 
   async find(id: number): Promise<User> {
-    return User.findOrFail(id)
+    return User.query().where('id', id).preload('profile').firstOrFail()
   }
 
   async findByEmail(email: string): Promise<User | null> {

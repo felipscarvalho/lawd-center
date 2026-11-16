@@ -30,7 +30,9 @@ export default class MembershipService {
   async organizationChart(): Promise<Directorate[]> {
     const directorates = await Directorate.query()
       .preload('memberships', (query) =>
-        query.withScopes((scopes) => scopes.active()).preload('user')
+        query
+          .withScopes((scopes) => scopes.active())
+          .preload('user', (user) => user.preload('profile'))
       )
       .orderByRaw("CASE WHEN kind = 'core' THEN 0 ELSE 1 END")
       .orderBy('name', 'asc')
