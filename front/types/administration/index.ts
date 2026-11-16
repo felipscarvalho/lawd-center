@@ -143,9 +143,9 @@ export interface ProfileAbilities {
 export interface Profile {
   user: User;
   birthDate: string | null;
+  registrationNumber: string | null;
   course: Course | null;
   universityEntryPeriod: string | null;
-  graduated: boolean;
   photoUrl: string | null;
   weeklyAvailability: WeeklyAvailability | null;
   maturity: MaturityLevel | null;
@@ -161,9 +161,9 @@ export interface Profile {
 
 export interface UpdateProfilePayload {
   birthDate?: string | null;
+  registrationNumber?: string | null;
   course?: Course | null;
   universityEntryPeriod?: string | null;
-  graduated?: boolean;
   weeklyAvailability?: WeeklyAvailability | null;
   maturity?: MaturityLevel | null;
   careerPaths?: CareerPath[];

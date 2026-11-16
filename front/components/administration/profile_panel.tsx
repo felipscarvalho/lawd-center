@@ -1,36 +1,31 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { FileTrigger } from "react-aria-components";
-import { Camera01, Edit05, Star01 } from "@untitledui/icons";
+import { Edit05, Star01 } from "@untitledui/icons";
 import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { Avatar } from "@/components/base/avatar/avatar";
 import { Badge } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
 import { Alert } from "@/components/feedback/alert";
-import { toast } from "@/components/feedback/toast";
 import { ProfileFormModal } from "@/components/administration/profile_form_modal";
+import { ProfilePhotoButton } from "@/components/administration/profile_photo_button";
 import { TechnicalScoreModal } from "@/components/administration/technical_score_modal";
-import { useProfile, useUploadProfilePhoto } from "@/hooks/administration/use_profiles";
+import { useProfile } from "@/hooks/administration/use_profiles";
 import {
   careerPathLabels,
   courseLabels,
   getInitials,
-  getProfilePhotoError,
   maturityDescriptions,
   maturityLabels,
-  profilePhotoTypes,
   softSkillLabels,
   weeklyAvailabilityLabels,
 } from "@/lib/administration";
-import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
 import { useUserStore } from "@/stores/user_store";
 
 /** Perfil de uma pessoa: foto, dados acadêmicos, interesses e (para quem avalia) a nota técnica */
 export function ProfilePanel({ userId }: { userId: number }) {
   const profile = useProfile(userId);
-  const uploadPhoto = useUploadProfilePhoto(userId);
   const currentUserId = useUserStore((state) => state.user?.id);
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -50,31 +45,12 @@ export function ProfilePanel({ userId }: { userId: number }) {
 
   const { data } = profile;
   const isSelf = currentUserId === data.user.id;
-  // Nascimento e objetivo são privados: só a própria pessoa e quem tem view_private recebem
+  // Nascimento, matrícula e objetivo são privados: só a própria pessoa e quem tem view_private recebem
   const showPrivate = isSelf || data.abilities.canViewPrivate;
-
-  const handlePhoto = (files: FileList | null) => {
-    const photo = files?.[0];
-
-    if (!photo) return;
-
-    const photoError = getProfilePhotoError(photo);
-
-    if (photoError) {
-      toast.error("Não foi possível usar esta imagem", { description: photoError });
-      return;
-    }
-
-    uploadPhoto.mutate(photo, {
-      onSuccess: () => toast.success("Foto atualizada"),
-      onError: (error) => handleApiError(error),
-    });
-  };
 
   const academic = [
     data.course && courseLabels[data.course],
     data.universityEntryPeriod && `Entrada em ${data.universityEntryPeriod}`,
-    data.graduated && "Formado(a)",
   ].filter(Boolean);
 
   return (
@@ -98,17 +74,7 @@ export function ProfilePanel({ userId }: { userId: number }) {
 
         <div className="flex flex-wrap gap-2">
           {data.abilities.canUpdate && (
-            <FileTrigger acceptedFileTypes={profilePhotoTypes} onSelect={handlePhoto}>
-              <Button
-                color="secondary"
-                size="sm"
-                iconLeading={Camera01}
-                isLoading={uploadPhoto.isPending}
-                showTextWhileLoading
-              >
-                {data.photoUrl ? "Trocar foto" : "Enviar foto"}
-              </Button>
-            </FileTrigger>
+            <ProfilePhotoButton userId={data.user.id} hasPhoto={Boolean(data.photoUrl)} size="sm" />
           )}
           {data.abilities.canUpdate && (
             <Button color="secondary" size="sm" iconLeading={Edit05} onClick={() => setIsEditOpen(true)}>
@@ -133,6 +99,8 @@ export function ProfilePanel({ userId }: { userId: number }) {
         </Field>
 
         {showPrivate && <Field label="Data de nascimento">{data.birthDate ? formatDate(data.birthDate) : null}</Field>}
+
+        {showPrivate && <Field label="Matrícula">{data.registrationNumber}</Field>}
 
         <TagsField
           label="Carreira de interesse"

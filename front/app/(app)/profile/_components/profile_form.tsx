@@ -7,7 +7,6 @@ import { Button } from "@/components/base/buttons/button";
 import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
 import {
-  FormSection,
   ProfileFormFields,
   toProfileFormValues,
   toProfilePayload,
@@ -42,16 +41,19 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   });
 
   return (
-    <form onSubmit={onSubmit} className="flex min-w-0 flex-col gap-8 p-5 sm:p-6" noValidate>
-      <FormSection title="Dados da conta">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Input label="Nome completo" value={profile.user.fullName} isDisabled />
-          <Input label="E-mail" value={profile.user.email} isDisabled />
-        </div>
-        <p className="-mt-2 text-sm text-tertiary">Nome e e-mail são alterados pela gestão.</p>
-      </FormSection>
-
-      <ProfileFormFields control={control} canEditPrivate />
+    <form onSubmit={onSubmit} className="flex min-w-0 flex-col gap-6 p-5 sm:p-6" noValidate>
+      <div className="flex flex-col gap-6">
+        <ProfileFormFields
+          control={control}
+          canEditPrivate
+          personalFields={
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Input label="Nome completo" value={profile.user.fullName} isDisabled />
+              <Input label="E-mail" value={profile.user.email} isDisabled />
+            </div>
+          }
+        />
+      </div>
 
       <div className="flex flex-col-reverse gap-3 border-t border-secondary pt-6 sm:flex-row sm:justify-end">
         <Button

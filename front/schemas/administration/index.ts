@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { maxProfileChoices } from "@/lib/administration";
 
 // Validação de UX; a validação definitiva é a do backend (VineJS)
 
@@ -14,8 +15,6 @@ const email = z.email("Informe um e-mail válido").max(254);
 const password = z.string().min(8, "A senha precisa ter pelo menos 8 caracteres").max(72);
 
 export const createUserSchema = z.object({ fullName, email, password });
-
-export type CreateUserForm = z.infer<typeof createUserSchema>;
 
 // Na edição a senha é opcional: vazio mantém a atual
 export const updateUserSchema = z.object({
@@ -38,10 +37,6 @@ export const createDirectorateSchema = z.object({
 
 export type CreateDirectorateForm = z.infer<typeof createDirectorateSchema>;
 
-export const updateDirectorateSchema = createDirectorateSchema.pick({ name: true });
-
-export type UpdateDirectorateForm = z.infer<typeof updateDirectorateSchema>;
-
 export const assignMembershipSchema = z.object({
   userId: z.number({ error: "Selecione o usuário" }),
   directorateId: z.number({ error: "Selecione a diretoria" }),
@@ -59,15 +54,21 @@ const optional = <T extends z.ZodTypeAny>(schema: T) => schema.nullable().option
 export const profileSchema = z.object({
   /** YYYY-MM-DD */
   birthDate: optional(z.string()),
+  registrationNumber: optional(
+    z.union([z.literal(""), z.string().trim().regex(/^\d{4,20}$/, "Use só números (4 a 20 dígitos)")]),
+  ),
   course: optional(z.enum(["information_systems", "computer_science", "computer_engineering", "design", "advertising", "other"])),
   universityEntryPeriod: optional(
     z.union([z.literal(""), z.string().regex(/^\d{4}\.[12]$/, "Use o formato ano.semestre (ex.: 2022.1)")]),
   ),
-  graduated: z.boolean(),
   weeklyAvailability: optional(z.enum(["under_6h", "from_6_to_8h", "from_9_to_12h", "over_12h"])),
   maturity: optional(z.enum(["beginner", "developing", "autonomous", "mentor"])),
-  careerPaths: z.array(z.enum(["full_stack", "frontend", "backend", "devops", "ui_ux", "project_management", "research"])),
-  softSkills: z.array(z.enum(["communication", "teamwork", "leadership", "organization", "proactivity", "autonomy"])),
+  careerPaths: z
+    .array(z.enum(["full_stack", "frontend", "backend", "devops", "ui_ux", "project_management", "research"]))
+    .max(maxProfileChoices, `Escolha até ${maxProfileChoices} opções`),
+  softSkills: z
+    .array(z.enum(["communication", "teamwork", "leadership", "organization", "proactivity", "autonomy"]))
+    .max(maxProfileChoices, `Escolha até ${maxProfileChoices} opções`),
   goal: optional(z.string().max(2000, "Use até 2000 caracteres")),
   technologies: z.array(z.string()).max(50, "Use até 50 tecnologias"),
   interestAreas: z.array(z.string()).max(50, "Use até 50 áreas"),

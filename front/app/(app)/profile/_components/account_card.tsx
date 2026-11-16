@@ -1,41 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { FileTrigger } from "react-aria-components";
-import { UploadCloud02, XClose } from "@untitledui/icons";
-import { Button } from "@/components/base/buttons/button";
+import { XClose } from "@untitledui/icons";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
 import { toast } from "@/components/feedback/toast";
 import { ConfirmModal } from "@/components/overlays/confirm_modal";
-import { useRemoveProfilePhoto, useUploadProfilePhoto } from "@/hooks/administration/use_profiles";
-import { getInitials, getProfilePhotoError, profilePhotoTypes } from "@/lib/administration";
+import { ProfilePhotoButton } from "@/components/administration/profile_photo_button";
+import { useRemoveProfilePhoto } from "@/hooks/administration/use_profiles";
+import { getInitials } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import type { Profile } from "@/types/administration";
 import { ChangePasswordForm } from "./change_password_form";
 
 /** Coluna da conta: foto (enviar e remover) e troca de senha */
 export function AccountCard({ profile }: { profile: Profile }) {
-  const uploadPhoto = useUploadProfilePhoto(profile.user.id);
   const removePhoto = useRemoveProfilePhoto(profile.user.id);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
-
-  const handlePhoto = (files: FileList | null) => {
-    const photo = files?.[0];
-
-    if (!photo) return;
-
-    const photoError = getProfilePhotoError(photo);
-
-    if (photoError) {
-      toast.error("Não foi possível usar esta imagem", { description: photoError });
-      return;
-    }
-
-    uploadPhoto.mutate(photo, {
-      onSuccess: () => toast.success("Foto atualizada"),
-      onError: (error) => handleApiError(error),
-    });
-  };
 
   const confirmRemove = () => {
     removePhoto.mutate(undefined, {
@@ -76,11 +56,7 @@ export function AccountCard({ profile }: { profile: Profile }) {
           )}
         </div>
 
-        <FileTrigger acceptedFileTypes={profilePhotoTypes} onSelect={handlePhoto}>
-          <Button color="secondary" iconLeading={UploadCloud02} isLoading={uploadPhoto.isPending} showTextWhileLoading>
-            {profile.photoUrl ? "Trocar foto" : "Enviar foto"}
-          </Button>
-        </FileTrigger>
+        <ProfilePhotoButton userId={profile.user.id} hasPhoto={Boolean(profile.photoUrl)} />
         <p className="text-center text-xs text-tertiary">JPG, PNG ou WebP, até 5 MB</p>
       </div>
 

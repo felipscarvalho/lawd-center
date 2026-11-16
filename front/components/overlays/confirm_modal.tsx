@@ -32,10 +32,11 @@ export const ConfirmModal = ({
     <Modal className="max-w-md">
       <Dialog aria-label={title}>
         <div className="flex flex-col gap-5 p-6">
-          <FeaturedIcon icon={AlertTriangle} color={destructive ? "error" : "warning"} theme="light" size="lg" />
-
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-semibold text-primary">{title}</h2>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-4">
+              <FeaturedIcon icon={AlertTriangle} color={destructive ? "error" : "warning"} theme="light" size="lg" />
+              <h2 className="text-lg font-semibold text-primary">{title}</h2>
+            </div>
             <p className="text-sm text-tertiary">{description}</p>
           </div>
 

@@ -89,20 +89,9 @@ export const softSkillLabels: Record<SoftSkill, string> = {
   autonomy: "Autonomia",
 };
 
+/** Máximo de opções que cada pessoa escolhe em carreira de interesse e em atributos (igual ao backend) */
+export const maxProfileChoices = 3;
+
 /** Transforma um mapa de rótulos em opções de Select ({ id, label }) */
 export const toOptions = <T extends string>(labels: Record<T, string>) =>
   (Object.entries(labels) as [T, string][]).map(([id, label]) => ({ id, label }));
-
-// Foto de perfil: mesma regra do validator do backend (que comprime para WebP 512×512)
-
-export const profilePhotoTypes = ["image/jpeg", "image/png", "image/webp"];
-
-const maxProfilePhotoSize = 5 * 1024 * 1024;
-
-/** Mensagem de erro da foto escolhida, ou null se ela pode ser enviada */
-export const getProfilePhotoError = (photo: File) => {
-  if (!profilePhotoTypes.includes(photo.type)) return "Envie uma imagem JPG, PNG ou WebP.";
-  if (photo.size > maxProfilePhotoSize) return "A imagem pode ter no máximo 5 MB.";
-
-  return null;
-};
