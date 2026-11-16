@@ -49,6 +49,7 @@ export default class MembershipService {
   }
 
   /** Histórico completo de vínculos do usuário, do mais recente para o mais antigo */
+  /** Do mais recente ao mais antigo; no mesmo dia, o vínculo cadastrado por último vem primeiro */
   async historyForUser(userId: number): Promise<Membership[]> {
     await User.findOrFail(userId)
 
@@ -56,6 +57,7 @@ export default class MembershipService {
       .where('user_id', userId)
       .preload('directorate')
       .orderBy('starts_at', 'desc')
+      .orderBy('id', 'desc')
   }
 
   /**

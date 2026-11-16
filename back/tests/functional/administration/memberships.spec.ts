@@ -112,6 +112,38 @@ test.group('Memberships', (group) => {
     ])
   })
 
+  test('histórico vem do mais recente ao mais antigo, inclusive no mesmo dia', async ({
+    client,
+    assert,
+  }) => {
+    const { corp, projects, events } = await setupDirectorates()
+    const admin = await createUserWithPosition('president', corp)
+    const member = await createUserWithPosition('member', projects)
+
+    // Dois vínculos começando hoje: o cadastrado por último vem primeiro
+    await client
+      .post(assign)
+      .json({ userId: member.id, directorateId: events.id, position: 'member' })
+      .loginAs(admin)
+    await client
+      .post(assign)
+      .json({ userId: member.id, directorateId: events.id, position: 'director' })
+      .loginAs(admin)
+
+    const history = await client
+      .get(`/api/v1/administration/users/${member.id}/memberships`)
+      .loginAs(admin)
+    const items = (
+      history.body() as { data: { position: string; directorateId: number }[] }
+    ).data.map((item) => [item.position, item.directorateId])
+
+    assert.deepEqual(items, [
+      ['director', events.id],
+      ['member', events.id],
+      ['member', projects.id],
+    ])
+  })
+
   test('encerrar vínculo', async ({ client, assert }) => {
     const { corp, projects } = await setupDirectorates()
     const admin = await createUserWithPosition('president', corp)

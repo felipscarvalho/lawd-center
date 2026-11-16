@@ -10,8 +10,17 @@ import type { CreateUserInput, ListUsersInput, UpdateUserInput } from '#dtos/adm
 export default class UserService {
   constructor(protected membershipService: MembershipService) {}
 
+  /** Lista com o resumo do perfil e os cargos ativos (com a diretoria), para a tabela de usuários */
   async list(input: ListUsersInput = {}): Promise<User[]> {
-    const query = User.query().preload('profile').orderBy('full_name', 'asc')
+    const query = User.query()
+      .preload('profile')
+      .preload('memberships', (memberships) =>
+        memberships
+          .withScopes((scopes) => scopes.active())
+          .preload('directorate')
+          .orderBy('starts_at', 'asc')
+      )
+      .orderBy('full_name', 'asc')
 
     if (input.active === true) query.whereNull('deactivated_at')
     if (input.active === false) query.whereNotNull('deactivated_at')

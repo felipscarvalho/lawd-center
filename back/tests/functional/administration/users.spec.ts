@@ -25,6 +25,38 @@ test.group('Users', (group) => {
     assert.notProperty(created, 'password')
   })
 
+  test('lista traz resumo do perfil e cargos ativos com a diretoria', async ({
+    client,
+    assert,
+  }) => {
+    const { projects } = await setupDirectorates()
+    const member = await createUserWithPosition('member', projects)
+    await client
+      .put(`/api/v1/administration/users/${member.id}/profile`)
+      .json({ course: 'design', maturity: 'mentor', birthDate: '2001-01-01' })
+      .loginAs(member)
+
+    const response = await client.get('/api/v1/administration/users').loginAs(member)
+
+    response.assertStatus(200)
+    type ListedUser = {
+      id: number
+      profile: Record<string, unknown> | null
+      memberships: { position: string; directorate: { name: string } }[]
+    }
+    const listed = (response.body() as { data: ListedUser[] }).data.find(
+      (user) => user.id === member.id
+    )!
+    assert.deepEqual(listed.profile, {
+      course: 'design',
+      universityEntryPeriod: null,
+      weeklyAvailability: null,
+      maturity: 'mentor',
+    })
+    assert.equal(listed.memberships[0].position, 'member')
+    assert.equal(listed.memberships[0].directorate.name, 'Projetos')
+  })
+
   test('membro efetivo não cadastra usuários (403)', async ({ client }) => {
     const { projects } = await setupDirectorates()
     const member = await createUserWithPosition('member', projects)
