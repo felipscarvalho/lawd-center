@@ -10,8 +10,8 @@ import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
 import { Button } from "@/components/base/buttons/button";
 import { Alert } from "@/components/feedback/alert";
 import { ThemeToggle } from "@/components/theme/theme_toggle";
+import { avatarProps } from "@/components/administration/person_link";
 import { usePermissions } from "@/hooks/administration/use_auth";
-import { getInitials } from "@/lib/administration";
 import { useUserStore } from "@/stores/user_store";
 import type { PermissionKey } from "@/types/administration";
 import { FullPageLoading } from "./full_page_loading";
@@ -106,9 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="glass flex flex-col gap-3 rounded-xl p-3 ring-1 ring-secondary">
       <AvatarLabelGroup
         size="md"
-        src={user.photoUrl}
-        alt={user.fullName}
-        initials={getInitials(user.fullName)}
+        {...avatarProps(user)}
         title={user.fullName}
         subtitle={user.email}
       />

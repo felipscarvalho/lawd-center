@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/base/buttons/button";
-import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
+import { FormInput } from "@/components/forms/form_input";
 import { useUpdateTechnicalScore } from "@/hooks/administration/use_profiles";
+import { useEditForm } from "@/hooks/use_edit_form";
 import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
 import { technicalScoreSchema, type TechnicalScoreForm as TechnicalScoreValues } from "@/schemas/administration";
@@ -20,14 +19,11 @@ const toFormValues = (profile: Profile): TechnicalScoreValues => ({
 export function TechnicalScoreForm({ profile }: { profile: Profile }) {
   const updateScore = useUpdateTechnicalScore(profile.user.id);
 
-  const { control, handleSubmit, setError, reset, formState } = useForm<TechnicalScoreValues>({
+  const { control, handleSubmit, setError, formState } = useEditForm<TechnicalScoreValues>({
     resolver: zodResolver(technicalScoreSchema),
-    defaultValues: toFormValues(profile),
+    values: () => toFormValues(profile),
+    deps: [profile],
   });
-
-  useEffect(() => {
-    reset(toFormValues(profile));
-  }, [profile, reset]);
 
   const onSubmit = handleSubmit(({ technicalScore }) => {
     // Aceita vírgula ou ponto como separador decimal
@@ -41,26 +37,13 @@ export function TechnicalScoreForm({ profile }: { profile: Profile }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3" noValidate>
-      <Controller
+      <FormInput
         control={control}
         name="technicalScore"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Nota (0 a 10)"
-            placeholder="Ex.: 7,5"
-            inputMode="decimal"
-            value={field.value ?? ""}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={
-              fieldState.error?.message ??
-              (profile.technicalScoreUpdatedAt
-                ? `Atualizada em ${formatDate(profile.technicalScoreUpdatedAt)}. Vazio remove a nota.`
-                : "Sem nota. Vazio remove a nota.")
-            }
-          />
-        )}
+        label="Nota (0 a 10)"
+        placeholder="Ex.: 7,5"
+        inputMode="decimal"
+        hint={(profile.technicalScoreUpdatedAt ? `Atualizada em ${formatDate(profile.technicalScoreUpdatedAt)}. Vazio remove a nota.` : "Sem nota. Vazio remove a nota.")}
       />
 
       <Button

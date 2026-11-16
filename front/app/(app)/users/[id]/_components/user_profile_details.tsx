@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { Badge } from "@/components/base/badges/badges";
+import { DetailField, DetailTags, Section } from "@/components/layout/detail_section";
 import {
   careerPathLabels,
   courseLabels,
@@ -16,83 +15,68 @@ export function UserProfileDetails({ profile, showPrivate }: { profile: Profile;
   return (
     <div className="flex min-w-0 flex-col gap-6 p-5 sm:p-6">
       <Section title="Dados pessoais">
-        <Field label="Nome completo">{profile.user.fullName}</Field>
-        <Field label="E-mail">{profile.user.email}</Field>
-        {showPrivate && <Field label="Data de nascimento">{profile.birthDate ? formatDate(profile.birthDate) : null}</Field>}
-        {showPrivate && <Field label="Matrícula">{profile.registrationNumber}</Field>}
+        <dl className="grid gap-5 sm:grid-cols-2">
+          <DetailField label="Nome completo">{profile.user.fullName}</DetailField>
+          <DetailField label="E-mail">{profile.user.email}</DetailField>
+          {showPrivate && (
+            <DetailField label="Data de nascimento">
+              {profile.birthDate ? formatDate(profile.birthDate) : null}
+            </DetailField>
+          )}
+          {showPrivate && <DetailField label="Matrícula">{profile.registrationNumber}</DetailField>}
+        </dl>
       </Section>
 
       <Section title="Formação">
-        <Field label="Curso">{profile.course ? courseLabels[profile.course] : null}</Field>
-        <Field label="Entrada na UFS">{profile.universityEntryPeriod}</Field>
+        <dl className="grid gap-5 sm:grid-cols-2">
+          <DetailField label="Curso">{profile.course ? courseLabels[profile.course] : null}</DetailField>
+          <DetailField label="Entrada na UFS">{profile.universityEntryPeriod}</DetailField>
+        </dl>
       </Section>
 
       <Section title="Dedicação e nível">
-        <Field label="Disponibilidade">
-          {profile.weeklyAvailability ? weeklyAvailabilityLabels[profile.weeklyAvailability] : null}
-        </Field>
-        <Field label="Maturidade técnica">
-          {profile.maturity ? (
-            <span className="flex flex-col">
-              {maturityLabels[profile.maturity]}
-              <span className="text-xs text-tertiary">{maturityDescriptions[profile.maturity]}</span>
-            </span>
-          ) : null}
-        </Field>
+        <dl className="grid gap-5 sm:grid-cols-2">
+          <DetailField label="Disponibilidade">
+            {profile.weeklyAvailability ? weeklyAvailabilityLabels[profile.weeklyAvailability] : null}
+          </DetailField>
+          <DetailField label="Maturidade técnica">
+            {profile.maturity ? (
+              <span className="flex flex-col">
+                {maturityLabels[profile.maturity]}
+                <span className="text-xs text-tertiary">{maturityDescriptions[profile.maturity]}</span>
+              </span>
+            ) : null}
+          </DetailField>
+        </dl>
       </Section>
 
       <Section title="Interesses">
-        <TagsField label="Carreira de interesse" items={profile.careerPaths.map((item) => careerPathLabels[item])} color="brand" />
-        <TagsField label="Áreas de interesse" items={profile.interestAreas} color="gray" />
+        <dl className="grid gap-5 sm:grid-cols-2">
+          <DetailTags
+            label="Carreira de interesse"
+            items={profile.careerPaths.map((item) => careerPathLabels[item])}
+            color="brand"
+          />
+          <DetailTags label="Áreas de interesse" items={profile.interestAreas} color="gray" />
+        </dl>
       </Section>
 
       <Section title="Habilidades">
-        <TagsField label="Atributos" items={profile.softSkills.map((item) => softSkillLabels[item])} color="brand" />
-        <TagsField label="Tecnologias" items={profile.technologies} color="gray" />
+        <dl className="grid gap-5 sm:grid-cols-2">
+          <DetailTags label="Atributos" items={profile.softSkills.map((item) => softSkillLabels[item])} color="brand" />
+          <DetailTags label="Tecnologias" items={profile.technologies} color="gray" />
+        </dl>
       </Section>
 
       {showPrivate && (
         <Section title="Objetivo na LAWD">
-          <Field label="Objetivo" className="sm:col-span-2">
-            {profile.goal ? <span className="whitespace-pre-line">{profile.goal}</span> : null}
-          </Field>
+          <dl className="grid gap-5 sm:grid-cols-2">
+            <DetailField label="Objetivo" className="sm:col-span-2">
+              {profile.goal ? <span className="whitespace-pre-line">{profile.goal}</span> : null}
+            </DetailField>
+          </dl>
         </Section>
       )}
     </div>
-  );
-}
-
-/** Seção com título e linha separando da anterior, igual às do formulário */
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-4 border-t border-secondary pt-6 first:border-t-0 first:pt-0">
-      <h3 className="text-md font-semibold text-primary">{title}</h3>
-      <dl className="grid gap-5 sm:grid-cols-2">{children}</dl>
-    </section>
-  );
-}
-
-function Field({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
-  return (
-    <div className={className}>
-      <dt className="text-sm text-tertiary">{label}</dt>
-      <dd className="mt-1.5 text-sm text-primary">{children ?? <span className="text-quaternary">Não informado</span>}</dd>
-    </div>
-  );
-}
-
-function TagsField({ label, items, color }: { label: string; items: string[]; color: "brand" | "gray" }) {
-  return (
-    <Field label={label}>
-      {items.length > 0 ? (
-        <span className="flex flex-wrap gap-1.5">
-          {items.map((item) => (
-            <Badge key={item} size="sm" color={color}>
-              {item}
-            </Badge>
-          ))}
-        </span>
-      ) : null}
-    </Field>
   );
 }

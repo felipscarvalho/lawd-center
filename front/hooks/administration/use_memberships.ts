@@ -5,8 +5,9 @@ import {
   getOrganizationChart,
   getUserMemberships,
 } from "@/services/administration/memberships";
+import { usePermissions } from "@/hooks/administration/use_auth";
 import { useUserStore } from "@/stores/user_store";
-import type { EndMembershipPayload } from "@/types/administration";
+import type { EndMembershipPayload, Membership } from "@/types/administration";
 
 export const membershipKeys = {
   all: ["administration", "memberships"] as const,
@@ -55,4 +56,17 @@ export function useEndMembership() {
     mutationFn: ({ id, payload }: { id: number; payload?: EndMembershipPayload }) => endMembership(id, payload),
     onSuccess: invalidate,
   });
+}
+
+/**
+ * Quem pode encerrar um vínculo ativo: gestão global, qualquer cargo; gestão só na diretoria (diretor),
+ * apenas membros efetivos dela (mesma regra do backend)
+ */
+export function useCanEndMembership() {
+  const { can } = usePermissions();
+
+  return (membership: Membership) =>
+    membership.isActive &&
+    (can("administration.membership.manage") ||
+      (membership.position === "member" && can("administration.membership.manage", membership.directorateId)));
 }

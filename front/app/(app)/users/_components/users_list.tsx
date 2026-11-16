@@ -12,12 +12,12 @@ import { UserFormModal } from "@/components/administration/user_form_modal";
 import { ListContent } from "@/components/layout/list_content";
 import { ListToolbar } from "@/components/layout/list_toolbar";
 import { PageHeader } from "@/components/layout/page_header";
+import { avatarProps } from "@/components/administration/person_link";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useDirectorates } from "@/hooks/administration/use_directorates";
 import { useUsers } from "@/hooks/administration/use_users";
 import {
   courseLabels,
-  getInitials,
   maturityLabels,
   toOptions,
   weeklyAvailabilityShortLabels,
@@ -148,7 +148,7 @@ export function UsersList() {
               <Table.Head id="memberships" label="Cargos" />
               <Table.Head id="course" label="Curso" className="hidden md:table-cell" />
               <Table.Head id="maturity" label="Maturidade" className="hidden lg:table-cell" />
-              <Table.Head id="availability" label="Disponibilidade" className="hidden xl:table-cell" />
+              <Table.Head id="availability" label="Disponibilidade" className="hidden 2xl:table-cell" />
               {showStatus && <Table.Head id="status" label="Situação" />}
             </Table.Header>
             <Table.Body items={filteredUsers}>
@@ -157,9 +157,7 @@ export function UsersList() {
                   <Table.Cell>
                     <AvatarLabelGroup
                       size="md"
-                      src={user.photoUrl}
-                      alt={user.fullName}
-                      initials={getInitials(user.fullName)}
+                      {...avatarProps(user)}
                       title={user.fullName}
                       subtitle={user.email}
                     />
@@ -192,7 +190,7 @@ export function UsersList() {
                   <Table.Cell className="hidden whitespace-nowrap lg:table-cell">
                     {user.profile?.maturity ? maturityLabels[user.profile.maturity] : emptyValue}
                   </Table.Cell>
-                  <Table.Cell className="hidden whitespace-nowrap xl:table-cell">
+                  <Table.Cell className="hidden whitespace-nowrap 2xl:table-cell">
                     {user.profile?.weeklyAvailability ? weeklyAvailabilityShortLabels[user.profile.weeklyAvailability] : emptyValue}
                   </Table.Cell>
                   {showStatus && (

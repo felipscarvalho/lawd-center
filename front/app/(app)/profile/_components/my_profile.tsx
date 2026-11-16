@@ -1,13 +1,13 @@
 "use client";
 
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { Input } from "@/components/base/input/input";
 import { ProfileForm } from "./profile_form";
-import { Alert } from "@/components/feedback/alert";
 import { PageHeader } from "@/components/layout/page_header";
+import { LoadingState, ErrorState } from "@/components/layout/query_states";
+import { SplitCard } from "@/components/layout/card";
 import { useProfile } from "@/hooks/administration/use_profiles";
 import { useUserStore } from "@/stores/user_store";
-import { AccountCard } from "./account_card";
+import { AccountColumn } from "./account_column";
 
 /**
  * Perfil do usuário logado: à esquerda a conta (foto e senha), à direita o formulário do perfil.
@@ -18,23 +18,18 @@ export function MyProfile() {
   const profile = useProfile(userId);
 
   if (profile.isPending) {
-    return (
-      <div className="flex justify-center py-16">
-        <LoadingIndicator type="line-spinner" size="md" label="Carregando perfil..." />
-      </div>
-    );
+    return <LoadingState label="Carregando perfil..." />;
   }
 
   if (profile.isError) {
-    return <Alert color="error" title="Não foi possível carregar o perfil" description={profile.error.message} />;
+    return <ErrorState title="Não foi possível carregar o perfil" error={profile.error} />;
   }
 
   return (
     <>
       <PageHeader title="Meu perfil" />
 
-      <div className="glass grid overflow-hidden rounded-2xl ring-1 ring-secondary lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
-        <AccountCard profile={profile.data} />
+      <SplitCard aside={<AccountColumn profile={profile.data} />}>
         <ProfileForm
           profile={profile.data}
           canEditPrivate
@@ -46,7 +41,7 @@ export function MyProfile() {
             </div>
           }
         />
-      </div>
+      </SplitCard>
     </>
   );
 }

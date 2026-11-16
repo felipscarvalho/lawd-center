@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { Controller, useForm, type Control } from "react-hook-form";
+import { type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail01 } from "@untitledui/icons";
-import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
+import { FormInput } from "@/components/forms/form_input";
 import {
   ProfileFormFields,
   toProfileFormValues,
@@ -14,6 +13,7 @@ import {
 import { FormActions } from "@/components/layout/form_actions";
 import { useUpdateProfile } from "@/hooks/administration/use_profiles";
 import { useUpdateUser } from "@/hooks/administration/use_users";
+import { useEditForm } from "@/hooks/use_edit_form";
 import { handleApiError } from "@/lib/form_errors";
 import { userEditSchema, type ProfileForm, type UserEditForm } from "@/schemas/administration";
 import type { Profile, User } from "@/types/administration";
@@ -43,15 +43,11 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
   const updateUser = useUpdateUser(user.id);
   const updateProfile = useUpdateProfile(user.id);
 
-  const { control, handleSubmit, setError, reset, formState } = useForm<UserEditForm>({
+  const { control, handleSubmit, setError, reset, formState, discard } = useEditForm<UserEditForm>({
     resolver: zodResolver(userEditSchema),
-    defaultValues: toFormValues(user, profile),
+    values: () => toFormValues(user, profile),
+    deps: [user, profile],
   });
-
-  // Recarrega quando os dados salvos mudam de fato (o TanStack Query mantém a referência se nada mudou)
-  useEffect(() => {
-    reset(toFormValues(user, profile));
-  }, [user, profile, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
     const { fullName, email, ...profileValues } = values;
@@ -87,7 +83,7 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
       <FormActions
         isDirty={formState.isDirty}
         isSubmitting={updateUser.isPending || updateProfile.isPending}
-        onDiscard={() => reset(toFormValues(user, profile))}
+        onDiscard={discard}
       />
     </form>
   );
@@ -96,38 +92,20 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
 function AccountFields({ control, isDisabled }: { control: Control<UserEditForm>; isDisabled: boolean }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <Controller
+      <FormInput
         control={control}
         name="fullName"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Nome completo"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isDisabled={isDisabled}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="Nome completo"
+        isDisabled={isDisabled}
       />
 
-      <Controller
+      <FormInput
         control={control}
         name="email"
-        render={({ field, fieldState }) => (
-          <Input
-            label="E-mail"
-            type="email"
-            icon={Mail01}
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isDisabled={isDisabled}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="E-mail"
+        type="email"
+        icon={Mail01}
+        isDisabled={isDisabled}
       />
     </div>
   );

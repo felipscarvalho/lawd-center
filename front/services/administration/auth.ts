@@ -1,10 +1,8 @@
-import { api } from "@/lib/api";
+import { api, apiGet, apiPost } from "@/lib/api";
 import type { ChangePasswordPayload, CurrentUser, LoginPayload, LoginResponse } from "@/types/administration";
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
-  const { data } = await api.post<{ data: LoginResponse }>("/administration/auth/login", payload);
-
-  return data.data;
+  return apiPost<LoginResponse>("/administration/auth/login", payload);
 }
 
 export async function logout(): Promise<void> {
@@ -12,9 +10,7 @@ export async function logout(): Promise<void> {
 }
 
 export async function getCurrentUser(): Promise<CurrentUser> {
-  const { data } = await api.get<{ data: CurrentUser }>("/administration/auth/me");
-
-  return data.data;
+  return apiGet<CurrentUser>("/administration/auth/me");
 }
 
 /** Troca a própria senha; o backend encerra as outras sessões e mantém a atual */

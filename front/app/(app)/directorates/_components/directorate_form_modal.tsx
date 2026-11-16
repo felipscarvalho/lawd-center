@@ -1,10 +1,10 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/base/input/input";
-import { Select } from "@/components/base/select/select";
 import { toast } from "@/components/feedback/toast";
+import { FormSelect } from "@/components/forms/form_select";
+import { FormInput } from "@/components/forms/form_input";
 import { FormModal } from "@/components/overlays/form_modal";
 import { useOpenSession } from "@/hooks/use_open_session";
 import { useCreateDirectorate, useUpdateDirectorate } from "@/hooks/administration/use_directorates";
@@ -65,56 +65,28 @@ function DirectorateFormModalContent({ isOpen, onOpenChange, directorate }: Dire
       submitLabel={isEditing ? "Salvar" : "Cadastrar"}
       isSubmitting={mutation.isPending}
     >
-      <Controller
+      <FormInput
         control={control}
         name="name"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Nome"
-            placeholder="Ex.: Jurídico"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="Nome"
+        placeholder="Ex.: Jurídico"
       />
 
       {!isEditing && (
         <>
-          <Controller
+          <FormInput
             control={control}
             name="key"
-            render={({ field, fieldState }) => (
-              <Input
-                label="Chave"
-                placeholder="Ex.: legal_affairs"
-                tooltip="Identificador em inglês usado pelo sistema. Não pode ser alterado depois."
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                isInvalid={Boolean(fieldState.error)}
-                hint={fieldState.error?.message}
-              />
-            )}
+            label="Chave"
+            placeholder="Ex.: legal_affairs"
+            tooltip="Identificador em inglês usado pelo sistema. Não pode ser alterado depois."
           />
 
-          <Controller
+          <FormSelect
             control={control}
             name="kind"
-            render={({ field, fieldState }) => (
-              <Select
-                label="Tipo"
-                items={kindOptions}
-                selectedKey={field.value}
-                onSelectionChange={(key) => field.onChange(key)}
-                isInvalid={Boolean(fieldState.error)}
-                hint={fieldState.error?.message}
-              >
-                {(item) => <Select.Item id={item.id} label={item.label} />}
-              </Select>
-            )}
+            label="Tipo"
+            items={kindOptions}
           />
         </>
       )}

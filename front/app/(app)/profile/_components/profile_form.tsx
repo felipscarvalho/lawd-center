@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import type { ReactNode } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/feedback/toast";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/administration/profile_form_fields";
 import { FormActions } from "@/components/layout/form_actions";
 import { useUpdateProfile } from "@/hooks/administration/use_profiles";
+import { useEditForm } from "@/hooks/use_edit_form";
 import { handleApiError } from "@/lib/form_errors";
 import { profileSchema, type ProfileForm as ProfileFormValues } from "@/schemas/administration";
 import type { Profile } from "@/types/administration";
@@ -29,15 +29,11 @@ interface ProfileFormProps {
 export function ProfileForm({ profile, canEditPrivate, personalFields, isSelf = false }: ProfileFormProps) {
   const updateProfile = useUpdateProfile(profile.user.id);
 
-  const { control, handleSubmit, setError, reset, formState } = useForm<ProfileFormValues>({
+  const { control, handleSubmit, setError, formState, discard } = useEditForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: toProfileFormValues(profile),
+    values: () => toProfileFormValues(profile),
+    deps: [profile],
   });
-
-  // Recarrega o formulário só quando o perfil muda de fato (o TanStack Query mantém a mesma referência se nada mudou)
-  useEffect(() => {
-    reset(toProfileFormValues(profile));
-  }, [profile, reset]);
 
   const onSubmit = handleSubmit((values) => {
     const payload = toProfilePayload(values, canEditPrivate);
@@ -63,7 +59,7 @@ export function ProfileForm({ profile, canEditPrivate, personalFields, isSelf = 
       <FormActions
         isDirty={formState.isDirty}
         isSubmitting={updateProfile.isPending}
-        onDiscard={() => reset(toProfileFormValues(profile))}
+        onDiscard={discard}
       />
     </form>
   );

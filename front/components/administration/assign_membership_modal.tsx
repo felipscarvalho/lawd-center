@@ -10,6 +10,7 @@ import { Select } from "@/components/base/select/select";
 import { HintText } from "@/components/base/input/hint-text";
 import { Label } from "@/components/base/input/label";
 import { toast } from "@/components/feedback/toast";
+import { FormSelect } from "@/components/forms/form_select";
 import { FormModal } from "@/components/overlays/form_modal";
 import { useOpenSession } from "@/hooks/use_open_session";
 import { usePermissions } from "@/hooks/administration/use_auth";
@@ -115,46 +116,25 @@ function AssignMembershipModalContent({ isOpen, onOpenChange, directorate, user 
       )}
 
       {!directorate && (
-        <Controller
+        <FormSelect
           control={control}
           name="directorateId"
-          render={({ field, fieldState }) => (
-            <Select
-              label="Diretoria"
-              placeholder="Selecione a diretoria"
-              items={manageableDirectorates.map((item) => ({ id: item.id, label: item.name }))}
-              selectedKey={field.value ?? null}
-              onSelectionChange={(key) => {
-                field.onChange(key === null ? undefined : Number(key));
-                // O cargo depende da diretoria escolhida
-                setValue("position", undefined as never);
-              }}
-              isInvalid={Boolean(fieldState.error)}
-              hint={fieldState.error?.message}
-            >
-              {(item) => <Select.Item id={item.id} label={item.label} />}
-            </Select>
-          )}
+          label="Diretoria"
+          placeholder="Selecione a diretoria"
+          items={manageableDirectorates.map((item) => ({ id: item.id, label: item.name }))}
+          valueType="number"
+          // O cargo depende da diretoria escolhida
+          onValueChange={() => setValue("position", undefined as never)}
         />
       )}
 
-      <Controller
+      <FormSelect
         control={control}
         name="position"
-        render={({ field, fieldState }) => (
-          <Select
-            label="Cargo"
-            placeholder={selectedDirectorate ? "Selecione o cargo" : "Escolha a diretoria primeiro"}
-            isDisabled={!selectedDirectorate}
-            items={positionOptions.map((position) => ({ id: position, label: positionLabels[position] }))}
-            selectedKey={field.value ?? null}
-            onSelectionChange={(key) => field.onChange(key ?? undefined)}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          >
-            {(item) => <Select.Item id={item.id} label={item.label} />}
-          </Select>
-        )}
+        label="Cargo"
+        placeholder={selectedDirectorate ? "Selecione o cargo" : "Escolha a diretoria primeiro"}
+        isDisabled={!selectedDirectorate}
+        items={positionOptions.map((position) => ({ id: position, label: positionLabels[position] }))}
       />
 
       <Controller

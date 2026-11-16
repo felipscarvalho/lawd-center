@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
+import { LoadingState } from "@/components/layout/query_states";
 import { UserDetail } from "./_components/user_detail";
 
 // Página da área logada (só existe no navegador): fora da validação de instant navigation, ver app/(app)/layout.tsx
@@ -14,11 +14,7 @@ export const metadata: Metadata = {
 export default function UserPage() {
   return (
     <Suspense
-      fallback={
-        <div className="flex justify-center py-16">
-          <LoadingIndicator type="line-spinner" size="md" label="Carregando usuário..." />
-        </div>
-      }
+      fallback={<LoadingState label="Carregando usuário..." />}
     >
       <UserDetail />
     </Suspense>

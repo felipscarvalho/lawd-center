@@ -2,8 +2,8 @@
 
 import type { FC, ReactNode } from "react";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
-import { Alert } from "@/components/feedback/alert";
+import { ErrorState, LoadingState } from "@/components/layout/query_states";
+import { Card } from "@/components/layout/card";
 
 interface ListContentProps {
   isPending: boolean;
@@ -32,21 +32,17 @@ export function ListContent({
   children,
 }: ListContentProps) {
   if (error) {
-    return <Alert color="error" title={errorTitle} description={error.message} />;
+    return <ErrorState title={errorTitle} error={error} />;
   }
 
   if (isPending) {
-    return (
-      <div className="flex justify-center py-16">
-        <LoadingIndicator type="line-spinner" size="md" label={loadingLabel} />
-      </div>
-    );
+    return <LoadingState label={loadingLabel} />;
   }
 
   if (isEmpty) {
     return (
       // O EmptyState limita a própria largura: o card fica num wrapper com a largura toda
-      <div className="glass rounded-2xl py-12 ring-1 ring-secondary">
+      <Card className="py-12">
         <EmptyState size="md">
           <EmptyState.Header pattern="none">
             <EmptyState.FeaturedIcon icon={empty.icon} color="brand" theme="light" />
@@ -56,7 +52,7 @@ export function ListContent({
             <EmptyState.Description>{empty.description}</EmptyState.Description>
           </EmptyState.Content>
         </EmptyState>
-      </div>
+      </Card>
     );
   }
 

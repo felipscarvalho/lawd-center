@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Mail01 } from "@untitledui/icons";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/base/buttons/button";
-import { Input } from "@/components/base/input/input";
+import { FormInput } from "@/components/forms/form_input";
 import { ThemeToggle } from "@/components/theme/theme_toggle";
+import { Card } from "@/components/layout/card";
 import { handleApiError } from "@/lib/form_errors";
 import { loginSchema, type LoginForm as LoginFormValues } from "@/schemas/administration";
 import { useUserStore } from "@/stores/user_store";
@@ -53,48 +54,30 @@ export function LoginForm() {
       </header>
 
       <section className="flex flex-1 items-center justify-center py-12">
-        <div className="glass flex w-full max-w-md flex-col gap-6 rounded-2xl p-8 ring-1 ring-secondary sm:p-10">
+        <Card className="flex w-full max-w-md flex-col gap-6 p-8 sm:p-10">
           <div className="flex flex-col gap-1">
             <h1 className="text-display-xs font-semibold text-primary">Entrar</h1>
             <p className="text-md text-tertiary">Acesse o Lawd Center com seu e-mail e senha.</p>
           </div>
 
           <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-            <Controller
+            <FormInput
               control={control}
               name="email"
-              render={({ field, fieldState }) => (
-                <Input
-                  label="E-mail"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="voce@exemplo.com"
-                  icon={Mail01}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  isInvalid={Boolean(fieldState.error)}
-                  hint={fieldState.error?.message}
-                />
-              )}
+              label="E-mail"
+              type="email"
+              autoComplete="email"
+              placeholder="voce@exemplo.com"
+              icon={Mail01}
             />
 
-            <Controller
+            <FormInput
               control={control}
               name="password"
-              render={({ field, fieldState }) => (
-                <Input
-                  label="Senha"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="Sua senha"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  isInvalid={Boolean(fieldState.error)}
-                  hint={fieldState.error?.message}
-                />
-              )}
+              label="Senha"
+              type="password"
+              autoComplete="current-password"
+              placeholder="Sua senha"
             />
 
             <Button type="submit" size="lg" className="mt-2" isLoading={isSubmitting} showTextWhileLoading>
@@ -105,7 +88,7 @@ export function LoginForm() {
           <Button color="link-gray" size="sm" iconLeading={ArrowLeft} href="/" className="self-center">
             Voltar para o início
           </Button>
-        </div>
+        </Card>
       </section>
     </main>
   );

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { Plus } from "@untitledui/icons";
-import { Avatar } from "@/components/base/avatar/avatar";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
-import { directorateKindLabels, getInitials } from "@/lib/administration";
+import { Card } from "@/components/layout/card";
+import { PersonLink, UserAvatar } from "@/components/administration/person_link";
+import { directorateKindLabels } from "@/lib/administration";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import type { Directorate, Membership } from "@/types/administration";
 import { cx } from "@/utils/cx";
@@ -69,7 +70,7 @@ export function OrganizationGraph({ directorates, canManage, onAddMember }: Orga
 
   return (
     // Fundo pontilhado, como uma tela de diagrama
-    <div className="glass rounded-2xl bg-[radial-gradient(var(--color-border-secondary)_1px,transparent_1px)] bg-size-[20px_20px] px-6 py-10 ring-1 ring-secondary">
+    <Card className="bg-[radial-gradient(var(--color-border-secondary)_1px,transparent_1px)] bg-size-[20px_20px] px-6 py-10">
       <div className="mx-auto flex w-max flex-col items-center">
         {cores.map((core) => (
           <div key={core.id}>{renderNode(core, "root")}</div>
@@ -100,7 +101,7 @@ export function OrganizationGraph({ directorates, canManage, onAddMember }: Orga
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -149,7 +150,7 @@ function GraphNode({ directorate, hasDotTop, hasDotBottom, canManage, onAddMembe
           <ul className="flex flex-col gap-2">
             {memberships.map((membership) => (
               <li key={membership.id}>
-                <PersonLink membership={membership} />
+                <PersonLink userId={membership.userId} person={membership.user} subtitle={membership.positionLabel} />
               </li>
             ))}
           </ul>
@@ -171,7 +172,7 @@ function StandardMembers({ memberships }: { memberships: Membership[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {director ? <PersonLink membership={director} /> : <p className="text-sm text-quaternary">Sem diretor</p>}
+      {director ? <PersonLink userId={director.userId} person={director.user} subtitle={director.positionLabel} /> : <p className="text-sm text-quaternary">Sem diretor</p>}
 
       {members.length > 0 && (
         <div className="flex flex-col gap-1.5">
@@ -187,13 +188,7 @@ function StandardMembers({ memberships }: { memberships: Membership[] }) {
                 aria-label={`Ver perfil de ${membership.user?.fullName}`}
                 className="rounded-full outline-focus-ring transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:outline-2"
               >
-                <Avatar
-                  size="sm"
-                  src={membership.user?.photoUrl}
-                  alt={membership.user?.fullName}
-                  initials={getInitials(membership.user?.fullName ?? "")}
-                  className="ring-2 ring-bg-primary"
-                />
+                <UserAvatar person={membership.user} size="sm" className="ring-2 ring-bg-primary" />
               </Link>
             ))}
             {hiddenCount > 0 && (
@@ -205,25 +200,5 @@ function StandardMembers({ memberships }: { memberships: Membership[] }) {
         </div>
       )}
     </div>
-  );
-}
-
-function PersonLink({ membership }: { membership: Membership }) {
-  return (
-    <Link
-      href={`/users/${membership.userId}`}
-      className="flex min-w-0 items-center gap-2.5 rounded-lg outline-focus-ring transition-opacity hover:opacity-80 focus-visible:outline-2"
-    >
-      <Avatar
-        size="sm"
-        src={membership.user?.photoUrl}
-        alt={membership.user?.fullName}
-        initials={getInitials(membership.user?.fullName ?? "")}
-      />
-      <span className="flex min-w-0 flex-col">
-        <span className="truncate text-sm font-semibold text-primary">{membership.user?.fullName}</span>
-        <span className="text-xs text-tertiary">{membership.positionLabel}</span>
-      </span>
-    </Link>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/base/buttons/button";
-import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
+import { FormInput } from "@/components/forms/form_input";
 import { useUpdateUser } from "@/hooks/administration/use_users";
 import { handleApiError } from "@/lib/form_errors";
 import { resetPasswordSchema, type ResetPasswordForm } from "@/schemas/administration";
@@ -35,21 +35,13 @@ export function UserPasswordForm({ user }: { user: User }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-4 border-t border-secondary pt-6" noValidate>
       <h3 className="text-md font-semibold text-primary">Senha</h3>
 
-      <Controller
+      <FormInput
         control={control}
         name="password"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Nova senha"
-            type="password"
-            autoComplete="new-password"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message ?? "Pelo menos 8 caracteres"}
-          />
-        )}
+        label="Nova senha"
+        type="password"
+        autoComplete="new-password"
+        hint="Pelo menos 8 caracteres"
       />
 
       <Button

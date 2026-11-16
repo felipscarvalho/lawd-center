@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { apiGet, apiPost, apiPut } from "@/lib/api";
 import type { CreateUserPayload, UpdateUserPayload, User } from "@/types/administration";
 
 export interface UserFilters {
@@ -7,31 +7,21 @@ export interface UserFilters {
 }
 
 export async function getUsers(filters: UserFilters = {}): Promise<User[]> {
-  const { data } = await api.get<{ data: User[] }>("/administration/users", { params: filters });
-
-  return data.data;
+  return apiGet<User[]>("/administration/users", { params: filters });
 }
 
 export async function getUser(id: number): Promise<User> {
-  const { data } = await api.get<{ data: User }>(`/administration/users/${id}`);
-
-  return data.data;
+  return apiGet<User>(`/administration/users/${id}`);
 }
 
 export async function createUser(payload: CreateUserPayload): Promise<User> {
-  const { data } = await api.post<{ data: User }>("/administration/users", payload);
-
-  return data.data;
+  return apiPost<User>("/administration/users", payload);
 }
 
 export async function updateUser(id: number, payload: UpdateUserPayload): Promise<User> {
-  const { data } = await api.put<{ data: User }>(`/administration/users/${id}`, payload);
-
-  return data.data;
+  return apiPut<User>(`/administration/users/${id}`, payload);
 }
 
 export async function deactivateUser(id: number): Promise<User> {
-  const { data } = await api.post<{ data: User }>(`/administration/users/${id}/deactivate`);
-
-  return data.data;
+  return apiPost<User>(`/administration/users/${id}/deactivate`);
 }

@@ -6,6 +6,7 @@ import { BadgeWithDot } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
 import { ThemeToggle } from "@/components/theme/theme_toggle";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
+import { Card } from "@/components/layout/card";
 
 export function UnderDevelopment() {
   return (
@@ -21,7 +22,7 @@ export function UnderDevelopment() {
       </header>
 
       <section className="flex flex-1 items-center justify-center py-12">
-        <div className="glass flex w-full max-w-lg flex-col items-center gap-6 rounded-2xl p-8 text-center ring-1 ring-secondary sm:p-10">
+        <Card className="flex w-full max-w-lg flex-col items-center gap-6 p-8 text-center sm:p-10">
           <FeaturedIcon icon={Tool02} color="brand" theme="light" size="xl" />
 
           <div className="flex flex-col items-center gap-3">
@@ -37,7 +38,7 @@ export function UnderDevelopment() {
           <Button size="lg" iconLeading={LogIn01} href="/login">
             Entrar no sistema
           </Button>
-        </div>
+        </Card>
       </section>
     </main>
   );

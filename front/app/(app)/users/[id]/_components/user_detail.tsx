@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { SlashCircle01, UserPlus01 } from "@untitledui/icons";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { Button } from "@/components/base/buttons/button";
-import { Alert } from "@/components/feedback/alert";
 import { toast } from "@/components/feedback/toast";
 import { AssignMembershipModal } from "@/components/administration/assign_membership_modal";
 import { PageHeader } from "@/components/layout/page_header";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { ConfirmModal } from "@/components/overlays/confirm_modal";
+import { LoadingState, ErrorState } from "@/components/layout/query_states";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useUserMemberships } from "@/hooks/administration/use_memberships";
 import { useDeactivateUser, useUser } from "@/hooks/administration/use_users";
@@ -33,15 +32,11 @@ export function UserDetail() {
   const [isDeactivateOpen, setIsDeactivateOpen] = useState(false);
 
   if (user.isPending) {
-    return (
-      <div className="flex justify-center py-16">
-        <LoadingIndicator type="line-spinner" size="md" label="Carregando usuário..." />
-      </div>
-    );
+    return <LoadingState label="Carregando usuário..." />;
   }
 
   if (user.isError) {
-    return <Alert color="error" title="Não foi possível carregar o usuário" description={user.error.message} />;
+    return <ErrorState title="Não foi possível carregar o usuário" error={user.error} />;
   }
 
   const { data } = user;

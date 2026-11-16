@@ -1,53 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Plus, XClose } from "@untitledui/icons";
-import { Avatar } from "@/components/base/avatar/avatar";
 import { Badge } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
-import { toast } from "@/components/feedback/toast";
-import { ConfirmModal } from "@/components/overlays/confirm_modal";
-import { useEndMembership } from "@/hooks/administration/use_memberships";
-import { directorateKindLabels, getInitials } from "@/lib/administration";
-import { handleApiError } from "@/lib/form_errors";
+import { EndMembershipModal } from "@/components/administration/end_membership_modal";
+import { PersonLink } from "@/components/administration/person_link";
+import { useCanEndMembership } from "@/hooks/administration/use_memberships";
+import { directorateKindLabels } from "@/lib/administration";
 import { formatDate } from "@/lib/moment";
 import type { Directorate, Membership } from "@/types/administration";
 import { DirectorateIcon } from "./directorate_icon";
 
 interface DirectorateSectionProps {
   directorate: Directorate;
-  /** Pode atribuir e encerrar cargos nesta diretoria */
+  /** Pode atribuir cargos nesta diretoria (encerrar segue useCanEndMembership) */
   canManage: boolean;
-  /** Gestão global: pode mexer em qualquer cargo; sem ela, só em membros efetivos */
-  canManageAllPositions: boolean;
   onAddMember: () => void;
 }
 
 /** Seção de uma diretoria na visualização em lista: cabeçalho e uma linha por pessoa com cargo ativo */
-export function DirectorateSection({ directorate, canManage, canManageAllPositions, onAddMember }: DirectorateSectionProps) {
-  const endMembership = useEndMembership();
+export function DirectorateSection({ directorate, canManage, onAddMember }: DirectorateSectionProps) {
+  const canEnd = useCanEndMembership();
   const [membershipToEnd, setMembershipToEnd] = useState<Membership | null>(null);
   const memberships = directorate.memberships ?? [];
   const isCore = directorate.kind === "core";
 
-  const canEnd = (membership: Membership) => canManage && (canManageAllPositions || membership.position === "member");
-
-  const confirmEnd = () => {
-    if (!membershipToEnd) return;
-
-    endMembership.mutate(
-      { id: membershipToEnd.id },
-      {
-        onSuccess: () => {
-          toast.success("Vínculo encerrado", { description: membershipToEnd.user?.fullName });
-          setMembershipToEnd(null);
-        },
-        onError: (error) => handleApiError(error),
-      },
-    );
-  };
 
   const peopleCount = `${memberships.length} ${memberships.length === 1 ? "pessoa" : "pessoas"}`;
 
@@ -79,21 +58,12 @@ export function DirectorateSection({ directorate, canManage, canManageAllPositio
               key={membership.id}
               className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-primary_hover sm:grid-cols-[minmax(0,1fr)_11rem_8rem_2rem] sm:px-5"
             >
-              <Link
-                href={`/users/${membership.userId}`}
-                className="flex min-w-0 items-center gap-3 rounded-lg outline-focus-ring focus-visible:outline-2"
-              >
-                <Avatar
-                  size="md"
-                  src={membership.user?.photoUrl}
-                  alt={membership.user?.fullName}
-                  initials={getInitials(membership.user?.fullName ?? "")}
-                />
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm font-semibold text-primary">{membership.user?.fullName}</span>
-                  <span className="truncate text-sm text-tertiary">{membership.user?.email}</span>
-                </span>
-              </Link>
+              <PersonLink
+                userId={membership.userId}
+                person={membership.user}
+                subtitle={membership.user?.email}
+                size="md"
+              />
 
               <span className="hidden sm:block">
                 <Badge size="sm" color={membership.position === "member" ? "gray" : "brand"}>
@@ -122,18 +92,10 @@ export function DirectorateSection({ directorate, canManage, canManageAllPositio
         </ul>
       )}
 
-      <ConfirmModal
-        isOpen={membershipToEnd !== null}
-        onOpenChange={(isOpen) => !isOpen && setMembershipToEnd(null)}
-        title="Encerrar vínculo?"
-        description={
-          membershipToEnd
-            ? `${membershipToEnd.user?.fullName} deixará de ser ${membershipToEnd.positionLabel.toLowerCase()} em ${directorate.name} a partir de hoje. O histórico é mantido.`
-            : ""
-        }
-        confirmLabel="Encerrar"
-        onConfirm={confirmEnd}
-        isConfirming={endMembership.isPending}
+      <EndMembershipModal
+        membership={membershipToEnd}
+        directorateName={directorate.name}
+        onClose={() => setMembershipToEnd(null)}
       />
     </section>
   );

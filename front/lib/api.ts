@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { useUserStore } from "@/stores/user_store";
 
 /** Erro normalizado da API, no mesmo formato para qualquer falha */
@@ -61,3 +61,21 @@ api.interceptors.response.use(
     return Promise.reject(new ApiError(message, status, errors[0]?.code ?? null, fieldErrors));
   },
 );
+
+// Atalhos dos services: o backend responde { data: ... } e eles já devolvem o conteúdo de `data`
+
+async function unwrap<T>(request: Promise<AxiosResponse<{ data: T }>>): Promise<T> {
+  const response = await request;
+
+  return response.data.data;
+}
+
+export const apiGet = <T>(url: string, config?: AxiosRequestConfig) => unwrap<T>(api.get(url, config));
+
+export const apiPost = <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
+  unwrap<T>(api.post(url, body, config));
+
+export const apiPut = <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
+  unwrap<T>(api.put(url, body, config));
+
+export const apiDelete = <T>(url: string, config?: AxiosRequestConfig) => unwrap<T>(api.delete(url, config));

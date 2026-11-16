@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Edit05, Plus } from "@untitledui/icons";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
+import { Building07, Edit05, Plus } from "@untitledui/icons";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
-import { Alert } from "@/components/feedback/alert";
+import { ListContent } from "@/components/layout/list_content";
 import { PageHeader } from "@/components/layout/page_header";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useDirectorates } from "@/hooks/administration/use_directorates";
@@ -40,14 +39,19 @@ export function DirectoratesList() {
         }
       />
 
-      {directorates.isError && <Alert color="error" title="Não foi possível carregar as diretorias" description={directorates.error.message} />}
-
-      {directorates.isPending ? (
-        <div className="flex justify-center py-16">
-          <LoadingIndicator type="line-spinner" size="md" label="Carregando diretorias..." />
-        </div>
-      ) : (
-        directorates.data && (
+      <ListContent
+        isPending={directorates.isPending}
+        error={directorates.error}
+        isEmpty={directorates.data?.length === 0}
+        loadingLabel="Carregando diretorias..."
+        errorTitle="Não foi possível carregar as diretorias"
+        empty={{
+          icon: Building07,
+          title: "Nenhuma diretoria cadastrada",
+          description: "Cadastre a primeira diretoria para montar o organograma.",
+        }}
+      >
+        {directorates.data && (
           <TableCard.Root>
             <Table aria-label="Diretorias">
               <Table.Header>
@@ -83,8 +87,8 @@ export function DirectoratesList() {
               </Table.Body>
             </Table>
           </TableCard.Root>
-        )
-      )}
+        )}
+      </ListContent>
 
       <DirectorateFormModal isOpen={isFormOpen} onOpenChange={setIsFormOpen} directorate={editing} />
     </>

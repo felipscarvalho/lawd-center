@@ -3,16 +3,12 @@
 import { useState } from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { XClose } from "@untitledui/icons";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
-import { Alert } from "@/components/feedback/alert";
-import { toast } from "@/components/feedback/toast";
-import { ConfirmModal } from "@/components/overlays/confirm_modal";
-import { usePermissions } from "@/hooks/administration/use_auth";
-import { useEndMembership } from "@/hooks/administration/use_memberships";
-import { handleApiError } from "@/lib/form_errors";
+import { EndMembershipModal } from "@/components/administration/end_membership_modal";
+import { ErrorState, LoadingState } from "@/components/layout/query_states";
+import { useCanEndMembership } from "@/hooks/administration/use_memberships";
 import { formatDate } from "@/lib/moment";
 import type { Membership } from "@/types/administration";
 
@@ -22,45 +18,19 @@ interface MembershipHistoryProps {
 
 /** Histórico de cargos do usuário; vínculos ativos podem ser encerrados por quem gerencia a diretoria */
 export function MembershipHistory({ memberships }: MembershipHistoryProps) {
-  const { can } = usePermissions();
-  const endMembership = useEndMembership();
+  const canEnd = useCanEndMembership();
   const [membershipToEnd, setMembershipToEnd] = useState<Membership | null>(null);
-
-  // Gestão global: qualquer cargo; gestão só na diretoria (diretor): apenas membros efetivos dela
-  const canEnd = (membership: Membership) =>
-    membership.isActive &&
-    (can("administration.membership.manage") ||
-      (membership.position === "member" && can("administration.membership.manage", membership.directorateId)));
-
-  const confirmEnd = () => {
-    if (!membershipToEnd) return;
-
-    endMembership.mutate(
-      { id: membershipToEnd.id },
-      {
-        onSuccess: () => {
-          toast.success("Vínculo encerrado");
-          setMembershipToEnd(null);
-        },
-        onError: (error) => handleApiError(error),
-      },
-    );
-  };
 
   return (
     <>
       <TableCard.Root>
         <TableCard.Header title="Histórico de cargos" description="Todos os vínculos, do mais recente ao mais antigo." />
 
-        {memberships.isPending && (
-          <div className="flex justify-center py-10">
-            <LoadingIndicator type="line-spinner" size="sm" />
-          </div>
-        )}
+        {memberships.isPending && <LoadingState size="sm" />}
 
         {memberships.isError && (
           <div className="p-4">
-            <Alert color="error" title="Não foi possível carregar o histórico" description={memberships.error.message} />
+            <ErrorState title="Não foi possível carregar o histórico" error={memberships.error} />
           </div>
         )}
 
@@ -107,19 +77,7 @@ export function MembershipHistory({ memberships }: MembershipHistoryProps) {
         )}
       </TableCard.Root>
 
-      <ConfirmModal
-        isOpen={membershipToEnd !== null}
-        onOpenChange={(isOpen) => !isOpen && setMembershipToEnd(null)}
-        title="Encerrar vínculo?"
-        description={
-          membershipToEnd
-            ? `O cargo de ${membershipToEnd.positionLabel.toLowerCase()} em ${membershipToEnd.directorate?.name} será encerrado a partir de hoje. O histórico é mantido.`
-            : ""
-        }
-        confirmLabel="Encerrar"
-        onConfirm={confirmEnd}
-        isConfirming={endMembership.isPending}
-      />
+      <EndMembershipModal membership={membershipToEnd} onClose={() => setMembershipToEnd(null)} />
     </>
   );
 }

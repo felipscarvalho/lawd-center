@@ -1,28 +1,20 @@
-import { api } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 import type { AssignMembershipPayload, Directorate, EndMembershipPayload, Membership } from "@/types/administration";
 
 /** Organograma: diretorias com os vínculos ativos e o usuário de cada vínculo */
 export async function getOrganizationChart(): Promise<Directorate[]> {
-  const { data } = await api.get<{ data: Directorate[] }>("/administration/organization-chart");
-
-  return data.data;
+  return apiGet<Directorate[]>("/administration/organization-chart");
 }
 
 /** Histórico completo de vínculos de um usuário */
 export async function getUserMemberships(userId: number): Promise<Membership[]> {
-  const { data } = await api.get<{ data: Membership[] }>(`/administration/users/${userId}/memberships`);
-
-  return data.data;
+  return apiGet<Membership[]>(`/administration/users/${userId}/memberships`);
 }
 
 export async function assignMembership(payload: AssignMembershipPayload): Promise<Membership> {
-  const { data } = await api.post<{ data: Membership }>("/administration/memberships", payload);
-
-  return data.data;
+  return apiPost<Membership>("/administration/memberships", payload);
 }
 
 export async function endMembership(id: number, payload: EndMembershipPayload = {}): Promise<Membership> {
-  const { data } = await api.post<{ data: Membership }>(`/administration/memberships/${id}/end`, payload);
-
-  return data.data;
+  return apiPost<Membership>(`/administration/memberships/${id}/end`, payload);
 }

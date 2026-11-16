@@ -6,12 +6,14 @@ import { parseDate } from "@internationalized/date";
 import { Badge } from "@/components/base/badges/badges";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
 import { HintText } from "@/components/base/input/hint-text";
-import { Input } from "@/components/base/input/input";
+import { FormInput } from "@/components/forms/form_input";
 import { InputDate } from "@/components/base/input/input-date";
 import { InputTags } from "@/components/base/input/input-tags";
 import { Label } from "@/components/base/input/label";
 import { Select } from "@/components/base/select/select";
 import { TextArea } from "@/components/base/textarea/textarea";
+import { FormSelect } from "@/components/forms/form_select";
+import { Section } from "@/components/layout/detail_section";
 import { useInterestAreaCatalog, useTechnologyCatalog } from "@/hooks/administration/use_profiles";
 import {
   careerPathLabels,
@@ -78,7 +80,7 @@ export function ProfileFormFields({
   return (
     <>
       {(personalFields || canEditPrivate) && (
-        <FormSection title="Dados pessoais" description={personalDescription}>
+        <Section title="Dados pessoais" description={personalDescription}>
           {personalFields}
 
           {canEditPrivate && (
@@ -97,81 +99,49 @@ export function ProfileFormFields({
                 )}
               />
 
-              <Controller
+              <FormInput
                 control={control}
                 name="registrationNumber"
-                render={({ field, fieldState }) => (
-                  <Input
-                    label="Matrícula"
-                    placeholder="Ex.: 202200012345"
-                    inputMode="numeric"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    isInvalid={Boolean(fieldState.error)}
-                    hint={fieldState.error?.message}
-                  />
-                )}
+                label="Matrícula"
+                placeholder="Ex.: 202200012345"
+                inputMode="numeric"
               />
             </div>
           )}
-        </FormSection>
+        </Section>
       )}
 
-      <FormSection title="Formação" description={describe("Seu curso e quando você entrou na UFS.")}>
+      <Section title="Formação" description={describe("Seu curso e quando você entrou na UFS.")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Controller
+          <FormSelect
             control={control}
             name="course"
-            render={({ field, fieldState }) => (
-              <Select
-                label="Curso"
-                placeholder="Selecione o curso"
-                items={toOptions(courseLabels)}
-                selectedKey={field.value ?? null}
-                onSelectionChange={(key) => field.onChange(key ?? null)}
-                isInvalid={Boolean(fieldState.error)}
-                hint={fieldState.error?.message}
-              >
-                {(item) => <Select.Item id={item.id} label={item.label} />}
-              </Select>
-            )}
+            label="Curso"
+            placeholder="Selecione o curso"
+            items={toOptions(courseLabels)}
           />
 
-          <Controller
+          <FormInput
             control={control}
             name="universityEntryPeriod"
-            render={({ field, fieldState }) => (
-              <Input
-                label="Entrada na UFS"
-                placeholder="Ex.: 2022.1"
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                isInvalid={Boolean(fieldState.error)}
-                hint={fieldState.error?.message ?? "Ano e semestre de entrada"}
-              />
-            )}
+            label="Entrada na UFS"
+            placeholder="Ex.: 2022.1"
+            hint="Ano e semestre de entrada"
           />
         </div>
-      </FormSection>
+      </Section>
 
-      <FormSection title="Dedicação e nível" description={describe("Quanto tempo você dedica à LAWD e como se vê tecnicamente hoje.")}>
+      <Section
+        title="Dedicação e nível"
+        description={describe("Quanto tempo você dedica à LAWD e como se vê tecnicamente hoje.")}
+      >
         <div className="grid gap-4 sm:grid-cols-2">
-          <Controller
+          <FormSelect
             control={control}
             name="weeklyAvailability"
-            render={({ field }) => (
-              <Select
-                label="Disponibilidade"
-                placeholder="Horas por semana"
-                items={toOptions(weeklyAvailabilityLabels)}
-                selectedKey={field.value ?? null}
-                onSelectionChange={(key) => field.onChange(key ?? null)}
-              >
-                {(item) => <Select.Item id={item.id} label={item.label} />}
-              </Select>
-            )}
+            label="Disponibilidade"
+            placeholder="Horas por semana"
+            items={toOptions(weeklyAvailabilityLabels)}
           />
 
           <Controller
@@ -192,20 +162,28 @@ export function ProfileFormFields({
             )}
           />
         </div>
-      </FormSection>
+      </Section>
 
-      <FormSection title="Interesses" description={describe(`O que você quer seguir na carreira (até ${maxProfileChoices}) e os temas que te atraem.`)}>
+      <Section
+        title="Interesses"
+        description={describe(
+          `O que você quer seguir na carreira (até ${maxProfileChoices}) e os temas que te atraem.`,
+        )}
+      >
         <CheckboxList control={control} name="careerPaths" label="Carreira de interesse" labels={careerPathLabels} />
         <CatalogTags control={control} name="interestAreas" label="Áreas de interesse" />
-      </FormSection>
+      </Section>
 
-      <FormSection title="Habilidades" description={describe(`Seus pontos fortes (até ${maxProfileChoices}) e as tecnologias que você usa.`)}>
+      <Section
+        title="Habilidades"
+        description={describe(`Seus pontos fortes (até ${maxProfileChoices}) e as tecnologias que você usa.`)}
+      >
         <CheckboxList control={control} name="softSkills" label="Atributos" labels={softSkillLabels} />
         <CatalogTags control={control} name="technologies" label="Tecnologias" />
-      </FormSection>
+      </Section>
 
       {canEditPrivate && (
-        <FormSection title="Objetivo na LAWD" description={describe("O que você quer aprender ou construir na liga.")}>
+        <Section title="Objetivo na LAWD" description={describe("O que você quer aprender ou construir na liga.")}>
           <Controller
             control={control}
             name="goal"
@@ -221,22 +199,9 @@ export function ProfileFormFields({
               />
             )}
           />
-        </FormSection>
+        </Section>
       )}
     </>
-  );
-}
-
-/** Seção do formulário com título, descrição e uma linha separando da seção anterior */
-function FormSection({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-4 border-t border-secondary pt-6 first:border-t-0 first:pt-0">
-      <header className="flex flex-col gap-0.5">
-        <h3 className="text-md font-semibold text-primary">{title}</h3>
-        {description && <p className="text-sm text-tertiary">{description}</p>}
-      </header>
-      {children}
-    </section>
   );
 }
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail01 } from "@untitledui/icons";
-import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
+import { FormInput } from "@/components/forms/form_input";
 import { FormModal } from "@/components/overlays/form_modal";
 import { useCreateUser } from "@/hooks/administration/use_users";
 import { useOpenSession } from "@/hooks/use_open_session";
@@ -52,56 +52,29 @@ function UserFormModalContent({ isOpen, onOpenChange }: UserFormModalProps) {
       submitLabel="Cadastrar"
       isSubmitting={createUser.isPending}
     >
-      <Controller
+      <FormInput
         control={control}
         name="fullName"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Nome completo"
-            placeholder="Nome e sobrenome"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="Nome completo"
+        placeholder="Nome e sobrenome"
       />
 
-      <Controller
+      <FormInput
         control={control}
         name="email"
-        render={({ field, fieldState }) => (
-          <Input
-            label="E-mail"
-            type="email"
-            icon={Mail01}
-            placeholder="pessoa@exemplo.com"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="E-mail"
+        type="email"
+        icon={Mail01}
+        placeholder="pessoa@exemplo.com"
       />
 
-      <Controller
+      <FormInput
         control={control}
         name="password"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Senha"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Pelo menos 8 caracteres"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            isInvalid={Boolean(fieldState.error)}
-            hint={fieldState.error?.message}
-          />
-        )}
+        label="Senha"
+        type="password"
+        autoComplete="new-password"
+        placeholder="Pelo menos 8 caracteres"
       />
     </FormModal>
   );
