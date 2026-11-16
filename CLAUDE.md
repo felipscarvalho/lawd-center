@@ -112,9 +112,12 @@ router
   .group(() => {
     // rotas do módulo
   })
+  .where('id', router.matchers.number())
   .prefix('/api/v1/<module>')
   .as('<module>')
 ```
+
+- O matcher numérico de `:id` fica no grupo do módulo, não em cada rota
 
 - Middlewares nomeados continuam centralizados em `start/kernel.ts`
 
@@ -132,7 +135,7 @@ router
 - Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
 - Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
-- Testes Japa com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`
+- Testes Japa com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`; o `data` das respostas é lido com `responseData<T>(response)` de `tests/helpers/http.ts`
 
 ## 6. Autenticação e permissões
 
@@ -184,8 +187,7 @@ Instância única de axios, configurada uma vez:
 Funções tipadas que representam cada endpoint, reutilizadas por toda a aplicação:
 
 - Uma função por operação: `getUser(id)` → `GET /<module>/users/:id`
-- Usam exclusivamente o API client
-- Retornam dados já tipados (desembrulhando o `data` da resposta do back)
+- Usam exclusivamente o API client, pelos atalhos `apiGet`, `apiPost`, `apiPut` e `apiDelete` de `lib/api.ts`, que já devolvem o `data` da resposta tipado (`return apiGet<User>(...)`); o `api` direto só quando não há corpo a desembrulhar
 - Módulos espelham os módulos do backend
 
 ### Hooks de dados (`hooks/<module>/`)
@@ -239,9 +241,14 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 
 ### Componentes de tela compartilhados (não congelados)
 
-- `components/layout/`: estrutura de página (`PageHeader`), listas (`ListToolbar`: botão de filtros com painel + busca à direita; `ListContent`: carregando, erro, vazio e conteúdo) e `FormActions` (Descartar/Salvar dos formulários de edição direta)
+- `components/layout/`: estrutura de página e blocos reutilizáveis
+  - `PageHeader`; `Card` (card de vidro padrão) e `SplitCard` (duas colunas: aside + conteúdo, como Meu perfil e detalhe do usuário)
+  - `Section`, `DetailField` e `DetailTags` (seções com divisória e campos só de leitura)
+  - `LoadingState` e `ErrorState` (carregando e erro de qualquer tela); `ListToolbar` (filtros em painel + busca à direita) e `ListContent` (carregando, erro, vazio e conteúdo de listas)
+  - `FormActions` (Descartar/Salvar dos formulários de edição direta)
+- `components/forms/`: `FormInput` e `FormSelect`, campos já ligados ao react-hook-form (valor, validação e erro no lugar da dica); usar no lugar de `Controller` + `Input`/`Select"
 - `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
-- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfileFormFields`, `ProfilePhotoEditor`)
+- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfileFormFields`, `ProfilePhotoEditor`, `EndMembershipModal`, `PersonLink`/`UserAvatar`/`avatarProps` para pessoa com foto ou iniciais)
 - `components/query_provider.tsx`: `QueryClientProvider` do TanStack Query, aplicado no layout raiz
 
 ### Locais (`app/<route>/_components/`)
@@ -256,7 +263,7 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 - Schemas compartilhados em `schemas/<module>/`; schema usado por um único formulário pode ficar junto da página
 - Tipos derivados com `z.infer<typeof schema>`, sem duplicar tipo manualmente
 - A validação do front é para UX; a validação de verdade continua no backend (VineJS)
-- **Telas de detalhe são editáveis direto**: quem tem permissão já entra com os campos editáveis, sem botão "Editar" nem modal de edição; um único formulário por tela com `FormActions` (Descartar/Salvar ativos só quando algo mudou), e quem não pode editar vê a mesma estrutura só para leitura. Modais ficam para criar registros e ações pontuais (atribuir cargo, confirmar)
+- **Telas de detalhe são editáveis direto**: quem tem permissão já entra com os campos editáveis, sem botão "Editar" nem modal de edição; um único formulário por tela, montado com `useEditForm` (`hooks/use_edit_form.ts`: carrega os dados salvos, recarrega quando mudam e oferece `discard`) e `FormActions` (Descartar/Salvar ativos só quando algo mudou), e quem não pode editar vê a mesma estrutura só para leitura. Modais ficam para criar registros e ações pontuais (atribuir cargo, confirmar)
 - **Sem informação repetida em cards separados**: dados de uma mesma entidade ficam num card só (ex.: uma única foto por tela)
 - **Campos limpos a cada submissão**: o formulário nunca reaparece com o que foi preenchido antes
   - Em modal: o componente exportado só chama `useOpenSession(isOpen)` (`hooks/use_open_session.ts`) e renderiza o conteúdo com `key={session}`; os valores iniciais vão em `defaultValues` do `useForm`. Não usar `reset` em `useEffect` ao abrir (os campos montam antes do efeito e guardam os valores antigos)

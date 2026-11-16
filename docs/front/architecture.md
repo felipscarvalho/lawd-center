@@ -46,3 +46,22 @@ O route group `(app)` agrupa as páginas autenticadas sob o layout `AppShell`:
 ## Visual
 
 Componentes do Untitled UI em `components/base`, `components/application`, `components/foundations` e `components/shared-assets`, com as formas originais e as cores, transparências e glassmorphism do SimMAP (`styles/lawd-theme.css`). Modo claro/escuro com `next-themes` (padrão escuro). Esses componentes e estilos são congelados: mudanças só com autorização (ver `CLAUDE.md`).
+
+## Peças reutilizáveis
+
+Padrões que se repetiam pelas telas viraram componentes e hooks, para telas novas já nascerem iguais:
+
+| Peça | Onde | Para quê |
+|---|---|---|
+| `apiGet`, `apiPost`, `apiPut`, `apiDelete` | `lib/api.ts` | services chamam o endpoint e recebem o `data` da resposta já tipado |
+| `FormInput`, `FormSelect` | `components/forms/` | campo ligado ao react-hook-form (valor, validação e erro no lugar da dica), sem repetir o `Controller` |
+| `useEditForm` | `hooks/use_edit_form.ts` | formulário de edição direta: carrega os dados salvos, recarrega quando mudam e oferece `discard` |
+| `useOpenSession` | `hooks/use_open_session.ts` | formulário de modal remontado a cada abertura (começa limpo) |
+| `Card`, `SplitCard` | `components/layout/card.tsx` | card de vidro padrão e card em duas colunas (Meu perfil, detalhe do usuário) |
+| `Section`, `DetailField`, `DetailTags` | `components/layout/detail_section.tsx` | seções com divisória e campos só de leitura |
+| `LoadingState`, `ErrorState`, `ListContent`, `ListToolbar` | `components/layout/` | estados de carregamento, erro e vazio; barra de filtros e busca das listas |
+| `FormActions` | `components/layout/form_actions.tsx` | Descartar/Salvar das telas editáveis |
+| `PersonLink`, `UserAvatar`, `avatarProps` | `components/administration/person_link.tsx` | pessoa com foto ou iniciais, com link para o detalhe |
+| `EndMembershipModal`, `useCanEndMembership` | `components/administration/`, `hooks/administration/use_memberships.ts` | confirmar e autorizar o encerramento de vínculos (organograma e histórico) |
+
+A busca que vinha na sidebar do Untitled UI foi removida (alteração autorizada no componente base), porque não havia o que buscar nela.

@@ -32,7 +32,7 @@ Regras de dependência:
 
 ## Rotas
 
-`start/routes.ts` só importa os arquivos de cada módulo (`start/routes/<module>.ts`). Cada módulo declara um grupo com prefixo `/api/v1/<module>` e nome `<module>`. Os controllers são referenciados pelo índice gerado (`controllers.administration.Users`).
+`start/routes.ts` só importa os arquivos de cada módulo (`start/routes/<module>.ts`). Cada módulo declara um grupo com prefixo `/api/v1/<module>` e nome `<module>`. Os controllers são referenciados pelo índice gerado (`controllers.administration.Users`). O matcher numérico do parâmetro `:id` é declarado uma vez no grupo do módulo (`.where('id', router.matchers.number())`), valendo para todas as rotas dele.
 
 ## Respostas e erros
 
@@ -44,7 +44,7 @@ Regras de dependência:
 ## Banco e ambiente
 
 - PostgreSQL, conexão `postgres` configurada pelas variáveis `DB_*` (validadas em `start/env.ts`; modelo em `.env.example`)
-- Testes (Japa) usam o mesmo banco do `.env`, com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`); recomenda-se apontar `.env.test` para um banco separado
+- Testes (Japa) usam o mesmo banco do `.env`, com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`); recomenda-se apontar `.env.test` para um banco separado. O `data` das respostas é lido com `responseData<T>(response)` (`tests/helpers/http.ts`), em vez de converter o corpo à mão em cada teste
 
 ## Comandos
 
