@@ -3,11 +3,12 @@
 | Routes file
 |--------------------------------------------------------------------------
 |
-| The routes file is used for defining the HTTP routes.
+| Apenas importa os arquivos de rotas de cada módulo (start/routes/<module>.ts).
 |
 */
 
 import router from '@adonisjs/core/services/router'
+import '#start/routes/administration'
 
 router.get('/', () => {
   return { hello: 'world' }

@@ -3,4 +3,11 @@
  * DO NOT EDIT manually
  */
 
-export const controllers = {}
+export const controllers = {
+  administration: {
+    Auth: () => import('#controllers/administration/auth_controller'),
+    Directorates: () => import('#controllers/administration/directorates_controller'),
+    Memberships: () => import('#controllers/administration/memberships_controller'),
+    Users: () => import('#controllers/administration/users_controller'),
+  },
+}
