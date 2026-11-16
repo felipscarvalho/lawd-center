@@ -203,9 +203,18 @@ Tipos das respostas e payloads da API, espelhando os DTOs/transformers do backen
 ## 3. Estado global do cliente (`stores/`)
 
 - Zustand apenas para estado **do próprio front compartilhado entre páginas/componentes** (ex.: sessão do usuário, preferências, UI global)
-- Dados vindos do backend ficam no cache do TanStack Query, nunca copiados para stores
+- Dados vindos do backend ficam no cache do TanStack Query, nunca copiados para stores. **Exceção: o usuário autenticado**, que fica no `user_store` (`stores/user_store.ts`): token, dados do usuário e permissões, com os métodos `login`, `logout`, `revalidate`, `clear`, `can` e `canAnywhere`. Ações que mudam cargos ou o próprio cadastro chamam `revalidate()` depois de concluir
 - Estado local de um componente fica em `useState`; não criar store para estado usado em um só lugar
 - Um store por responsabilidade: `stores/<name>_store.ts`, exportando o hook `use<Name>Store`
+
+## Área logada e autenticação
+
+- Token no `user_store` (persistido no `localStorage`); o API client envia `Authorization: Bearer` e, em 401, limpa a sessão e volta para `/login`
+- Páginas autenticadas ficam no route group `app/(app)/`, cujo layout (`AppShell`) só monta no navegador (`use(browser())` + `Suspense`), redireciona sem token, revalida o usuário e monta a sidebar filtrada por permissão
+- Toda página nova em `app/(app)/` exporta `export const instant = false` (a área depende da sessão do navegador e não passa na validação de instant navigation do Next)
+- Botões e ações aparecem só com a permissão necessária (`usePermissions().can/canAnywhere`, mesma regra de escopo do backend); o backend continua sendo quem garante
+- Logout usa `window.location.href` (recarga completa), porque o Next mantém rotas montadas em segundo plano
+- URL da API em `NEXT_PUBLIC_API_URL` (`front/.env.local`; modelo em `front/.env.example`)
 
 ## 4. Componentes
 
@@ -224,6 +233,13 @@ Os componentes base já estão definidos e **não podem ser modificados sem perm
 - Estilos globais: `styles/theme.css`, `styles/lawd-theme.css`, `styles/globals.css` e `app/globals.css`
 
 Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorização descrevendo a alteração. Telas devem usar os componentes como estão, ajustando apenas via props e `className` no local de uso. Adicionar um componente novo do Untitled UI (via CLI) também precisa de autorização.
+
+### Componentes de tela compartilhados (não congelados)
+
+- `components/layout/`: estrutura de página (`PageHeader`)
+- `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
+- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`)
+- `components/query_provider.tsx`: `QueryClientProvider` do TanStack Query, aplicado no layout raiz
 
 ### Locais (`app/<route>/_components/`)
 
