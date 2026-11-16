@@ -18,7 +18,11 @@ Depois do login o usuário vai para `/organization`.
 
 ## Organograma
 
-Um card por diretoria (o núcleo institucional ocupa a largura toda), com as pessoas ordenadas pela hierarquia do cargo e a data de início.
+Duas visualizações, alternadas pelo botão **Grafo / Lista** no topo. Abre sempre no grafo, em qualquer tela.
+
+**Grafo** (`organization_graph.tsx`): árvore estática, só para visualizar (sem arrastar nem zoom). O núcleo institucional fica no topo, ligado às diretorias por linhas com cantos arredondados e pontos nas ligações, sobre um fundo pontilhado. As diretorias quebram em fileiras para caber na tela sem rolagem (2 por fileira; 4 em telas bem largas), com a linha central descendo pelo vão entre os cards. Cada card mostra o tipo, o nome, o diretor em destaque e os membros como avatares (até 5, depois "+N"); clicar numa pessoa abre o detalhe dela, e o **+** atribui cargo para quem gerencia a diretoria. As linhas são feitas só com CSS (pseudo-elementos do Tailwind), sem biblioteca de grafos.
+
+**Lista** (`directorate_section.tsx`): um card só, com uma seção por diretoria (núcleo primeiro). Cada seção tem cabeçalho no estilo do grafo (ícone, nome, quantidade de pessoas e **Adicionar**) e uma linha por pessoa: avatar, nome e e-mail (abre o detalhe), cargo (diretor e núcleo em destaque), data de início e o **X** para encerrar o vínculo, ordenadas pela hierarquia do cargo e a data de início. É onde se encerram vínculos.
 
 - **Atribuir cargo** (botão no topo): só com gestão global de vínculos
 - **Adicionar** (no card): para quem gerencia aquela diretoria. O diretor vê o botão só no card da própria diretoria e só pode adicionar membros efetivos
