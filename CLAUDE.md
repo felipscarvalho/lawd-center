@@ -11,6 +11,18 @@ Gerenciador de pacotes: npm.
 
 - **Idioma do código: inglês.** Nomes de variáveis, funções, classes, arquivos, pastas, tabelas, colunas, rotas e chaves de API sempre em inglês (ex.: `getUser`, `users_controller.ts`). A única exceção são os comentários, que ficam em português
 - Funções e variáveis em camelCase (`getUser`), classes e componentes em PascalCase (`UserCard`)
+- **Seções separadas por linha em branco**: dentro de funções e métodos, cada etapa lógica fica separada da seguinte por uma linha em branco. Ex.: entrada/validação → chamada principal → retorno; busca do registro → verificações (cada `if` de guarda) → alteração → retorno. Resultados de expressões aninhadas viram variáveis nomeadas antes do `return`
+
+```ts
+async update({ params, request, serialize }: HttpContext) {
+  const userId = Number(params.id)
+  const payload = await request.validateUsing(updateUserValidator, { meta: { userId } })
+
+  const user = await this.userService.update(userId, payload)
+
+  return serialize(UserTransformer.transform(user))
+}
+```
 
 ---
 
@@ -111,7 +123,28 @@ router
 1. Qualquer módulo pode depender de `administration`.
 2. `administration` não depende de nenhum outro módulo.
 3. Um módulo acessa dados de outro **somente via service** do módulo dono, nunca importando o model alheio diretamente. Dependências circulares entre módulos são proibidas.
-4. Migrations: cada pasta de módulo é registrada explicitamente em `config/database.ts` (`migrations.paths`), em ordem de dependência, com `administration` primeiro. Uma migration só pode referenciar (FK) tabelas de módulos registrados antes. Motivo: o Lucid ordena migrations pelo caminho relativo do arquivo, então pastas soltas em `database/migrations` rodariam em ordem alfabética de módulo, não cronológica.
+4. Migrations: cada pasta de módulo é registrada explicitamente em `config/database.ts` (`migrations.paths`), em ordem de dependência, com `administration` primeiro. Uma migration só pode referenciar (FK) tabelas de módulos registrados antes. Motivo: o Lucid ordena migrations pelo caminho relativo do arquivo, então pastas soltas em `database/migrations` rodariam em ordem alfabética de módulo, não cronológica. O mesmo vale para seeders (`seeders.paths`, pasta `database/seeders/<module>/`).
+
+## 5. Banco, models e testes
+
+- PostgreSQL (conexão `postgres`, variáveis `DB_*` validadas em `start/env.ts`)
+- Colunas dos models vêm de `database/schema.ts`, **gerado** a cada `node ace migration:run`; nunca editar à mão. Models estendem a classe gerada (`UserSchema`) e só acrescentam relações, scopes e tipos específicos
+- Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
+- Testes Japa com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`
+
+## 6. Autenticação e permissões
+
+- Access tokens (`@adonisjs/auth`, guard `api`); rotas autenticadas usam `middleware.auth()`
+- **Permissões existem só no código**: catálogo em `app/permissions/<module>.ts` (chaves `<módulo>.<recurso>.<ação>`), registrado em `app/permissions/index.ts`, e mapa cargo → permissões + escopo (`global` | `directorate`) em `app/permissions/positions.ts`. Não criar tabelas de permissões ou papéis
+- Permissões efetivas = cargos dos vínculos ativos (`memberships`) do usuário, via `PermissionService`
+- Checar na rota com `middleware.can('<permissão>')`; escopo de diretoria e regras por registro são conferidos no service (`PermissionService.can/authorize`)
+- Erros: `ForbiddenException` (403) e `BusinessRuleException` (422, com código da regra) em `app/exceptions/administration/`
+
+---
+
+# Documentação (`docs/`)
+
+Cada funcionalidade aprovada e implementada ganha documentação em `docs/back/` ou `docs/front/`, explicando o que foi definido e por quê, e entra no índice `docs/README.md`. O `CLAUDE.md` guarda só as regras curtas.
 
 ---
 
