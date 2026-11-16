@@ -17,20 +17,21 @@ Campos de `profiles`:
 | Campo | Tipo | Observação |
 |---|---|---|
 | `birth_date` | data | privado |
+| `registration_number` | texto (4 a 20 dígitos) | matrícula na UFS; privada e única entre os perfis |
 | `course` | enum | `information_systems`, `computer_science`, `computer_engineering`, `design`, `advertising`, `other` |
 | `university_entry_period` | `AAAA.S` | período de **entrada** na UFS (ex.: `2022.1`); o período atual se calcula a partir dele |
-| `graduated` | booleano | já formado |
 | `photo_path` | texto | caminho da foto no disco (ver abaixo) |
 | `weekly_availability` | enum | `under_6h`, `from_6_to_8h`, `from_9_to_12h`, `over_12h` |
 | `maturity` | enum | `beginner`, `developing`, `autonomous`, `mentor` |
-| `career_paths` | jsonb (lista de enum) | `full_stack`, `frontend`, `backend`, `devops`, `ui_ux`, `project_management`, `research` |
-| `soft_skills` | jsonb (lista de enum) | `communication`, `teamwork`, `leadership`, `organization`, `proactivity`, `autonomy` |
+| `career_paths` | jsonb (lista de enum, até 3) | `full_stack`, `frontend`, `backend`, `devops`, `ui_ux`, `project_management`, `research` |
+| `soft_skills` | jsonb (lista de enum, até 3) | `communication`, `teamwork`, `leadership`, `organization`, `proactivity`, `autonomy` |
 | `goal` | texto | objetivo na LAWD; privado |
 | `technical_score` | decimal 0–10 | nota técnica; com `technical_score_updated_by` e `technical_score_updated_at` |
 
 Por que assim:
 
 - **Listas fixas em enum, catálogos abertos em tabela.** Carreira e atributos têm poucas opções e o código decide o que significam, então ficam em `jsonb` validado por enum. Tecnologias e áreas de interesse crescem com o uso: cada nome novo vira item do catálogo, e o formulário sugere os que já existem. A comparação ignora maiúsculas (índice único em `lower(name)`), então "react" e "React" são o mesmo item, mantendo a primeira grafia cadastrada
+- **No máximo 3 opções em carreira e atributos** por pessoa (`maxProfileChoices`, no model; o front usa o mesmo valor)
 - **Tabela separada de `users`.** O cadastro (login, ativação) e o perfil mudam por motivos diferentes e têm regras de acesso diferentes
 - Os enums e o formato do período ficam exportados em `app/models/administration/profile.ts`, usados pelo model e pelo validator. Os rótulos em português ficam no front
 - `technical_score`, `career_paths` e `soft_skills` são ignorados pelo gerador de schema (`database/schema_rules.ts`) e declarados no model com conversão: o Postgres devolve decimal como texto e o `jsonb` precisa de `JSON.stringify` na escrita
@@ -40,7 +41,7 @@ Por que assim:
 | Ação | Quem pode |
 |---|---|
 | Ver o perfil | a própria pessoa (mesmo sem vínculo ativo) e quem tem `profile.view` (todos os cargos) |
-| Ver nascimento e objetivo | a própria pessoa e quem tem `profile.view_private` sobre ela |
+| Ver nascimento, matrícula e objetivo | a própria pessoa e quem tem `profile.view_private` sobre ela |
 | Ver a nota técnica | só quem tem `profile.view_private` sobre ela (a própria pessoa **não** vê) |
 | Editar o perfil e a foto | a própria pessoa e quem tem `profile.update` sobre ela |
 | Definir a nota técnica | quem tem `profile.evaluate` sobre ela, nunca sobre si mesmo (`E_SELF_EVALUATION`, 422) |

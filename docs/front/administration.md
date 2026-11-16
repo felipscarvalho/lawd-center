@@ -44,7 +44,7 @@ Um card por diretoria (o núcleo institucional ocupa a largura toda), com as pes
 Página em duas colunas dentro de um único card (no celular, uma embaixo da outra):
 
 - **Conta** (esquerda): foto em quadro grande com o X para remover (pede confirmação) e o botão **Enviar/Trocar foto**; sem foto, mostra as iniciais. Abaixo, a **troca de senha** (senha atual e nova). Depois da troca o backend encerra as outras sessões, e o toast avisa isso
-- **Formulário do perfil** (direita), direto na página em vez de modal: nome e e-mail só leitura (quem altera é a gestão), seções **Formação**, **Atuação na LAWD** e **Sobre você**. **Salvar alterações** e **Descartar** só ficam ativos quando algo mudou
+- **Formulário do perfil** (direita), direto na página em vez de modal, em seções com título, descrição e linha divisória: **Dados pessoais** (nome e e-mail só leitura, pois quem altera é a gestão, nascimento e matrícula), **Formação** (curso e entrada na UFS), **Dedicação e nível** (disponibilidade e maturidade), **Interesses** (carreira e áreas de interesse), **Habilidades** (atributos e tecnologias) e **Objetivo na LAWD**. **Salvar alterações** e **Descartar** só ficam ativos quando algo mudou
 - A nota técnica não aparece: a própria pessoa não vê a sua
 
 Os campos do perfil ficam em `ProfileFormFields` (`components/administration/profile_form_fields.tsx`), usados pela página e pelo `ProfileFormModal`, para os dois formulários não divergirem. Na maturidade técnica a descrição do nível aparece como dica abaixo do select: como texto de apoio do item, o `Select` do Untitled cortava o nome do nível.
@@ -55,9 +55,9 @@ Componente de `components/administration/`, usado no detalhe do usuário (o pró
 
 - Foto grande no topo; fotos também aparecem nos avatares da sidebar, da lista de usuários, do detalhe e do organograma
 - **Enviar/Trocar foto** e **Editar perfil** com `abilities.canUpdate`. A foto é conferida no navegador (JPG, PNG ou WebP, até 5 MB) antes do envio; o backend comprime
-- Nascimento e objetivo só aparecem (e só entram no formulário) para a própria pessoa ou com `canViewPrivate`
+- Nascimento, matrícula e objetivo só aparecem (e só entram no formulário) para a própria pessoa ou com `canViewPrivate`
 - **Nota técnica** em bloco à parte, só com `canViewPrivate`; o botão **Avaliar** aparece com `canEvaluate` e abre o `TechnicalScoreModal` (0 a 10, vírgula ou ponto, vazio remove)
-- O `ProfileFormModal` usa selects para curso, disponibilidade e maturidade, checkboxes para carreira e atributos e tags livres para tecnologias e áreas de interesse, com sugestões vindas do catálogo do backend
+- O `ProfileFormModal` usa selects para curso, disponibilidade e maturidade, checkboxes para carreira e atributos (até 3 em cada: um contador mostra quantas foram escolhidas e, ao chegar em 3, as demais ficam desabilitadas) e tags livres para tecnologias e áreas de interesse, com sugestões vindas do catálogo do backend
 - Toda alteração invalida perfil, usuários e organograma (por causa da foto) e, quando é o próprio perfil, chama `revalidate()` do `user_store`
 
 ## Diretorias

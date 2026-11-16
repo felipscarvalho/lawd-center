@@ -212,7 +212,7 @@ Tipos das respostas e payloads da API, espelhando os DTOs/transformers do backen
 ## Área logada e autenticação
 
 - Token no `user_store` (persistido no `localStorage`); o API client envia `Authorization: Bearer` e, em 401, limpa a sessão e volta para `/login`
-- Páginas autenticadas ficam no route group `app/(app)/`, cujo layout (`AppShell`) só monta no navegador (`use(browser())` + `Suspense`), redireciona sem token, revalida o usuário e monta a sidebar filtrada por permissão
+- Páginas autenticadas ficam no route group `app/(app)/`, cujo layout (`AppShell`) só monta no navegador (`use(browser())` + `Suspense`), redireciona sem token, revalida o usuário e monta a sidebar filtrada por permissão. A sidebar é dividida em seções por módulo (`navigation` no `AppShell`): tela nova entra na seção do seu módulo, com a permissão exigida
 - Toda página nova em `app/(app)/` exporta `export const instant = false` (a área depende da sessão do navegador e não passa na validação de instant navigation do Next)
 - Botões e ações aparecem só com a permissão necessária (`usePermissions().can/canAnywhere`, mesma regra de escopo do backend); o backend continua sendo quem garante
 - Logout usa `window.location.href` (recarga completa), porque o Next mantém rotas montadas em segundo plano

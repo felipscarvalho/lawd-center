@@ -37,7 +37,7 @@ O route group `(app)` agrupa as páginas autenticadas sob o layout `AppShell`:
 
 - **Só no navegador**: como a sessão fica no `localStorage`, o `AppShell` usa `use(browser())` dentro de `Suspense` (padrão do Next 16 para conteúdo que depende de APIs do navegador). No servidor é renderizado só o carregamento
 - **Proteção**: sem token, redireciona para `/login`; um 401 em qualquer requisição limpa a sessão e volta ao login
-- **Navegação**: sidebar do Untitled UI com os itens que o usuário pode ver (cada item exige uma permissão); nome, troca de tema e "Sair" ficam no rodapé da sidebar (também no menu do celular)
+- **Navegação**: sidebar do Untitled UI em seções com título, uma por módulo (hoje "Pessoal" e "Administração"), definidas em `navigation` no `AppShell`. Cada item pode exigir uma permissão (`canAnywhere`); item sem permissão aparece para todo usuário logado, e seção sem nenhum item visível some. As seções viram itens `divider` com `label`, que o `NavList` desenha como título (alteração autorizada no componente base; divider sem label continua sendo linha). Nome, troca de tema e "Sair" ficam no rodapé da sidebar (também no menu do celular)
 - **Instant navigation**: o layout e cada página exportam `instant = false`. O Next 16 valida em desenvolvimento se a navegação mostra conteúdo imediatamente, o que uma área dependente do navegador não consegue fazer
 - **Logout** usa `window.location.href` (recarga completa), porque com `cacheComponents` o Next mantém rotas visitadas montadas em segundo plano e o estado do usuário anterior ficaria na memória
 
