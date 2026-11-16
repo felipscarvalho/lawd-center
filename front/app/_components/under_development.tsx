@@ -1,8 +1,9 @@
 "use client";
 
-import { Tool02 } from "@untitledui/icons";
+import { LogIn01, Tool02 } from "@untitledui/icons";
 import { Logo } from "@/components/brand/logo";
 import { BadgeWithDot } from "@/components/base/badges/badges";
+import { Button } from "@/components/base/buttons/button";
 import { ThemeToggle } from "@/components/theme/theme_toggle";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
 
@@ -11,7 +12,12 @@ export function UnderDevelopment() {
     <main className="flex min-h-dvh flex-col px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between">
         <Logo />
-        <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Button size="sm" iconLeading={LogIn01} href="/login">
+            Entrar
+          </Button>
+        </div>
       </header>
 
       <section className="flex flex-1 items-center justify-center py-12">
@@ -27,6 +33,10 @@ export function UnderDevelopment() {
               O Lawd Center está sendo construído. Em breve esta página estará disponível.
             </p>
           </div>
+
+          <Button size="lg" iconLeading={LogIn01} href="/login">
+            Entrar no sistema
+          </Button>
         </div>
       </section>
     </main>

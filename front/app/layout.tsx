@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, MuseoModerno } from "next/font/google";
 import { Toaster } from "@/components/feedback/toast";
 import { Providers } from "@/components/providers";
+import { QueryProvider } from "@/components/query_provider";
 import "./globals.css";
 
 // Fontes da identidade da LAWD (mesmas do SimMAP), ligadas às variáveis usadas em styles/lawd-theme.css
@@ -28,8 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className={`${museo.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
-          {children}
-          <Toaster />
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
         </Providers>
       </body>
     </html>
