@@ -16,12 +16,25 @@ import { useUserStore } from "@/stores/user_store";
 import type { PermissionKey } from "@/types/administration";
 import { FullPageLoading } from "./full_page_loading";
 
-// Itens sem permissão aparecem para todos os usuários logados
-const navigation: (NavItemType & { permission?: PermissionKey })[] = [
-  { label: "Meu perfil", href: "/profile", icon: UserCircle },
-  { label: "Organograma", href: "/organization", icon: Dataflow03, permission: "administration.membership.view" },
-  { label: "Usuários", href: "/users", icon: Users01, permission: "administration.user.view" },
-  { label: "Diretorias", href: "/directorates", icon: Building07, permission: "administration.directorate.view" },
+type NavigationItem = NavItemType & { permission?: PermissionKey };
+
+/**
+ * Menu em seções com título, uma por módulo. Itens sem permissão aparecem para todos os usuários
+ * logados; seções que ficam sem nenhum item visível não aparecem.
+ */
+const navigation: { title: string; items: NavigationItem[] }[] = [
+  {
+    title: "Pessoal",
+    items: [{ label: "Meu perfil", href: "/profile", icon: UserCircle }],
+  },
+  {
+    title: "Administração",
+    items: [
+      { label: "Organograma", href: "/organization", icon: Dataflow03, permission: "administration.membership.view" },
+      { label: "Usuários", href: "/users", icon: Users01, permission: "administration.user.view" },
+      { label: "Diretorias", href: "/directorates", icon: Building07, permission: "administration.directorate.view" },
+    ],
+  },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -74,7 +87,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     return <FullPageLoading />;
   }
 
-  const items = navigation.filter((item) => !item.permission || canAnywhere(item.permission));
+  const sections = navigation
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => !item.permission || canAnywhere(item.permission)),
+    }))
+    .filter((section) => section.items.length > 0);
+
+  // O NavList desenha o divider com label como título da seção
+  const items: NavItemType[] = sections.flatMap((section) => [
+    { label: section.title, divider: true },
+    ...section.items,
+  ]);
   // Destaca o item da seção atual também nas subpáginas (ex.: /users/5 → /users)
   const activeUrl = items.find((item) => item.href && pathname.startsWith(item.href))?.href;
 

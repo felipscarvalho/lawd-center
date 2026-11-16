@@ -19,6 +19,15 @@ export const NavList = ({ activeUrl, items, className }: NavListProps) => {
     return (
         <ul className={cx("flex flex-col px-4 pt-5", className)}>
             {items.map((item, index) => {
+                // Divider com label vira título de seção; sem label continua sendo uma linha
+                if (item.divider && item.label) {
+                    return (
+                        <li key={index} className={cx("px-3 pb-1.5", index > 0 ? "pt-5" : "pt-0.5")}>
+                            <p className="text-xs font-semibold tracking-wide text-quaternary uppercase">{item.label}</p>
+                        </li>
+                    );
+                }
+
                 if (item.divider) {
                     return (
                         <li key={index} className="w-full px-0.5 py-2">
