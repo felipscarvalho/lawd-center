@@ -129,6 +129,8 @@ router
 
 - PostgreSQL (conexão `postgres`, variáveis `DB_*` validadas em `start/env.ts`)
 - Colunas dos models vêm de `database/schema.ts`, **gerado** a cada `node ace migration:run`; nunca editar à mão. Models estendem a classe gerada (`UserSchema`) e só acrescentam relações, scopes e tipos específicos
+- Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
+- Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
 - Testes Japa com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`
 
@@ -137,7 +139,7 @@ router
 - Access tokens (`@adonisjs/auth`, guard `api`); rotas autenticadas usam `middleware.auth()`
 - **Permissões existem só no código**: catálogo em `app/permissions/<module>.ts` (chaves `<módulo>.<recurso>.<ação>`), registrado em `app/permissions/index.ts`, e mapa cargo → permissões + escopo (`global` | `directorate`) em `app/permissions/positions.ts`. Não criar tabelas de permissões ou papéis
 - Permissões efetivas = cargos dos vínculos ativos (`memberships`) do usuário, via `PermissionService`
-- Checar na rota com `middleware.can('<permissão>')`; escopo de diretoria e regras por registro são conferidos no service (`PermissionService.can/authorize`)
+- Checar na rota com `middleware.can('<permissão>')`; escopo de diretoria e regras por registro são conferidos no service (`PermissionService.can/authorize`). Permissão sobre outra pessoa (ex.: diretor sobre membros da diretoria): `PermissionService.canOnUser`
 - Erros: `ForbiddenException` (403) e `BusinessRuleException` (422, com código da regra) em `app/exceptions/administration/`
 
 ---
@@ -238,7 +240,7 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 
 - `components/layout/`: estrutura de página (`PageHeader`)
 - `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
-- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`)
+- `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfilePanel`)
 - `components/query_provider.tsx`: `QueryClientProvider` do TanStack Query, aplicado no layout raiz
 
 ### Locais (`app/<route>/_components/`)

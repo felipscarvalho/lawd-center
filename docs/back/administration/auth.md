@@ -11,6 +11,13 @@ Os tokens ficam na tabela `auth_access_tokens` (só o hash é guardado; o valor 
 | POST | `/api/v1/administration/auth/login` | `email`, `password` → `{ token, user }`. Credenciais inválidas ou usuário desativado: 400 `E_INVALID_CREDENTIALS` (mensagem genérica, não revela qual) |
 | POST | `/api/v1/administration/auth/logout` | revoga o token da requisição (204) |
 | GET | `/api/v1/administration/auth/me` | usuário autenticado + permissões efetivas, usadas pelo front para montar menus e telas |
+| PUT | `/api/v1/administration/auth/password` | troca a própria senha (`currentPassword`, `newPassword`; 204) |
+
+### Troca de senha
+
+Qualquer usuário logado troca a própria senha informando a atual. Senha atual errada devolve 422 com `code: E_INVALID_CURRENT_PASSWORD` e `field: currentPassword` (o front mostra o erro no campo); a nova precisa ter de 8 a 72 caracteres e ser diferente da atual. Depois da troca, **todas as outras sessões (tokens) são revogadas** e a sessão usada continua válida: quem trocou a senha por suspeita de acesso indevido derruba o outro lado sem precisar entrar de novo.
+
+`BusinessRuleException` aceita um `field` opcional justamente para regras de negócio ligadas a um campo do formulário.
 
 O middleware `auth` protege as rotas autenticadas; sem token válido a resposta é 401.
 

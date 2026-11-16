@@ -40,15 +40,16 @@ Não há atribuição manual de papéis: mudou o cargo, mudou o acesso; encerrou
 | Cargo | Permissões |
 |---|---|
 | Presidente, vice-presidente, secretário-geral | todas as `administration.*`, global |
-| Diretor | `user.view`, `directorate.view`, `membership.view` (global) + `membership.manage` (diretoria) |
-| Membro efetivo | `user.view`, `directorate.view`, `membership.view` (global) |
+| Diretor | `user.view`, `directorate.view`, `membership.view`, `profile.view` (global) + `membership.manage`, `profile.view_private`, `profile.update`, `profile.evaluate` (diretoria) |
+| Membro efetivo | `user.view`, `directorate.view`, `membership.view`, `profile.view` (global) |
 
-Catálogo do `administration`: `user.view`, `user.create`, `user.update`, `user.deactivate`, `directorate.view`, `directorate.manage`, `membership.view`, `membership.manage`.
+Catálogo do `administration`: `user.view`, `user.create`, `user.update`, `user.deactivate`, `directorate.view`, `directorate.manage`, `membership.view`, `membership.manage`, `profile.view`, `profile.view_private`, `profile.update`, `profile.evaluate`. As regras do perfil estão em [profile.md](profile.md).
 
 ## Onde a autorização é checada
 
 - **Na rota**, com o middleware `can`: `router.post('users', ...).use(middleware.can('administration.user.create'))`. Exige a permissão em algum escopo e deixa a regra visível no arquivo de rotas
 - **No service**, para escopo de diretoria e regras por registro, via `PermissionService.can(userId, permission, directorateId)` ou `authorize(...)` (lança `ForbiddenException`, HTTP 403). Ex.: o `MembershipService` confere se o diretor está mexendo na própria diretoria
+- **Sobre outra pessoa**, via `PermissionService.canOnUser(actorId, permission, targetUserId)`: vale a permissão global ou a concedida numa diretoria onde a pessoa alvo tem vínculo ativo. É o que deixa o diretor editar e avaliar o perfil dos membros da própria diretoria
 
 ## Como adicionar permissões de um módulo novo
 
