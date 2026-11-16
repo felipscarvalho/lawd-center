@@ -34,6 +34,17 @@ export interface User {
   deactivatedAt: string | null;
   createdAt: string;
   photoUrl: string | null;
+  /** Resumo público do perfil: só na lista de usuários (null se nunca preenchido) */
+  profile?: UserProfileSummary | null;
+  /** Cargos ativos: só na lista de usuários */
+  memberships?: Membership[];
+}
+
+export interface UserProfileSummary {
+  course: Course | null;
+  universityEntryPeriod: string | null;
+  weeklyAvailability: WeeklyAvailability | null;
+  maturity: MaturityLevel | null;
 }
 
 export interface Membership {

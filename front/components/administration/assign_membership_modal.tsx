@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { parseDate } from "@internationalized/date";
@@ -11,6 +11,7 @@ import { HintText } from "@/components/base/input/hint-text";
 import { Label } from "@/components/base/input/label";
 import { toast } from "@/components/feedback/toast";
 import { FormModal } from "@/components/overlays/form_modal";
+import { useOpenSession } from "@/hooks/use_open_session";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useDirectorates } from "@/hooks/administration/use_directorates";
 import { useAssignMembership } from "@/hooks/administration/use_memberships";
@@ -33,22 +34,24 @@ interface AssignMembershipModalProps {
  * Atribui um cargo. Mostra só as combinações que quem está atribuindo pode fazer:
  * com gestão global, qualquer cargo; com gestão só na própria diretoria (diretor), apenas membro efetivo.
  */
-export function AssignMembershipModal({ isOpen, onOpenChange, directorate, user }: AssignMembershipModalProps) {
+export function AssignMembershipModal(props: AssignMembershipModalProps) {
+  const session = useOpenSession(props.isOpen);
+
+  return <AssignMembershipModalContent key={session} {...props} />;
+}
+
+/** Formulário montado a cada abertura do modal (ver useOpenSession) */
+function AssignMembershipModalContent({ isOpen, onOpenChange, directorate, user }: AssignMembershipModalProps) {
   const { can } = usePermissions();
   const directorates = useDirectorates();
   const users = useUsers({ active: true });
   const assign = useAssignMembership();
 
-  const { control, handleSubmit, setError, reset, setValue } = useForm<AssignMembershipForm>({
+  const { control, handleSubmit, setError, setValue } = useForm<AssignMembershipForm>({
     resolver: zodResolver(assignMembershipSchema),
+    // Valores já definidos pela tela de origem
+    defaultValues: { userId: user?.id, directorateId: directorate?.id },
   });
-
-  // Ao abrir, recomeça o formulário com os valores já definidos pela tela de origem
-  useEffect(() => {
-    if (isOpen) {
-      reset({ userId: user?.id, directorateId: directorate?.id, position: undefined, startsAt: undefined });
-    }
-  }, [isOpen, user, directorate, reset]);
 
   const directorateId = useWatch({ control, name: "directorateId" });
   const selectedDirectorate = directorates.data?.find((item) => item.id === directorateId);

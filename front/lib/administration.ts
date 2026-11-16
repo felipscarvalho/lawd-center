@@ -56,6 +56,14 @@ export const weeklyAvailabilityLabels: Record<WeeklyAvailability, string> = {
   over_12h: "Mais de 12 horas semanais",
 };
 
+/** Versão curta para tabelas */
+export const weeklyAvailabilityShortLabels: Record<WeeklyAvailability, string> = {
+  under_6h: "< 6h/semana",
+  from_6_to_8h: "6–8h/semana",
+  from_9_to_12h: "9–12h/semana",
+  over_12h: "> 12h/semana",
+};
+
 export const maturityLabels: Record<MaturityLevel, string> = {
   beginner: "Iniciante",
   developing: "Em desenvolvimento",

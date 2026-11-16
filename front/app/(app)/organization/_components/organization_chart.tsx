@@ -28,7 +28,6 @@ export function OrganizationChart() {
     <>
       <PageHeader
         title="Organograma"
-        description="Núcleo institucional e diretorias, com os cargos ativos de cada pessoa."
         actions={
           can("administration.membership.manage") && (
             <Button iconLeading={UserPlus01} onClick={() => openAssign(null)}>
@@ -47,15 +46,18 @@ export function OrganizationChart() {
       {chart.isError && <Alert color="error" title="Não foi possível carregar o organograma" description={chart.error.message} />}
 
       {chart.data?.length === 0 && (
-        <EmptyState size="md" className="glass rounded-2xl py-12 ring-1 ring-secondary">
-          <EmptyState.Header pattern="none">
-            <EmptyState.FeaturedIcon icon={Dataflow03} color="brand" theme="light" />
-          </EmptyState.Header>
-          <EmptyState.Content>
-            <EmptyState.Title>Nenhuma diretoria cadastrada</EmptyState.Title>
-            <EmptyState.Description>Cadastre as diretorias para montar o organograma.</EmptyState.Description>
-          </EmptyState.Content>
-        </EmptyState>
+        // O EmptyState limita a própria largura: o card fica num wrapper com a largura toda
+        <div className="glass rounded-2xl py-12 ring-1 ring-secondary">
+          <EmptyState size="md">
+            <EmptyState.Header pattern="none">
+              <EmptyState.FeaturedIcon icon={Dataflow03} color="brand" theme="light" />
+            </EmptyState.Header>
+            <EmptyState.Content>
+              <EmptyState.Title>Nenhuma diretoria cadastrada</EmptyState.Title>
+              <EmptyState.Description>Cadastre as diretorias para montar o organograma.</EmptyState.Description>
+            </EmptyState.Content>
+          </EmptyState>
+        </div>
       )}
 
       {chart.data && chart.data.length > 0 && (

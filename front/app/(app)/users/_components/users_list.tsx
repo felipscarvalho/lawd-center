@@ -2,26 +2,30 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, SearchLg, Users01 } from "@untitledui/icons";
-import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
+import { Plus, Users01 } from "@untitledui/icons";
 import { Table, TableCard } from "@/components/application/table/table";
-import { Tabs } from "@/components/application/tabs/tabs";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
-import { BadgeWithDot } from "@/components/base/badges/badges";
+import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 import { Button } from "@/components/base/buttons/button";
-import { Input } from "@/components/base/input/input";
-import { Alert } from "@/components/feedback/alert";
+import { Select } from "@/components/base/select/select";
 import { UserFormModal } from "@/components/administration/user_form_modal";
+import { ListContent } from "@/components/layout/list_content";
+import { ListToolbar } from "@/components/layout/list_toolbar";
 import { PageHeader } from "@/components/layout/page_header";
 import { usePermissions } from "@/hooks/administration/use_auth";
+import { useDirectorates } from "@/hooks/administration/use_directorates";
 import { useUsers } from "@/hooks/administration/use_users";
-import { getInitials } from "@/lib/administration";
-import { formatDate } from "@/lib/moment";
+import {
+  courseLabels,
+  getInitials,
+  maturityLabels,
+  toOptions,
+  weeklyAvailabilityShortLabels,
+} from "@/lib/administration";
 
 type StatusFilter = "active" | "inactive" | "all";
 
-const statusTabs = [
+const statusOptions = [
   { id: "active", label: "Ativos" },
   { id: "inactive", label: "Desativados" },
   { id: "all", label: "Todos" },
@@ -29,30 +33,60 @@ const statusTabs = [
 
 const filtersByStatus = { active: { active: true }, inactive: { active: false }, all: {} } as const;
 
+const ALL = "all";
+
+const courseOptions = [{ id: ALL, label: "Todos os cursos" }, ...toOptions(courseLabels)];
+
+const emptyValue = <span className="text-quaternary">—</span>;
+
 export function UsersList() {
   const router = useRouter();
   const { can } = usePermissions();
   const [status, setStatus] = useState<StatusFilter>("active");
   const [search, setSearch] = useState("");
+  const [directorateId, setDirectorateId] = useState<string>(ALL);
+  const [course, setCourse] = useState<string>(ALL);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const users = useUsers(filtersByStatus[status]);
+  const directorates = useDirectorates();
 
-  // Busca local por nome ou e-mail (a lista da liga é pequena)
+  const directorateOptions = [
+    { id: ALL, label: "Todas as diretorias" },
+    ...(directorates.data ?? []).map((directorate) => ({ id: String(directorate.id), label: directorate.name })),
+  ];
+
+  // Filtros locais (a lista da liga é pequena): busca por nome ou e-mail, diretoria do cargo ativo e curso
   const filteredUsers = useMemo(() => {
     const term = search.trim().toLowerCase();
 
-    if (!term) return users.data ?? [];
+    return (users.data ?? []).filter((user) => {
+      const matchesSearch =
+        !term || user.fullName.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
+      const matchesDirectorate =
+        directorateId === ALL ||
+        (user.memberships ?? []).some((membership) => String(membership.directorateId) === directorateId);
+      const matchesCourse = course === ALL || user.profile?.course === course;
 
-    return (users.data ?? []).filter(
-      (user) => user.fullName.toLowerCase().includes(term) || user.email.toLowerCase().includes(term),
-    );
-  }, [users.data, search]);
+      return matchesSearch && matchesDirectorate && matchesCourse;
+    });
+  }, [users.data, search, directorateId, course]);
+
+  // Filtros do painel que fogem do padrão (situação "Ativos", todas as diretorias, todos os cursos)
+  const activeFilters = [status !== "active", directorateId !== ALL, course !== ALL].filter(Boolean).length;
+  const hasFilters = Boolean(search.trim()) || activeFilters > 0;
+
+  const clearFilters = () => {
+    setStatus("active");
+    setDirectorateId(ALL);
+    setCourse(ALL);
+  };
+  // Com o filtro em Ativos ou Desativados a situação já é conhecida; a coluna só aparece em Todos
+  const showStatus = status === "all";
 
   return (
     <>
       <PageHeader
         title="Usuários"
-        description="Pessoas com acesso ao Lawd Center."
         actions={
           can("administration.user.create") && (
             <Button iconLeading={Plus} onClick={() => setIsCreateOpen(true)}>
@@ -62,43 +96,60 @@ export function UsersList() {
         }
       />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Tabs selectedKey={status} onSelectionChange={(key) => setStatus(key as StatusFilter)}>
-          <Tabs.List type="button-brand" items={statusTabs}>
-            {(tab) => <Tabs.Item {...tab} />}
-          </Tabs.List>
-        </Tabs>
+      <ListToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nome ou e-mail"
+        activeFilters={activeFilters}
+        onClearFilters={clearFilters}
+        filters={
+          <>
+            <Select
+              label="Situação"
+              items={statusOptions}
+              selectedKey={status}
+              onSelectionChange={(key) => setStatus((key ?? "active") as StatusFilter)}
+            >
+              {(item) => <Select.Item id={item.id} label={item.label} />}
+            </Select>
 
-        <div className="w-full sm:w-72">
-          <Input aria-label="Buscar usuário" placeholder="Buscar por nome ou e-mail" icon={SearchLg} value={search} onChange={setSearch} />
-        </div>
-      </div>
+            <Select
+              label="Diretoria"
+              items={directorateOptions}
+              selectedKey={directorateId}
+              onSelectionChange={(key) => setDirectorateId(String(key ?? ALL))}
+            >
+              {(item) => <Select.Item id={item.id} label={item.label} />}
+            </Select>
 
-      {users.isError && <Alert color="error" title="Não foi possível carregar os usuários" description={users.error.message} />}
+            <Select label="Curso" items={courseOptions} selectedKey={course} onSelectionChange={(key) => setCourse(String(key ?? ALL))}>
+              {(item) => <Select.Item id={item.id} label={item.label} />}
+            </Select>
+          </>
+        }
+      />
 
-      {users.isPending ? (
-        <div className="flex justify-center py-16">
-          <LoadingIndicator type="line-spinner" size="md" label="Carregando usuários..." />
-        </div>
-      ) : filteredUsers.length === 0 ? (
-        <EmptyState size="md" className="glass rounded-2xl py-12 ring-1 ring-secondary">
-          <EmptyState.Header pattern="none">
-            <EmptyState.FeaturedIcon icon={Users01} color="brand" theme="light" />
-          </EmptyState.Header>
-          <EmptyState.Content>
-            <EmptyState.Title>Nenhum usuário encontrado</EmptyState.Title>
-            <EmptyState.Description>
-              {search ? "Nenhum resultado para essa busca." : "Não há usuários nesta lista."}
-            </EmptyState.Description>
-          </EmptyState.Content>
-        </EmptyState>
-      ) : (
+      <ListContent
+        isPending={users.isPending}
+        error={users.error}
+        isEmpty={filteredUsers.length === 0}
+        loadingLabel="Carregando usuários..."
+        errorTitle="Não foi possível carregar os usuários"
+        empty={{
+          icon: Users01,
+          title: "Nenhum usuário encontrado",
+          description: hasFilters ? "Nenhum resultado para esses filtros." : "Não há usuários nesta lista.",
+        }}
+      >
         <TableCard.Root>
           <Table aria-label="Usuários" onRowAction={(key) => router.push(`/users/${key}`)}>
             <Table.Header>
-              <Table.Head id="name" label="Nome" isRowHeader className="w-full" />
-              <Table.Head id="status" label="Situação" />
-              <Table.Head id="createdAt" label="Cadastrado em" />
+              <Table.Head id="name" label="Nome" isRowHeader />
+              <Table.Head id="memberships" label="Cargos" />
+              <Table.Head id="course" label="Curso" className="hidden md:table-cell" />
+              <Table.Head id="maturity" label="Maturidade" className="hidden lg:table-cell" />
+              <Table.Head id="availability" label="Disponibilidade" className="hidden xl:table-cell" />
+              {showStatus && <Table.Head id="status" label="Situação" />}
             </Table.Header>
             <Table.Body items={filteredUsers}>
               {(user) => (
@@ -114,17 +165,49 @@ export function UsersList() {
                     />
                   </Table.Cell>
                   <Table.Cell>
-                    <BadgeWithDot size="sm" type="modern" color={user.isActive ? "success" : "gray"}>
-                      {user.isActive ? "Ativo" : "Desativado"}
-                    </BadgeWithDot>
+                    {user.memberships?.length ? (
+                      <div className="flex flex-wrap gap-1">
+                        {user.memberships.map((membership) => (
+                          <Badge key={membership.id} size="sm" color="brand">
+                            {membership.positionLabel} · {membership.directorate?.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-quaternary">Sem cargo</span>
+                    )}
                   </Table.Cell>
-                  <Table.Cell className="whitespace-nowrap">{formatDate(user.createdAt)}</Table.Cell>
+                  <Table.Cell className="hidden md:table-cell">
+                    {user.profile?.course ? (
+                      <div className="flex flex-col">
+                        <span className="whitespace-nowrap text-primary">{courseLabels[user.profile.course]}</span>
+                        {user.profile.universityEntryPeriod && (
+                          <span className="text-xs text-tertiary">Entrada em {user.profile.universityEntryPeriod}</span>
+                        )}
+                      </div>
+                    ) : (
+                      emptyValue
+                    )}
+                  </Table.Cell>
+                  <Table.Cell className="hidden whitespace-nowrap lg:table-cell">
+                    {user.profile?.maturity ? maturityLabels[user.profile.maturity] : emptyValue}
+                  </Table.Cell>
+                  <Table.Cell className="hidden whitespace-nowrap xl:table-cell">
+                    {user.profile?.weeklyAvailability ? weeklyAvailabilityShortLabels[user.profile.weeklyAvailability] : emptyValue}
+                  </Table.Cell>
+                  {showStatus && (
+                    <Table.Cell>
+                      <BadgeWithDot size="sm" type="modern" color={user.isActive ? "success" : "gray"}>
+                        {user.isActive ? "Ativo" : "Desativado"}
+                      </BadgeWithDot>
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               )}
             </Table.Body>
           </Table>
         </TableCard.Root>
-      )}
+      </ListContent>
 
       <UserFormModal isOpen={isCreateOpen} onOpenChange={setIsCreateOpen} />
     </>

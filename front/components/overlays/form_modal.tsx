@@ -13,8 +13,6 @@ interface FormModalProps {
   onSubmit: FormEventHandler<HTMLFormElement>;
   submitLabel?: string;
   isSubmitting?: boolean;
-  /** Largura do modal: md para formulários curtos, lg para formulários longos */
-  size?: "md" | "lg";
   children: ReactNode;
 }
 
@@ -27,11 +25,10 @@ export const FormModal = ({
   onSubmit,
   submitLabel = "Salvar",
   isSubmitting = false,
-  size = "md",
   children,
 }: FormModalProps) => (
   <ModalOverlay isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={!isSubmitting}>
-    <Modal className={size === "lg" ? "max-w-2xl" : "max-w-lg"}>
+    <Modal className="max-w-lg">
       <Dialog aria-label={title}>
         <form onSubmit={onSubmit} className="flex flex-col gap-5 p-6" noValidate>
           <div className="flex flex-col gap-1">

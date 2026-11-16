@@ -16,14 +16,12 @@ const password = z.string().min(8, "A senha precisa ter pelo menos 8 caracteres"
 
 export const createUserSchema = z.object({ fullName, email, password });
 
-// Na edição a senha é opcional: vazio mantém a atual
-export const updateUserSchema = z.object({
-  fullName,
-  email,
-  password: z.union([z.literal(""), password]),
-});
+export type CreateUserForm = z.infer<typeof createUserSchema>;
 
-export type UpdateUserForm = z.infer<typeof updateUserSchema>;
+/** Senha nova definida pela gestão no detalhe do usuário (sem pedir a atual) */
+export const resetPasswordSchema = z.object({ password });
+
+export type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export const createDirectorateSchema = z.object({
   name: z.string().trim().min(2, "Informe o nome").max(255),
@@ -97,3 +95,8 @@ export const changePasswordSchema = z
   });
 
 export type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
+
+/** Detalhe do usuário: dados da conta e do perfil num formulário só (cada parte vai para o seu endpoint) */
+export const userEditSchema = profileSchema.extend({ fullName, email });
+
+export type UserEditForm = z.infer<typeof userEditSchema>;

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/base/input/input";
 import { Select } from "@/components/base/select/select";
 import { toast } from "@/components/feedback/toast";
 import { FormModal } from "@/components/overlays/form_modal";
+import { useOpenSession } from "@/hooks/use_open_session";
 import { useCreateDirectorate, useUpdateDirectorate } from "@/hooks/administration/use_directorates";
 import { directorateKindLabels } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
@@ -22,21 +22,23 @@ interface DirectorateFormModalProps {
 
 const kindOptions = (["standard", "core"] as const).map((kind) => ({ id: kind, label: directorateKindLabels[kind] }));
 
-export function DirectorateFormModal({ isOpen, onOpenChange, directorate }: DirectorateFormModalProps) {
+export function DirectorateFormModal(props: DirectorateFormModalProps) {
+  const session = useOpenSession(props.isOpen);
+
+  return <DirectorateFormModalContent key={session} {...props} />;
+}
+
+/** Formulário montado a cada abertura do modal (ver useOpenSession) */
+function DirectorateFormModalContent({ isOpen, onOpenChange, directorate }: DirectorateFormModalProps) {
   const isEditing = Boolean(directorate);
   const createDirectorate = useCreateDirectorate();
   const updateDirectorate = useUpdateDirectorate(directorate?.id ?? 0);
   const mutation = isEditing ? updateDirectorate : createDirectorate;
 
-  const { control, handleSubmit, setError, reset } = useForm<CreateDirectorateForm>({
+  const { control, handleSubmit, setError } = useForm<CreateDirectorateForm>({
     resolver: zodResolver(createDirectorateSchema),
+    defaultValues: { name: directorate?.name ?? "", key: directorate?.key ?? "", kind: directorate?.kind ?? "standard" },
   });
-
-  useEffect(() => {
-    if (isOpen) {
-      reset({ name: directorate?.name ?? "", key: directorate?.key ?? "", kind: directorate?.kind ?? "standard" });
-    }
-  }, [isOpen, directorate, reset]);
 
   const onSubmit = handleSubmit((values) => {
     const options = {

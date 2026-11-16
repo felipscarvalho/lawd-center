@@ -31,7 +31,6 @@ export function DirectoratesList() {
     <>
       <PageHeader
         title="Diretorias"
-        description="Núcleo institucional e diretorias da liga."
         actions={
           canManage && (
             <Button iconLeading={Plus} onClick={() => openForm()}>

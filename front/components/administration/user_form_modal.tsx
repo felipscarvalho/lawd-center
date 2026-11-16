@@ -1,67 +1,56 @@
 "use client";
 
-import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail01 } from "@untitledui/icons";
 import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
 import { FormModal } from "@/components/overlays/form_modal";
-import { useCreateUser, useUpdateUser } from "@/hooks/administration/use_users";
+import { useCreateUser } from "@/hooks/administration/use_users";
+import { useOpenSession } from "@/hooks/use_open_session";
 import { handleApiError } from "@/lib/form_errors";
-import { createUserSchema, updateUserSchema, type UpdateUserForm } from "@/schemas/administration";
-import type { User } from "@/types/administration";
+import { createUserSchema, type CreateUserForm } from "@/schemas/administration";
 
 interface UserFormModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  /** Sem usuário: cadastro; com usuário: edição */
-  user?: User;
 }
 
-/** Cadastro e edição de usuário. Na edição, senha em branco mantém a atual */
-export function UserFormModal({ isOpen, onOpenChange, user }: UserFormModalProps) {
-  const isEditing = Boolean(user);
-  const createUser = useCreateUser();
-  const updateUser = useUpdateUser(user?.id ?? 0);
-  const mutation = isEditing ? updateUser : createUser;
+/** Cadastro de usuário. A edição é feita direto no detalhe do usuário */
+export function UserFormModal(props: UserFormModalProps) {
+  const session = useOpenSession(props.isOpen);
 
-  const { control, handleSubmit, setError, reset } = useForm<UpdateUserForm>({
-    resolver: zodResolver(isEditing ? updateUserSchema : createUserSchema),
+  return <UserFormModalContent key={session} {...props} />;
+}
+
+/** Formulário montado a cada abertura do modal (ver useOpenSession) */
+function UserFormModalContent({ isOpen, onOpenChange }: UserFormModalProps) {
+  const createUser = useCreateUser();
+
+  const { control, handleSubmit, setError } = useForm<CreateUserForm>({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      reset({ fullName: user?.fullName ?? "", email: user?.email ?? "", password: "" });
-    }
-  }, [isOpen, user, reset]);
-
   const onSubmit = handleSubmit((values) => {
-    const payload = { ...values, password: values.password || undefined };
-    const options = {
+    createUser.mutate(values, {
       onSuccess: () => {
-        toast.success(isEditing ? "Usuário atualizado" : "Usuário cadastrado", { description: values.fullName });
+        toast.success("Usuário cadastrado", { description: values.fullName });
         onOpenChange(false);
       },
-      onError: (error: unknown) => handleApiError(error, setError),
-    };
-
-    if (isEditing) {
-      updateUser.mutate(payload, options);
-    } else {
-      createUser.mutate({ ...payload, password: values.password }, options);
-    }
+      onError: (error) => handleApiError(error, setError),
+    });
   });
 
   return (
     <FormModal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      title={isEditing ? "Editar usuário" : "Novo usuário"}
-      description={isEditing ? undefined : "O cargo é atribuído depois, na página do usuário ou no organograma."}
+      title="Novo usuário"
+      description="O cargo é atribuído depois, na página do usuário ou no organograma."
       onSubmit={onSubmit}
-      submitLabel={isEditing ? "Salvar" : "Cadastrar"}
-      isSubmitting={mutation.isPending}
+      submitLabel="Cadastrar"
+      isSubmitting={createUser.isPending}
     >
       <Controller
         control={control}
@@ -102,10 +91,10 @@ export function UserFormModal({ isOpen, onOpenChange, user }: UserFormModalProps
         name="password"
         render={({ field, fieldState }) => (
           <Input
-            label={isEditing ? "Nova senha" : "Senha"}
+            label="Senha"
             type="password"
             autoComplete="new-password"
-            placeholder={isEditing ? "Deixe em branco para manter" : "Pelo menos 8 caracteres"}
+            placeholder="Pelo menos 8 caracteres"
             value={field.value}
             onChange={field.onChange}
             onBlur={field.onBlur}

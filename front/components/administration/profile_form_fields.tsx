@@ -56,17 +56,29 @@ interface ProfileFormFieldsProps {
   canEditPrivate: boolean;
   /** Campos extras no início de "Dados pessoais" (ex.: nome e e-mail só leitura na página Meu perfil) */
   personalFields?: ReactNode;
+  /** Descrição de "Dados pessoais" (ex.: avisar que nome e e-mail são alterados pela gestão) */
+  personalDescription?: string;
+  /** Descrições das seções falam com a pessoa ("você"): só aparecem no próprio perfil */
+  showDescriptions?: boolean;
 }
 
 /**
  * Campos do perfil em seções temáticas, separadas por linha; usados no modal de edição e na página "Meu perfil".
  * Seção sem nenhum campo visível não aparece.
  */
-export function ProfileFormFields({ control, canEditPrivate, personalFields }: ProfileFormFieldsProps) {
+export function ProfileFormFields({
+  control,
+  canEditPrivate,
+  personalFields,
+  personalDescription,
+  showDescriptions = true,
+}: ProfileFormFieldsProps) {
+  const describe = (text: string) => (showDescriptions ? text : undefined);
+
   return (
     <>
       {(personalFields || canEditPrivate) && (
-        <FormSection title="Dados pessoais" description={personalFields ? "Nome e e-mail são alterados pela gestão." : undefined}>
+        <FormSection title="Dados pessoais" description={personalDescription}>
           {personalFields}
 
           {canEditPrivate && (
@@ -106,7 +118,7 @@ export function ProfileFormFields({ control, canEditPrivate, personalFields }: P
         </FormSection>
       )}
 
-      <FormSection title="Formação" description="Seu curso e quando você entrou na UFS.">
+      <FormSection title="Formação" description={describe("Seu curso e quando você entrou na UFS.")}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Controller
             control={control}
@@ -144,7 +156,7 @@ export function ProfileFormFields({ control, canEditPrivate, personalFields }: P
         </div>
       </FormSection>
 
-      <FormSection title="Dedicação e nível" description="Quanto tempo você dedica à LAWD e como se vê tecnicamente hoje.">
+      <FormSection title="Dedicação e nível" description={describe("Quanto tempo você dedica à LAWD e como se vê tecnicamente hoje.")}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Controller
             control={control}
@@ -182,18 +194,18 @@ export function ProfileFormFields({ control, canEditPrivate, personalFields }: P
         </div>
       </FormSection>
 
-      <FormSection title="Interesses" description={`O que você quer seguir na carreira (até ${maxProfileChoices}) e os temas que te atraem.`}>
+      <FormSection title="Interesses" description={describe(`O que você quer seguir na carreira (até ${maxProfileChoices}) e os temas que te atraem.`)}>
         <CheckboxList control={control} name="careerPaths" label="Carreira de interesse" labels={careerPathLabels} />
         <CatalogTags control={control} name="interestAreas" label="Áreas de interesse" />
       </FormSection>
 
-      <FormSection title="Habilidades" description={`Seus pontos fortes (até ${maxProfileChoices}) e as tecnologias que você usa.`}>
+      <FormSection title="Habilidades" description={describe(`Seus pontos fortes (até ${maxProfileChoices}) e as tecnologias que você usa.`)}>
         <CheckboxList control={control} name="softSkills" label="Atributos" labels={softSkillLabels} />
         <CatalogTags control={control} name="technologies" label="Tecnologias" />
       </FormSection>
 
       {canEditPrivate && (
-        <FormSection title="Objetivo na LAWD" description="O que você quer aprender ou construir na liga.">
+        <FormSection title="Objetivo na LAWD" description={describe("O que você quer aprender ou construir na liga.")}>
           <Controller
             control={control}
             name="goal"

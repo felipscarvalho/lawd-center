@@ -1,23 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/base/buttons/button";
-import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/feedback/toast";
 import {
   ProfileFormFields,
   toProfileFormValues,
   toProfilePayload,
 } from "@/components/administration/profile_form_fields";
+import { FormActions } from "@/components/layout/form_actions";
 import { useUpdateProfile } from "@/hooks/administration/use_profiles";
 import { handleApiError } from "@/lib/form_errors";
 import { profileSchema, type ProfileForm as ProfileFormValues } from "@/schemas/administration";
 import type { Profile } from "@/types/administration";
 
-/** Formulário do próprio perfil, direto na página (sem modal) */
-export function ProfileForm({ profile }: { profile: Profile }) {
+interface ProfileFormProps {
+  profile: Profile;
+  /** Nascimento, matrícula e objetivo: a própria pessoa ou quem pode ver dados privados */
+  canEditPrivate: boolean;
+  /** Campos extras no início de "Dados pessoais" (ex.: nome e e-mail só leitura em Meu perfil) */
+  personalFields?: ReactNode;
+  /** Próprio perfil: mostra as descrições das seções, escritas para a pessoa */
+  isSelf?: boolean;
+}
+
+/** Formulário do próprio perfil, editável direto na página (sem modal) */
+export function ProfileForm({ profile, canEditPrivate, personalFields, isSelf = false }: ProfileFormProps) {
   const updateProfile = useUpdateProfile(profile.user.id);
 
   const { control, handleSubmit, setError, reset, formState } = useForm<ProfileFormValues>({
@@ -31,11 +40,10 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   }, [profile, reset]);
 
   const onSubmit = handleSubmit((values) => {
-    // Na própria página a pessoa sempre edita os dados privados
-    const payload = toProfilePayload(values, true);
+    const payload = toProfilePayload(values, canEditPrivate);
 
     updateProfile.mutate(payload, {
-      onSuccess: () => toast.success("Perfil atualizado"),
+      onSuccess: () => toast.success("Perfil atualizado", { description: profile.user.fullName }),
       onError: (error) => handleApiError(error, setError),
     });
   });
@@ -45,28 +53,18 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       <div className="flex flex-col gap-6">
         <ProfileFormFields
           control={control}
-          canEditPrivate
-          personalFields={
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Nome completo" value={profile.user.fullName} isDisabled />
-              <Input label="E-mail" value={profile.user.email} isDisabled />
-            </div>
-          }
+          canEditPrivate={canEditPrivate}
+          personalFields={personalFields}
+          personalDescription={personalFields ? "Nome e e-mail são alterados pela gestão." : undefined}
+          showDescriptions={isSelf}
         />
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-secondary pt-6 sm:flex-row sm:justify-end">
-        <Button
-          color="secondary"
-          onClick={() => reset(toProfileFormValues(profile))}
-          isDisabled={!formState.isDirty || updateProfile.isPending}
-        >
-          Descartar
-        </Button>
-        <Button type="submit" isDisabled={!formState.isDirty} isLoading={updateProfile.isPending} showTextWhileLoading>
-          Salvar alterações
-        </Button>
-      </div>
+      <FormActions
+        isDirty={formState.isDirty}
+        isSubmitting={updateProfile.isPending}
+        onDiscard={() => reset(toProfileFormValues(profile))}
+      />
     </form>
   );
 }
