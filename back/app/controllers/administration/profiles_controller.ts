@@ -22,9 +22,10 @@ export default class ProfilesController {
 
   async update({ auth, params, request, serialize }: HttpContext) {
     const actorId = auth.getUserOrFail().id
-    const payload = await request.validateUsing(updateProfileValidator)
+    const userId = Number(params.id)
+    const payload = await request.validateUsing(updateProfileValidator, { meta: { userId } })
 
-    const profile = await this.profileService.update(actorId, Number(params.id), payload)
+    const profile = await this.profileService.update(actorId, userId, payload)
 
     return serialize(ProfileTransformer.transform(profile))
   }

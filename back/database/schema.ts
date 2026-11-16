@@ -84,7 +84,7 @@ export class MembershipSchema extends BaseModel {
 }
 
 export class ProfileSchema extends BaseModel {
-  static $columns = ['birthDate', 'course', 'createdAt', 'goal', 'graduated', 'id', 'maturity', 'photoPath', 'technicalScoreUpdatedAt', 'technicalScoreUpdatedBy', 'universityEntryPeriod', 'updatedAt', 'userId', 'weeklyAvailability'] as const
+  static $columns = ['birthDate', 'course', 'createdAt', 'goal', 'id', 'maturity', 'photoPath', 'registrationNumber', 'technicalScoreUpdatedAt', 'technicalScoreUpdatedBy', 'universityEntryPeriod', 'updatedAt', 'userId', 'weeklyAvailability'] as const
   $columns = ProfileSchema.$columns
   @column.date()
   declare birthDate: DateTime | null
@@ -94,14 +94,14 @@ export class ProfileSchema extends BaseModel {
   declare createdAt: DateTime
   @column()
   declare goal: string | null
-  @column()
-  declare graduated: boolean
   @column({ isPrimary: true })
   declare id: number
   @column()
   declare maturity: string | null
   @column()
   declare photoPath: string | null
+  @column()
+  declare registrationNumber: string | null
   @column.dateTime()
   declare technicalScoreUpdatedAt: DateTime | null
   @column()

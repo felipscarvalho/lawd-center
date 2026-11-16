@@ -186,7 +186,6 @@ export default class ProfileService {
     profile.userId = userId
     profile.careerPaths = []
     profile.softSkills = []
-    profile.graduated = false
 
     return profile
   }

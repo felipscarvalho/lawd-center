@@ -14,19 +14,12 @@ export interface CompressedImage {
 export default class ImageCompressionService {
   /** Foto de perfil: recorte quadrado centralizado, 512×512, WebP qualidade 80 */
   async compressAvatar(sourcePath: string): Promise<CompressedImage> {
-    return this.compress(sourcePath, { width: 512, height: 512, fit: 'cover', quality: 80 })
-  }
-
-  private async compress(
-    sourcePath: string,
-    options: { width: number; height: number; fit: 'cover' | 'inside'; quality: number }
-  ): Promise<CompressedImage> {
     try {
       const buffer = await sharp(sourcePath)
         // Aplica a rotação do EXIF antes de descartá-lo, para a foto não ficar deitada
         .rotate()
-        .resize(options.width, options.height, { fit: options.fit, withoutEnlargement: false })
-        .webp({ quality: options.quality })
+        .resize(512, 512, { fit: 'cover' })
+        .webp({ quality: 80 })
         .toBuffer()
 
       return { buffer, extension: 'webp', contentType: 'image/webp' }

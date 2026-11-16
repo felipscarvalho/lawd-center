@@ -1,8 +1,6 @@
 import { ProfileSchema } from '#database/schema'
-import { belongsTo, column } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { column } from '@adonisjs/lucid/orm'
 import env from '#start/env'
-import User from '#models/administration/user'
 
 // Listas fixas do perfil (os rótulos em português ficam no front)
 
@@ -43,6 +41,9 @@ export const softSkills = [
   'autonomy',
 ] as const
 
+/** Máximo de opções que cada pessoa escolhe em carreira de interesse e em atributos */
+export const maxProfileChoices = 3
+
 export type Course = (typeof courses)[number]
 export type WeeklyAvailability = (typeof weeklyAvailabilities)[number]
 export type MaturityLevel = (typeof maturityLevels)[number]
@@ -72,9 +73,6 @@ export default class Profile extends ProfileSchema {
   // O Postgres devolve decimal como texto
   @column({ consume: (value: string | null) => (value === null ? null : Number(value)) })
   declare technicalScore: number | null
-
-  @belongsTo(() => User)
-  declare user: BelongsTo<typeof User>
 
   /** URL pública da foto (servida pelo Drive em /uploads) */
   get photoUrl(): string | null {

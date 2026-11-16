@@ -3,6 +3,7 @@ import {
   careerPaths,
   courses,
   maturityLevels,
+  maxProfileChoices,
   softSkills,
   universityEntryPeriodPattern,
   weeklyAvailabilities,
@@ -11,11 +12,24 @@ import {
 const catalogNames = () =>
   vine.array(vine.string().trim().minLength(1).maxLength(100)).maxLength(50)
 
-/** Todos os campos são opcionais; null limpa o valor */
-export const updateProfileValidator = vine.create({
+/** Todos os campos são opcionais; null limpa o valor. A matrícula é única, ignorando o próprio perfil */
+export const updateProfileValidator = vine.withMetaData<{ userId: number }>().create({
   birthDate: vine
     .date({ formats: ['YYYY-MM-DD'] })
     .beforeOrEqual('today')
+    .nullable()
+    .optional(),
+  registrationNumber: vine
+    .string()
+    .trim()
+    .regex(/^\d{4,20}$/)
+    .unique({
+      table: 'profiles',
+      column: 'registration_number',
+      filter: (query, _, field) => {
+        query.whereNot('user_id', field.meta.userId)
+      },
+    })
     .nullable()
     .optional(),
   course: vine.enum(courses).nullable().optional(),
@@ -25,11 +39,14 @@ export const updateProfileValidator = vine.create({
     .regex(universityEntryPeriodPattern)
     .nullable()
     .optional(),
-  graduated: vine.boolean().optional(),
   weeklyAvailability: vine.enum(weeklyAvailabilities).nullable().optional(),
   maturity: vine.enum(maturityLevels).nullable().optional(),
-  careerPaths: vine.array(vine.enum(careerPaths)).distinct().optional(),
-  softSkills: vine.array(vine.enum(softSkills)).distinct().optional(),
+  careerPaths: vine
+    .array(vine.enum(careerPaths))
+    .distinct()
+    .maxLength(maxProfileChoices)
+    .optional(),
+  softSkills: vine.array(vine.enum(softSkills)).distinct().maxLength(maxProfileChoices).optional(),
   goal: vine.string().trim().maxLength(2000).nullable().optional(),
   technologies: catalogNames().optional(),
   interestAreas: catalogNames().optional(),

@@ -13,9 +13,9 @@ export default class ProfileTransformer extends BaseTransformer<ProfileOutput> {
     return {
       user: UserTransformer.transform(this.resource.user),
       birthDate: showPrivate ? (profile?.birthDate?.toISODate() ?? null) : null,
+      registrationNumber: showPrivate ? (profile?.registrationNumber ?? null) : null,
       course: profile?.course ?? null,
       universityEntryPeriod: profile?.universityEntryPeriod ?? null,
-      graduated: profile?.graduated ?? false,
       photoUrl: profile?.photoUrl ?? null,
       weeklyAvailability: profile?.weeklyAvailability ?? null,
       maturity: profile?.maturity ?? null,

@@ -12,9 +12,9 @@ import type {
 /** Campos editáveis do perfil; ausente = não altera, null = limpa */
 export interface UpdateProfileInput {
   birthDate?: DateTime | null
+  registrationNumber?: string | null
   course?: Course | null
   universityEntryPeriod?: string | null
-  graduated?: boolean
   weeklyAvailability?: WeeklyAvailability | null
   maturity?: MaturityLevel | null
   careerPaths?: CareerPath[]

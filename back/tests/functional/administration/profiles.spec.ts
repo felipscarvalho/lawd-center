@@ -73,6 +73,68 @@ test.group('Profiles', (group) => {
     response.assertStatus(422)
   })
 
+  test('carreira e atributos aceitam no máximo 3 opções', async ({ client }) => {
+    const user = await createUser()
+
+    const careers = await client
+      .put(profileUrl(user.id))
+      .json({ careerPaths: ['frontend', 'backend', 'devops', 'ui_ux'] })
+      .loginAs(user)
+    careers.assertStatus(422)
+
+    const skills = await client
+      .put(profileUrl(user.id))
+      .json({ softSkills: ['communication', 'teamwork', 'leadership', 'autonomy'] })
+      .loginAs(user)
+    skills.assertStatus(422)
+
+    const valid = await client
+      .put(profileUrl(user.id))
+      .json({ careerPaths: ['frontend', 'backend', 'devops'] })
+      .loginAs(user)
+    valid.assertStatus(200)
+  })
+
+  test('matrícula é privada e única entre os perfis', async ({ client, assert }) => {
+    const { projects } = await setupDirectorates()
+    const member = await createUserWithPosition('member', projects)
+    const colleague = await createUserWithPosition('member', projects)
+
+    const saved = await client
+      .put(profileUrl(member.id))
+      .json({ registrationNumber: '202200012345' })
+      .loginAs(member)
+    saved.assertStatus(200)
+    assert.equal(
+      (saved.body() as { data: { registrationNumber: string } }).data.registrationNumber,
+      '202200012345'
+    )
+
+    // Salvar de novo a mesma matrícula no próprio perfil continua válido
+    const again = await client
+      .put(profileUrl(member.id))
+      .json({ registrationNumber: '202200012345' })
+      .loginAs(member)
+    again.assertStatus(200)
+
+    const duplicated = await client
+      .put(profileUrl(colleague.id))
+      .json({ registrationNumber: '202200012345' })
+      .loginAs(colleague)
+    duplicated.assertStatus(422)
+
+    const invalid = await client
+      .put(profileUrl(colleague.id))
+      .json({ registrationNumber: 'abc' })
+      .loginAs(colleague)
+    invalid.assertStatus(422)
+
+    const asColleague = await client.get(profileUrl(member.id)).loginAs(colleague)
+    assert.isNull(
+      (asColleague.body() as { data: { registrationNumber: null } }).data.registrationNumber
+    )
+  })
+
   test('membro não edita o perfil de outra pessoa', async ({ client }) => {
     const { projects } = await setupDirectorates()
     const member = await createUserWithPosition('member', projects)
