@@ -51,6 +51,17 @@ Regras de dependência:
 | Comando | Uso |
 |---|---|
 | `node ace migration:run` | aplica migrations e regenera `database/schema.ts` |
-| `node ace db:seed` | cadastra as diretorias e o primeiro administrador |
+| `node ace db:seed` | cadastra as diretorias e o primeiro administrador; em desenvolvimento, também as pessoas de demonstração |
+| `node ace db:seed --files=./database/seeders/administration/3_demo_members_seeder.ts` | só as pessoas de demonstração |
 | `node ace test` | testes unitários e funcionais |
 | `npm run lint` / `npm run typecheck` | qualidade de código |
+
+## Dados de demonstração
+
+O seeder `3_demo_members_seeder.ts` popula o banco de desenvolvimento para testar as telas com a liga "cheia": vice-presidente e secretário-geral no CORP (se os cargos estiverem livres) e, em cada diretoria comum, um diretor (se não houver) e 4 membros efetivos. Cada pessoa tem o perfil todo preenchido (curso, entrada, matrícula, disponibilidade, maturidade, carreira, atributos, tecnologias, áreas de interesse e objetivo) e uma nota técnica dada pelo primeiro administrador.
+
+- Só roda com `NODE_ENV=development` (`static environment`), nunca em produção
+- Usa os services, como os demais seeders, então passa pelas mesmas regras (cargos únicos, limite de 3 escolhas, catálogos)
+- Os dados são variados, mas iguais a cada execução, e o seeder é idempotente: e-mails que já existem são pulados
+- E-mails `nome.sobrenome@demo.lawd` e senha `lawd-demo-123`, para entrar como qualquer pessoa (ex.: um diretor) e ver a tela com as permissões dela
+- Para remover: apagar os usuários `@demo.lawd` (vínculos e perfis saem junto, por cascata)
