@@ -20,6 +20,14 @@ export const http = defineConfig({
   generateRequestId: true,
 
   /**
+   * Em produção a API fica atrás do proxy do Easypanel, que chega por um IP de rede privada (Docker).
+   * Confiar nesses endereços faz `request.ip()` devolver o IP de quem acessou (cabeçalho
+   * X-Forwarded-For), e não o do proxy. Sem isso o limite de requisições por IP contaria todos os
+   * visitantes como um só.
+   */
+  trustProxy: 'uniquelocal',
+
+  /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.
    * This lets HTML forms target PUT/PATCH/DELETE routes while still
    * submitting with POST.

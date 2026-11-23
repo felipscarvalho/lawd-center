@@ -130,6 +130,7 @@ router
 - O matcher numérico de `:id` fica no grupo do módulo, não em cada rota
 
 - Middlewares nomeados continuam centralizados em `start/kernel.ts`
+- Rota pública que grava dados leva limite de requisições por IP: os limites ficam em `start/limiter.ts` (`@adonisjs/limiter`, contadores em memória) e são aplicados na rota com `.use(...)`
 
 ## 4. Regras de dependência entre módulos
 
