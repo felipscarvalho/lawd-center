@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Servidor próprio e só as dependências usadas, para a imagem Docker (front/Dockerfile)
+  output: "standalone",
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

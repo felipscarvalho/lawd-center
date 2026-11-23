@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+coverage
+.env*
+!.env.example
+.git
+.vscode
+.idea
+*.log
+public/e2e_login.html
