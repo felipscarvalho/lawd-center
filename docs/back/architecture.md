@@ -44,7 +44,7 @@ Regras de dependência:
 ## Banco e ambiente
 
 - PostgreSQL, conexão `postgres` configurada pelas variáveis `DB_*` (validadas em `start/env.ts`; modelo em `.env.example`)
-- Testes (Japa) usam o mesmo banco do `.env`, com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`); recomenda-se apontar `.env.test` para um banco separado. O `data` das respostas é lido com `responseData<T>(response)` (`tests/helpers/http.ts`), em vez de converter o corpo à mão em cada teste
+- Testes (Japa) usam um banco próprio, `lawd_test` (`DB_DATABASE` em `.env.test`, que sobrescreve o `.env`), migrado no início da execução (`tests/bootstrap.ts`) e com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`). Motivo: com o banco de desenvolvimento, dados como os do seeder de demonstração (cargos únicos ocupados) quebravam os testes. Criar uma vez: `CREATE DATABASE lawd_test`. O `data` das respostas é lido com `responseData<T>(response)` (`tests/helpers/http.ts`), em vez de converter o corpo à mão em cada teste
 
 ## Comandos
 
