@@ -3,7 +3,7 @@
 import { use, useEffect, useState, type ReactNode } from "react";
 import { browser } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
-import { Building07, LogOut01, Users01, Dataflow03, UserCircle } from "@untitledui/icons";
+import { BarChartSquare02, Building07, Dataflow03, FolderClosed, LogOut01, UserCircle, Users01 } from "@untitledui/icons";
 import type { NavItemType } from "@/components/application/app-navigation/config";
 import { SidebarNavigationSimple } from "@/components/application/app-navigation/sidebar-navigation/sidebar-simple";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
@@ -33,6 +33,13 @@ const navigation: { title: string; items: NavigationItem[] }[] = [
       { label: "Organograma", href: "/organization", icon: Dataflow03, permission: "administration.membership.view" },
       { label: "Usuários", href: "/users", icon: Users01, permission: "administration.user.view" },
       { label: "Diretorias", href: "/directorates", icon: Building07, permission: "administration.directorate.view" },
+    ],
+  },
+  {
+    title: "Projetos",
+    items: [
+      { label: "Projetos", href: "/projects", icon: FolderClosed, permission: "projects.project.view" },
+      { label: "Análise", href: "/projects/analytics", icon: BarChartSquare02, permission: "projects.project.view" },
     ],
   },
 ];

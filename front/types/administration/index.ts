@@ -12,7 +12,10 @@ export type PermissionKey =
   | "administration.profile.view"
   | "administration.profile.view_private"
   | "administration.profile.update"
-  | "administration.profile.evaluate";
+  | "administration.profile.evaluate"
+  | "projects.project.view"
+  | "projects.project.manage"
+  | "projects.team.manage";
 
 export type PermissionScope = "global" | "directorate";
 

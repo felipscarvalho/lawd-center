@@ -9,6 +9,7 @@ import { AssignMembershipModal } from "@/components/administration/assign_member
 import { PageHeader } from "@/components/layout/page_header";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { ConfirmModal } from "@/components/overlays/confirm_modal";
+import { UserProjectsCard } from "@/components/projects/user_projects_card";
 import { LoadingState, ErrorState } from "@/components/layout/query_states";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useUserMemberships } from "@/hooks/administration/use_memberships";
@@ -78,6 +79,8 @@ export function UserDetail() {
       <UserCard user={data} activeMemberships={activeMemberships} />
 
       <MembershipHistory memberships={memberships} />
+
+      {can("projects.project.view") && <UserProjectsCard userId={data.id} />}
 
       <AssignMembershipModal isOpen={isAssignOpen} onOpenChange={setIsAssignOpen} user={data} />
       <ConfirmModal

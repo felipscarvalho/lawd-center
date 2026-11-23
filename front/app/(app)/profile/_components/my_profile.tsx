@@ -5,7 +5,9 @@ import { ProfileForm } from "./profile_form";
 import { PageHeader } from "@/components/layout/page_header";
 import { LoadingState, ErrorState } from "@/components/layout/query_states";
 import { SplitCard } from "@/components/layout/card";
+import { usePermissions } from "@/hooks/administration/use_auth";
 import { useProfile } from "@/hooks/administration/use_profiles";
+import { UserProjectsCard } from "@/components/projects/user_projects_card";
 import { useUserStore } from "@/stores/user_store";
 import { AccountColumn } from "./account_column";
 
@@ -16,6 +18,7 @@ import { AccountColumn } from "./account_column";
 export function MyProfile() {
   const userId = useUserStore((state) => state.user?.id ?? 0);
   const profile = useProfile(userId);
+  const { can } = usePermissions();
 
   if (profile.isPending) {
     return <LoadingState label="Carregando perfil..." />;
@@ -42,6 +45,9 @@ export function MyProfile() {
           }
         />
       </SplitCard>
+
+      {/* Quem ainda não tem cargo não vê projetos (o backend exige projects.project.view) */}
+      {can("projects.project.view") && <UserProjectsCard userId={userId} />}
     </>
   );
 }
