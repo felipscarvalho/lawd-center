@@ -30,6 +30,7 @@
     "#transformers/*": "./app/transformers/*.js",
     "#validators/*": "./app/validators/*.js",
     "#dtos/*": "./app/dtos/*.js",
+    "#helpers/*": "./app/helpers/*.js",
     "#permissions/*": "./app/permissions/*.js",
     "#providers/*": "./providers/*.js",
     "#policies/*": "./app/policies/*.js",

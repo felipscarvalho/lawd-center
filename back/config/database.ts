@@ -22,11 +22,11 @@ const dbConfig = defineConfig({
          * Uma pasta por módulo, em ordem de dependência (administration primeiro).
          * Uma migration só pode referenciar tabelas de módulos registrados antes.
          */
-        paths: ['database/migrations/administration'],
+        paths: ['database/migrations/administration', 'database/migrations/projects'],
       },
 
       seeders: {
-        paths: ['database/seeders/administration'],
+        paths: ['database/seeders/administration', 'database/seeders/projects'],
       },
 
       schemaGeneration: {

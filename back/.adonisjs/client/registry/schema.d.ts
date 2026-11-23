@@ -320,6 +320,175 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/memberships_controller').default['end']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'projects.projects.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/projects'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/projects/project').listProjectsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.projects.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/projects/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['show']>>>
+    }
+  }
+  'projects.projects.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/projects/projects'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/projects/project').createProjectValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/projects/project').createProjectValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.projects.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/projects/projects/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/projects/project').updateProjectValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/projects/project').updateProjectValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/projects_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.projectMembers.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/projects/:id/members'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['index']>>>
+    }
+  }
+  'projects.projectMembers.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/projects/projects/:id/members'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/projects/project').addProjectMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/projects/project').addProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.projectMembers.end': {
+    methods: ["POST"]
+    pattern: '/api/v1/projects/project-members/:id/end'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/projects/project').endProjectMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/projects/project').endProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['end']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['end']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['end']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.projectMembers.forUser': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/users/:id/projects'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['forUser']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['forUser']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_members_controller').default['forUser']>>>
+    }
+  }
+  'projects.projectInterests.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/projects/:id/interests'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['index']>>>
+    }
+  }
+  'projects.projectInterests.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/projects/projects/:id/interest'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['store']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['store']>>>
+    }
+  }
+  'projects.projectInterests.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/projects/projects/:id/interest'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_interests_controller').default['destroy']>>>
+    }
+  }
+  'projects.analytics.summary': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/analytics'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['summary']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['summary']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['summary']>>>
+    }
+  }
+  'projects.analytics.radar': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/projects/radar'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['radar']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['radar']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/projects/project_analytics_controller').default['radar']>>>
+    }
+  }
 }
 
 export namespace Route {

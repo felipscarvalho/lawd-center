@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import '#start/routes/administration'
+import '#start/routes/projects'
 
 router.get('/', () => {
   return { hello: 'world' }

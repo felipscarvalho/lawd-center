@@ -12,4 +12,10 @@ export const controllers = {
     Profiles: () => import('#controllers/administration/profiles_controller'),
     Users: () => import('#controllers/administration/users_controller'),
   },
+  projects: {
+    ProjectAnalytics: () => import('#controllers/projects/project_analytics_controller'),
+    ProjectInterests: () => import('#controllers/projects/project_interests_controller'),
+    ProjectMembers: () => import('#controllers/projects/project_members_controller'),
+    Projects: () => import('#controllers/projects/projects_controller'),
+  },
 }

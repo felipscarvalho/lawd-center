@@ -10,6 +10,13 @@ import type AdministrationDirectorateTransformer from '#transformers/administrat
 import type AdministrationMembershipTransformer from '#transformers/administration/membership_transformer'
 import type AdministrationProfileTransformer from '#transformers/administration/profile_transformer'
 import type AdministrationUserTransformer from '#transformers/administration/user_transformer'
+import type ProjectsProjectInterestTransformer from '#transformers/projects/project_interest_transformer'
+import type ProjectsProjectMemberTransformer from '#transformers/projects/project_member_transformer'
+import type ProjectsProjectSummaryTransformer from '#transformers/projects/project_summary_transformer'
+import type ProjectsProjectTransformer from '#transformers/projects/project_transformer'
+import type ProjectsProjectsAnalyticsTransformer from '#transformers/projects/projects_analytics_transformer'
+import type ProjectsRadarEntryTransformer from '#transformers/projects/radar_entry_transformer'
+import type ProjectsUserProjectsTransformer from '#transformers/projects/user_projects_transformer'
 
 export namespace Data {
   export namespace Administration {
@@ -32,6 +39,36 @@ export namespace Data {
     export type User = InferData<AdministrationUserTransformer>
     export namespace User {
       export type Variants = InferVariants<AdministrationUserTransformer>
+    }
+  }
+  export namespace Projects {
+    export type ProjectInterest = InferData<ProjectsProjectInterestTransformer>
+    export namespace ProjectInterest {
+      export type Variants = InferVariants<ProjectsProjectInterestTransformer>
+    }
+    export type ProjectMember = InferData<ProjectsProjectMemberTransformer>
+    export namespace ProjectMember {
+      export type Variants = InferVariants<ProjectsProjectMemberTransformer>
+    }
+    export type ProjectSummary = InferData<ProjectsProjectSummaryTransformer>
+    export namespace ProjectSummary {
+      export type Variants = InferVariants<ProjectsProjectSummaryTransformer>
+    }
+    export type Project = InferData<ProjectsProjectTransformer>
+    export namespace Project {
+      export type Variants = InferVariants<ProjectsProjectTransformer>
+    }
+    export type ProjectsAnalytics = InferData<ProjectsProjectsAnalyticsTransformer>
+    export namespace ProjectsAnalytics {
+      export type Variants = InferVariants<ProjectsProjectsAnalyticsTransformer>
+    }
+    export type RadarEntry = InferData<ProjectsRadarEntryTransformer>
+    export namespace RadarEntry {
+      export type Variants = InferVariants<ProjectsRadarEntryTransformer>
+    }
+    export type UserProjects = InferData<ProjectsUserProjectsTransformer>
+    export namespace UserProjects {
+      export type Variants = InferVariants<ProjectsUserProjectsTransformer>
     }
   }
 }

@@ -1,4 +1,5 @@
 import { administrationPermissions } from '#permissions/administration'
+import { projectsPermissions } from '#permissions/projects'
 import type { PermissionKey, PermissionScope } from '#permissions/index'
 
 /**
@@ -53,34 +54,51 @@ const global = (...keys: PermissionKey[]): PermissionGrant[] =>
 const inDirectorate = (...keys: PermissionKey[]): PermissionGrant[] =>
   keys.map((permission) => ({ permission, scope: 'directorate' }))
 
-/** Leitura comum a todos os membros: usuários, diretorias e organograma */
+/** Leitura comum a todos os membros: usuários, diretorias, organograma e projetos */
 const baseView = global(
   'administration.user.view',
   'administration.directorate.view',
   'administration.membership.view',
-  'administration.profile.view'
+  'administration.profile.view',
+  'projects.project.view'
 )
 
-/** Administradores gerais (presidente, vice e secretário-geral): todo o módulo administration */
-const administrationAdmin = global(...(Object.keys(administrationPermissions) as PermissionKey[]))
+/** Administradores gerais (presidente, vice e secretário-geral): todos os módulos */
+const generalAdmin = global(
+  ...(Object.keys(administrationPermissions) as PermissionKey[]),
+  ...(Object.keys(projectsPermissions) as PermissionKey[])
+)
 
 /**
  * Mapa cargo → permissões. As permissões efetivas de um usuário são a soma das concedidas
  * pelos cargos dos seus vínculos ativos.
  */
 export const positionPermissions: Record<Position, PermissionGrant[]> = {
-  president: administrationAdmin,
-  vice_president: administrationAdmin,
-  general_secretary: administrationAdmin,
-  // Diretor gerencia os membros da própria diretoria: vínculos, perfis e avaliação técnica
+  president: generalAdmin,
+  vice_president: generalAdmin,
+  general_secretary: generalAdmin,
+  // Diretor gerencia os membros e os projetos da própria diretoria
   director: [
     ...baseView,
     ...inDirectorate(
       'administration.membership.manage',
       'administration.profile.view_private',
       'administration.profile.update',
-      'administration.profile.evaluate'
+      'administration.profile.evaluate',
+      'projects.project.manage',
+      'projects.team.manage'
     ),
   ],
   member: baseView,
+}
+
+/**
+ * Permissões extras de um cargo numa diretoria específica, pela `key` da diretoria. Somam-se às do
+ * mapa acima quando a pessoa ocupa aquele cargo naquela diretoria.
+ */
+export const directoratePositionPermissions: Partial<
+  Record<string, Partial<Record<Position, PermissionGrant[]>>>
+> = {
+  // O diretor de Projetos gerencia os projetos de todas as diretorias
+  projects: { director: global('projects.project.manage', 'projects.team.manage') },
 }

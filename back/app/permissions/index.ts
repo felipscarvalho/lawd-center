@@ -1,4 +1,5 @@
 import { administrationPermissions } from '#permissions/administration'
+import { projectsPermissions } from '#permissions/projects'
 
 /**
  * Catálogo completo de permissões da aplicação: único lugar onde permissões existem.
@@ -6,6 +7,7 @@ import { administrationPermissions } from '#permissions/administration'
  */
 export const permissions = {
   ...administrationPermissions,
+  ...projectsPermissions,
 } as const
 
 export type PermissionKey = keyof typeof permissions

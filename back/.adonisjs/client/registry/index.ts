@@ -152,6 +152,84 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"administration"],[0,"memberships"],[1,"id"],[0,"end"]],
     types: placeholder as Registry['administration.memberships.end']['types'],
   },
+  'projects.projects.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/projects',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"]],
+    types: placeholder as Registry['projects.projects.index']['types'],
+  },
+  'projects.projects.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/projects/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"]],
+    types: placeholder as Registry['projects.projects.show']['types'],
+  },
+  'projects.projects.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/projects/projects',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"]],
+    types: placeholder as Registry['projects.projects.store']['types'],
+  },
+  'projects.projects.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/projects/projects/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"]],
+    types: placeholder as Registry['projects.projects.update']['types'],
+  },
+  'projects.projectMembers.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/projects/:id/members',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"],[0,"members"]],
+    types: placeholder as Registry['projects.projectMembers.index']['types'],
+  },
+  'projects.projectMembers.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/projects/projects/:id/members',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"],[0,"members"]],
+    types: placeholder as Registry['projects.projectMembers.store']['types'],
+  },
+  'projects.projectMembers.end': {
+    methods: ["POST"],
+    pattern: '/api/v1/projects/project-members/:id/end',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"project-members"],[1,"id"],[0,"end"]],
+    types: placeholder as Registry['projects.projectMembers.end']['types'],
+  },
+  'projects.projectMembers.forUser': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/users/:id/projects',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"users"],[1,"id"],[0,"projects"]],
+    types: placeholder as Registry['projects.projectMembers.forUser']['types'],
+  },
+  'projects.projectInterests.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/projects/:id/interests',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"],[0,"interests"]],
+    types: placeholder as Registry['projects.projectInterests.index']['types'],
+  },
+  'projects.projectInterests.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/projects/projects/:id/interest',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"],[0,"interest"]],
+    types: placeholder as Registry['projects.projectInterests.store']['types'],
+  },
+  'projects.projectInterests.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/projects/projects/:id/interest',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"projects"],[1,"id"],[0,"interest"]],
+    types: placeholder as Registry['projects.projectInterests.destroy']['types'],
+  },
+  'projects.analytics.summary': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/analytics',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"analytics"]],
+    types: placeholder as Registry['projects.analytics.summary']['types'],
+  },
+  'projects.analytics.radar': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/projects/radar',
+    tokens: [[0,"api"],[0,"v1"],[0,"projects"],[0,"radar"]],
+    types: placeholder as Registry['projects.analytics.radar']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

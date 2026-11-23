@@ -116,6 +116,67 @@ export class ProfileSchema extends BaseModel {
   declare weeklyAvailability: string | null
 }
 
+export class ProjectInterestSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'projectId', 'userId'] as const
+  $columns = ProjectInterestSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare projectId: number
+  @column()
+  declare userId: number
+}
+
+export class ProjectMemberSchema extends BaseModel {
+  static $columns = ['createdAt', 'endsAt', 'id', 'projectId', 'role', 'startsAt', 'updatedAt', 'userId'] as const
+  $columns = ProjectMemberSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.date()
+  declare endsAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare projectId: number
+  @column()
+  declare role: string
+  @column.date()
+  declare startsAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class ProjectSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'directorateId', 'endedAt', 'expectedEndAt', 'id', 'name', 'priority', 'startsAt', 'status', 'updatedAt'] as const
+  $columns = ProjectSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string | null
+  @column()
+  declare directorateId: number
+  @column.date()
+  declare endedAt: DateTime | null
+  @column.date()
+  declare expectedEndAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare priority: string | null
+  @column.date()
+  declare startsAt: DateTime | null
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class TechnologySchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'name', 'updatedAt'] as const
   $columns = TechnologySchema.$columns
