@@ -1,6 +1,7 @@
 import { ProfileSchema } from '#database/schema'
 import { column } from '@adonisjs/lucid/orm'
 import env from '#start/env'
+import { uploadsBasePath } from '#config/drive'
 
 // Listas fixas do perfil (os rótulos em português ficam no front)
 
@@ -74,8 +75,8 @@ export default class Profile extends ProfileSchema {
   @column({ consume: (value: string | null) => (value === null ? null : Number(value)) })
   declare technicalScore: number | null
 
-  /** URL pública da foto (servida pelo Drive em /uploads) */
+  /** URL pública da foto (servida pelo Drive em /api/v1/uploads) */
   get photoUrl(): string | null {
-    return this.photoPath ? `${env.get('APP_URL')}/uploads/${this.photoPath}` : null
+    return this.photoPath ? `${env.get('APP_URL')}${uploadsBasePath}/${this.photoPath}` : null
   }
 }

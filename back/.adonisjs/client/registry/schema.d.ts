@@ -10,7 +10,7 @@ export type ParamValue = string | number | bigint | boolean
 export interface Registry {
   'drive.fs.serve': {
     methods: ["GET","HEAD"]
-    pattern: '/uploads/*'
+    pattern: '/api/v1/uploads/*'
     types: {
       body: {}
       paramsTuple: [ParamValue]

@@ -2,6 +2,12 @@ import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig, services } from '@adonisjs/drive'
 
+/**
+ * Rota pública dos arquivos enviados. Fica sob /api/v1 como o resto da API, para o proxy mandar
+ * /api ao back e o resto ao front (ver docs/easypanel.md)
+ */
+export const uploadsBasePath = '/api/v1/uploads'
+
 const driveConfig = defineConfig({
   default: env.get('DRIVE_DISK'),
 
@@ -13,7 +19,7 @@ const driveConfig = defineConfig({
     fs: services.fs({
       location: app.makePath('storage'),
       serveFiles: true,
-      routeBasePath: '/uploads',
+      routeBasePath: uploadsBasePath,
       visibility: 'public',
     }),
   },

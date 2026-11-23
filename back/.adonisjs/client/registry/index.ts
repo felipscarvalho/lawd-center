@@ -10,8 +10,8 @@ const placeholder: any = {}
 const routes = {
   'drive.fs.serve': {
     methods: ["GET","HEAD"],
-    pattern: '/uploads/*',
-    tokens: [[0,"uploads"],[2,"*"]],
+    pattern: '/api/v1/uploads/*',
+    tokens: [[0,"api"],[0,"v1"],[0,"uploads"],[2,"*"]],
     types: placeholder as Registry['drive.fs.serve']['types'],
   },
   'health.live': {
