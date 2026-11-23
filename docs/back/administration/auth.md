@@ -45,10 +45,12 @@ Usuários não são apagados. Desativar (`POST /users/:id/deactivate`):
 
 | Método | Rota | Permissão |
 |---|---|---|
-| GET | `/users` (`?active=true\|false`) | `user.view` |
+| GET | `/users` (`?active`, `search`, `directorateId`, `course`, `page`, `perPage`) | `user.view` (paginado: `{ data, metadata }`) |
 | GET | `/users/:id` | `user.view` |
 | POST | `/users` | `user.create` |
 | PUT | `/users/:id` | `user.update` |
 | POST | `/users/:id/deactivate` | `user.deactivate` |
 
 Validações: nome com 3+ caracteres, e-mail válido e único (sem diferenciar maiúsculas), senha de 8 a 72 caracteres.
+
+Lista paginada no banco (padrão 20 por página, máximo 100), em ordem de nome. Os filtros também são aplicados no banco, para o total de páginas bater com o resultado: `search` procura no nome e no e-mail (sem diferenciar maiúsculas; `%` e `_` contam como texto), `directorateId` traz quem tem cargo ativo na diretoria e `course` filtra pelo curso do perfil. A resposta segue o paginador dos transformers: itens em `data` e `metadata` com `total`, `perPage`, `currentPage` e `lastPage`.

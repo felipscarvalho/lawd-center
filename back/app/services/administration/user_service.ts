@@ -1,17 +1,24 @@
 import { inject } from '@adonisjs/core'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
+import type { ModelPaginatorContract } from '@adonisjs/lucid/types/model'
 import User from '#models/administration/user'
 import MembershipService from '#services/administration/membership_service'
 import BusinessRuleException from '#exceptions/administration/business_rule_exception'
 import type { CreateUserInput, ListUsersInput, UpdateUserInput } from '#dtos/administration/user'
 
+/** Usuários por página quando a lista não informa */
+const defaultUsersPerPage = 20
+
 @inject()
 export default class UserService {
   constructor(protected membershipService: MembershipService) {}
 
-  /** Lista com o resumo do perfil e os cargos ativos (com a diretoria), para a tabela de usuários */
-  async list(input: ListUsersInput = {}): Promise<User[]> {
+  /**
+   * Página da lista de usuários, com o resumo do perfil e os cargos ativos (com a diretoria).
+   * Os filtros são aplicados no banco, para a contagem de páginas bater com o que foi filtrado.
+   */
+  async list(input: ListUsersInput = {}): Promise<ModelPaginatorContract<User>> {
     const query = User.query()
       .preload('profile')
       .preload('memberships', (memberships) =>
@@ -21,11 +28,29 @@ export default class UserService {
           .orderBy('starts_at', 'asc')
       )
       .orderBy('full_name', 'asc')
+      .orderBy('id', 'asc')
 
     if (input.active === true) query.whereNull('deactivated_at')
     if (input.active === false) query.whereNotNull('deactivated_at')
 
-    return query
+    if (input.search) {
+      const term = `%${input.search.replace(/[\\%_]/g, '\\$&')}%`
+      query.where((search) => search.whereILike('full_name', term).orWhereILike('email', term))
+    }
+
+    if (input.directorateId) {
+      const directorateId = input.directorateId
+      query.whereHas('memberships', (memberships) =>
+        memberships.withScopes((scopes) => scopes.active()).where('directorate_id', directorateId)
+      )
+    }
+
+    if (input.course) {
+      const course = input.course
+      query.whereHas('profile', (profile) => profile.where('course', course))
+    }
+
+    return query.paginate(input.page ?? 1, input.perPage ?? defaultUsersPerPage)
   }
 
   async find(id: number): Promise<User> {

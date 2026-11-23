@@ -17,7 +17,7 @@ export default class UsersController {
 
     const users = await this.userService.list(filters)
 
-    return serialize(UserTransformer.transform(users))
+    return serialize(UserTransformer.paginate(users.all(), users.getMeta()))
   }
 
   async show({ params, serialize }: HttpContext) {

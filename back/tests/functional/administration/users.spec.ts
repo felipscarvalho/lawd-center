@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { responseData } from '#tests/helpers/http'
+import { responseData, responsePage } from '#tests/helpers/http'
 import {
   createUser,
   createUserWithPosition,
@@ -37,7 +37,10 @@ test.group('Users', (group) => {
       .json({ course: 'design', maturity: 'mentor', birthDate: '2001-01-01' })
       .loginAs(member)
 
-    const response = await client.get('/api/v1/administration/users').loginAs(member)
+    const response = await client
+      .get('/api/v1/administration/users')
+      .qs({ search: member.email })
+      .loginAs(member)
 
     response.assertStatus(200)
     type ListedUser = {
@@ -54,6 +57,53 @@ test.group('Users', (group) => {
     })
     assert.equal(listed.memberships[0].position, 'member')
     assert.equal(listed.memberships[0].directorate.name, 'Projetos')
+  })
+
+  test('lista é paginada e filtra no banco', async ({ client, assert }) => {
+    const { projects, events } = await setupDirectorates()
+    const viewer = await createUserWithPosition('member', projects)
+    const token = `zpag${Date.now()}`
+    for (const name of ['Ana', 'Bruno', 'Carla']) {
+      const user = await createUserWithPosition('member', projects)
+      await user.merge({ fullName: `${name} ${token}` }).save()
+    }
+    const other = await createUserWithPosition('member', events)
+    await other.merge({ fullName: `Diego ${token}` }).save()
+
+    const list = async (qs: Record<string, unknown>) => {
+      const response = await client.get('/api/v1/administration/users').qs(qs).loginAs(viewer)
+      response.assertStatus(200)
+      return responsePage<{ fullName: string }>(response)
+    }
+
+    const second = await list({ search: token.toUpperCase(), perPage: 2, page: 2 })
+    assert.deepEqual(
+      second.data.map((user) => user.fullName),
+      [`Carla ${token}`, `Diego ${token}`]
+    )
+    assert.include(second.metadata, { total: 4, perPage: 2, currentPage: 2, lastPage: 2 })
+
+    const fromEvents = await list({ search: token, directorateId: events.id })
+    assert.deepEqual(
+      fromEvents.data.map((user) => user.fullName),
+      [`Diego ${token}`]
+    )
+
+    // Curinga do LIKE na busca é tratado como texto
+    const wildcard = await list({ search: '%' })
+    assert.lengthOf(wildcard.data, 0)
+  })
+
+  test('lista recusa página grande demais (422)', async ({ client }) => {
+    const { projects } = await setupDirectorates()
+    const viewer = await createUserWithPosition('member', projects)
+
+    const response = await client
+      .get('/api/v1/administration/users')
+      .qs({ perPage: 1000 })
+      .loginAs(viewer)
+
+    response.assertStatus(422)
   })
 
   test('membro efetivo não cadastra usuários (403)', async ({ client }) => {

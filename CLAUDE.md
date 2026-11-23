@@ -135,7 +135,8 @@ router
 - Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
 - Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
-- Testes Japa com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`; o `data` das respostas é lido com `responseData<T>(response)` de `tests/helpers/http.ts`
+- Listas que podem crescer são paginadas no banco (`query.paginate`, devolvidas com `Transformer.paginate(items.all(), items.getMeta())`), com os filtros também no banco
+- Testes Japa no banco próprio `lawd_test` (`.env.test`), com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`; o `data` das respostas é lido com `responseData<T>(response)` de `tests/helpers/http.ts`
 
 ## 6. Autenticação e permissões
 
@@ -187,7 +188,7 @@ Instância única de axios, configurada uma vez:
 Funções tipadas que representam cada endpoint, reutilizadas por toda a aplicação:
 
 - Uma função por operação: `getUser(id)` → `GET /<module>/users/:id`
-- Usam exclusivamente o API client, pelos atalhos `apiGet`, `apiPost`, `apiPut` e `apiDelete` de `lib/api.ts`, que já devolvem o `data` da resposta tipado (`return apiGet<User>(...)`); o `api` direto só quando não há corpo a desembrulhar
+- Usam exclusivamente o API client, pelos atalhos `apiGet`, `apiPost`, `apiPut` e `apiDelete` de `lib/api.ts`, que já devolvem o `data` da resposta tipado (`return apiGet<User>(...)`), e `apiGetPage` para listas paginadas (itens + `metadata`); o `api` direto só quando não há corpo a desembrulhar
 - Módulos espelham os módulos do backend
 
 ### Hooks de dados (`hooks/<module>/`)
@@ -244,7 +245,7 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 - `components/layout/`: estrutura de página e blocos reutilizáveis
   - `PageHeader`; `Card` (card de vidro padrão) e `SplitCard` (duas colunas: aside + conteúdo, como Meu perfil e detalhe do usuário)
   - `Section`, `DetailField` e `DetailTags` (seções com divisória e campos só de leitura)
-  - `LoadingState` e `ErrorState` (carregando e erro de qualquer tela); `ListToolbar` (filtros em painel + busca à direita) e `ListContent` (carregando, erro, vazio e conteúdo de listas)
+  - `LoadingState` e `ErrorState` (carregando e erro de qualquer tela); `ListToolbar` (filtros em painel + busca à direita), `ListContent` (carregando, erro, vazio e conteúdo de listas) e `ListPagination` (rodapé de paginação das tabelas)
   - `FormActions` (Descartar/Salvar dos formulários de edição direta)
 - `components/forms/`: `FormInput` e `FormSelect`, campos já ligados ao react-hook-form (valor, validação e erro no lugar da dica); usar no lugar de `Controller` + `Input`/`Select"
 - `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
