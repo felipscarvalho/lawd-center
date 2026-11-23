@@ -21,6 +21,32 @@ export interface Registry {
       rawResponse: ExtractRawResponse<unknown>
     }
   }
+  'health.live': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/health/live'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['live']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['live']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['live']>>>
+    }
+  }
+  'health.ready': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/health/ready'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['ready']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['ready']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['ready']>>>
+    }
+  }
   'administration.auth.login': {
     methods: ["POST"]
     pattern: '/api/v1/administration/auth/login'

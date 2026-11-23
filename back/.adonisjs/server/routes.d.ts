@@ -5,6 +5,8 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'health.live': { paramsTuple?: []; params?: {} }
+    'health.ready': { paramsTuple?: []; params?: {} }
     'administration.auth.login': { paramsTuple?: []; params?: {} }
     'administration.auth.logout': { paramsTuple?: []; params?: {} }
     'administration.auth.me': { paramsTuple?: []; params?: {} }
@@ -44,6 +46,8 @@ export type ScannedRoutes = {
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'health.live': { paramsTuple?: []; params?: {} }
+    'health.ready': { paramsTuple?: []; params?: {} }
     'administration.auth.me': { paramsTuple?: []; params?: {} }
     'administration.users.index': { paramsTuple?: []; params?: {} }
     'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -63,6 +67,8 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'health.live': { paramsTuple?: []; params?: {} }
+    'health.ready': { paramsTuple?: []; params?: {} }
     'administration.auth.me': { paramsTuple?: []; params?: {} }
     'administration.users.index': { paramsTuple?: []; params?: {} }
     'administration.users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

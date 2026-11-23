@@ -34,6 +34,17 @@ Regras de dependência:
 
 `start/routes.ts` só importa os arquivos de cada módulo (`start/routes/<module>.ts`). Cada módulo declara um grupo com prefixo `/api/v1/<module>` e nome `<module>`. Os controllers são referenciados pelo índice gerado (`controllers.administration.Users`). O matcher numérico do parâmetro `:id` é declarado uma vez no grupo do módulo (`.where('id', router.matchers.number())`), valendo para todas as rotas dele.
 
+### Health checks
+
+Rotas de infraestrutura, públicas e fora dos módulos, em `start/routes/health.ts` (o `GET /` do starter foi removido: toda a API fica sob `/api/v1`):
+
+| Rota | Para quê |
+|---|---|
+| `GET /api/v1/health/live` | o processo está no ar (`{ status: "ok" }`); não toca no banco, para o orquestrador não reiniciar a API quando o banco oscila. É o healthcheck do container |
+| `GET /api/v1/health/ready` | módulo de health checks do Adonis (`start/health.ts`): conexão com o banco, memória e disco. 200 quando saudável (avisos não derrubam), 503 quando não. Para monitoramento externo |
+
+O relatório do `ready` mostra detalhes internos: com `HEALTH_SECRET` definida, ele exige o cabeçalho `x-monitoring-secret` com esse valor (401 sem ele).
+
 ## Respostas e erros
 
 - Sucesso: `{ "data": ... }` (serializer do `providers/api_provider.ts`)

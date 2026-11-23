@@ -25,6 +25,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   // CORS: origens do front aceitas fora do desenvolvimento, separadas por vírgula (com https://)
   CORS_ORIGIN: Env.schema.string.optional(),
 
+  // Health check: segredo opcional exigido em /api/v1/health/ready (cabeçalho x-monitoring-secret)
+  HEALTH_SECRET: Env.schema.string.optional(),
+
   // Session
   SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
 

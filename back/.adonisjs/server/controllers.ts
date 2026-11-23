@@ -7,6 +7,7 @@ export const controllers = {
   administration: {
     Auth: () => import('#controllers/administration/auth_controller'),
     Directorates: () => import('#controllers/administration/directorates_controller'),
+    HealthChecks: () => import('#controllers/administration/health_checks_controller'),
     Memberships: () => import('#controllers/administration/memberships_controller'),
     ProfileCatalogs: () => import('#controllers/administration/profile_catalogs_controller'),
     Profiles: () => import('#controllers/administration/profiles_controller'),

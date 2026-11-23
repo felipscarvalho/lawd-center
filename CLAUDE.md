@@ -108,7 +108,9 @@ Módulos novos são criados conforme a aplicação cresce, seguindo a mesma estr
 
 ## 3. Rotas
 
+- **Toda rota da API fica sob `/api/v1`**, para não conflitar com as rotas do front; não há rotas na raiz
 - Cada módulo tem seu arquivo `start/routes/<module>.ts`, importado por `start/routes.ts` (que não define rotas de módulo, só importa os arquivos)
+- Health checks (infraestrutura, fora dos módulos) ficam em `start/routes/health.ts`: `/api/v1/health/live` (processo no ar) e `/api/v1/health/ready` (banco, memória e disco; verificações em `start/health.ts`)
 - Cada arquivo de módulo declara um único grupo com prefixo e nome do módulo:
 
 ```ts
