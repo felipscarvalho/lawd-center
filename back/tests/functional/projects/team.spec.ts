@@ -30,6 +30,29 @@ test.group('Project team', (group) => {
     asCoordinator.assertStatus(403)
   })
 
+  test('projeto suspenso não recebe nem perde integrantes (422)', async ({ client }) => {
+    const { projects } = await setupDirectorates()
+    const director = await createUserWithPosition('director', projects)
+    const member = await createUserWithPosition('member', projects)
+    const newcomer = await createUserWithPosition('member', projects)
+    const project = await createProject(projects, { status: 'suspended' })
+    const participation = await addToTeam(project, member)
+
+    const add = await client
+      .post(`${PROJECTS_API}/projects/${project.id}/members`)
+      .json({ userId: newcomer.id, role: 'member' })
+      .loginAs(director)
+    add.assertStatus(422)
+    add.assertBodyContains({ errors: [{ code: 'E_PROJECT_TEAM_LOCKED' }] })
+
+    const end = await client
+      .post(`${PROJECTS_API}/project-members/${participation.id}/end`)
+      .json({})
+      .loginAs(director)
+    end.assertStatus(422)
+    end.assertBodyContains({ errors: [{ code: 'E_PROJECT_TEAM_LOCKED' }] })
+  })
+
   test('integrante comum não mexe na equipe (403)', async ({ client }) => {
     const { projects } = await setupDirectorates()
     const member = await createUserWithPosition('member', projects)

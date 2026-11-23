@@ -30,6 +30,11 @@ export default class Project extends ProjectSchema {
     return this.status === 'finished'
   }
 
+  /** Equipe travada: projetos suspensos ou finalizados não recebem nem perdem integrantes */
+  get isTeamLocked() {
+    return this.status === 'suspended' || this.status === 'finished'
+  }
+
   /** Projetos que ainda podem receber pessoas e interessados */
   static open = scope((query) => {
     query.whereNot('status', 'finished')

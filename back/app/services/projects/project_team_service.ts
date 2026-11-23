@@ -56,13 +56,7 @@ export default class ProjectTeamService {
     const project = await this.projectService.find(projectId)
 
     await this.authorize(actorId, project, input.role)
-
-    if (project.isFinished) {
-      throw new BusinessRuleException(
-        'Projetos finalizados não recebem novos integrantes',
-        'E_PROJECT_FINISHED'
-      )
-    }
+    this.ensureTeamIsEditable(project)
 
     const user = await this.userService.find(input.userId)
 
@@ -145,6 +139,7 @@ export default class ProjectTeamService {
     const project = await this.projectService.find(member.projectId)
 
     await this.authorize(actorId, project, member.role)
+    this.ensureTeamIsEditable(project)
 
     if (!member.isActive) {
       throw new BusinessRuleException(
@@ -192,6 +187,16 @@ export default class ProjectTeamService {
     return {
       participations: participations.map((member) => ({ member, user, project: member.project })),
       interests: interests.map((interest) => interest.project),
+    }
+  }
+
+  /** Só projetos não iniciados ou em andamento mexem na equipe */
+  private ensureTeamIsEditable(project: Project) {
+    if (project.isTeamLocked) {
+      throw new BusinessRuleException(
+        'A equipe de projetos suspensos ou finalizados não pode ser alterada',
+        'E_PROJECT_TEAM_LOCKED'
+      )
     }
   }
 
