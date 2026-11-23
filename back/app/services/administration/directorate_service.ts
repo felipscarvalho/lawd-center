@@ -46,4 +46,9 @@ export default class DirectorateService {
   async upsertMany(inputs: CreateDirectorateInput[]): Promise<Directorate[]> {
     return Directorate.updateOrCreateMany('key', inputs)
   }
+
+  /** Cria só as diretorias cujas chaves ainda não existem, sem mexer nas que já existem (ex.: renomeadas) */
+  async createMissing(inputs: CreateDirectorateInput[]): Promise<Directorate[]> {
+    return Directorate.fetchOrCreateMany('key', inputs)
+  }
 }

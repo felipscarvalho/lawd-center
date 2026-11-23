@@ -8,7 +8,8 @@ import MembershipService from '#services/administration/membership_service'
 
 /**
  * Cria o primeiro administrador (presidente no CORP) a partir de ADMIN_NAME, ADMIN_EMAIL e ADMIN_PASSWORD,
- * para que exista alguém capaz de cadastrar os demais usuários. Idempotente.
+ * para que exista alguém capaz de cadastrar os demais usuários. Roda a cada deploy, mas só age na
+ * primeira vez: se o e-mail já existe, não mexe em nada (a presidência pode ter mudado de mãos).
  */
 export default class extends BaseSeeder {
   async run() {
@@ -27,9 +28,11 @@ export default class extends BaseSeeder {
     const directorateService = await app.container.make(DirectorateService)
     const membershipService = await app.container.make(MembershipService)
 
-    const user =
-      (await userService.findByEmail(email)) ??
-      (await userService.create({ fullName: name, email, password }))
+    if (await userService.findByEmail(email)) {
+      return
+    }
+
+    const user = await userService.create({ fullName: name, email, password })
 
     const corp = await directorateService.findByKey('corp')
 

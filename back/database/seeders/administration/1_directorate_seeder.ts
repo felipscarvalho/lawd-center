@@ -2,12 +2,15 @@ import app from '@adonisjs/core/services/app'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import DirectorateService from '#services/administration/directorate_service'
 
-/** Diretorias da LAWD (mesmas do organograma do SimMAP). Idempotente: atualiza pela chave. */
+/**
+ * Diretorias da LAWD (mesmas do organograma do SimMAP). Roda a cada deploy: só cria as que faltam,
+ * sem desfazer o que foi alterado pela tela (ex.: um nome trocado).
+ */
 export default class extends BaseSeeder {
   async run() {
     const directorateService = await app.container.make(DirectorateService)
 
-    await directorateService.upsertMany([
+    await directorateService.createMissing([
       { key: 'corp', name: 'CORP', kind: 'core' },
       { key: 'administrative', name: 'Adm', kind: 'standard' },
       { key: 'projects', name: 'Projetos', kind: 'standard' },
