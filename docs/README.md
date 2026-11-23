@@ -15,6 +15,8 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
   - [Organização: diretorias, cargos e vínculos](back/administration/organization.md)
   - [Permissões](back/administration/permissions.md)
   - [Perfil do usuário](back/administration/profile.md): dados acadêmicos, interesses, foto e nota técnica
+- Módulo `projects`
+  - [Projetos](back/projects/projects.md): projetos, equipes com histórico, interessados, análise e radar de alocação
 
 ## Frontend
 

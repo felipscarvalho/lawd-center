@@ -53,6 +53,7 @@ Regras de dependência:
 | `node ace migration:run` | aplica migrations e regenera `database/schema.ts` |
 | `node ace db:seed` | cadastra as diretorias e o primeiro administrador; em desenvolvimento, também as pessoas de demonstração |
 | `node ace db:seed --files=./database/seeders/administration/3_demo_members_seeder.ts` | só as pessoas de demonstração |
+| `node ace db:seed --files=./database/seeders/projects/1_demo_projects_seeder.ts` | só os projetos de demonstração (depois das pessoas) |
 | `node ace test` | testes unitários e funcionais |
 | `npm run lint` / `npm run typecheck` | qualidade de código |
 
@@ -64,4 +65,6 @@ O seeder `3_demo_members_seeder.ts` popula o banco de desenvolvimento para testa
 - Usa os services, como os demais seeders, então passa pelas mesmas regras (cargos únicos, limite de 3 escolhas, catálogos)
 - Os dados são variados, mas iguais a cada execução, e o seeder é idempotente: e-mails que já existem são pulados
 - E-mails `nome.sobrenome@demo.lawd` e senha `lawd-demo-123`, para entrar como qualquer pessoa (ex.: um diretor) e ver a tela com as permissões dela
-- Para remover: apagar os usuários `@demo.lawd` (vínculos e perfis saem junto, por cascata)
+- Para remover: apagar os usuários `@demo.lawd` (vínculos, perfis, participações em projetos e interesses saem junto, por cascata)
+
+O seeder `projects/1_demo_projects_seeder.ts` cria em seguida 7 projetos com equipes e interessados formados por essas pessoas (ver [projetos](projects/projects.md)).

@@ -100,6 +100,10 @@ tests/unit/<module>/
 
 Primeiro módulo da aplicação. Contém tudo que é **comum a todos os módulos** (ex.: usuários, autenticação, permissões, cadastros compartilhados). Critério: se mais de um módulo precisa e não pertence ao domínio de nenhum deles especificamente, vai para `administration`.
 
+### Módulo `projects`
+
+Projetos, equipes (com histórico) e interessados. Pessoas e diretorias vêm de `administration` pelos services de lá (`UserService.findMany/searchIds/listActiveMembers`, `DirectorateService`); os services do módulo devolvem DTOs de visão (`ProjectView`...) com esses dados montados.
+
 Módulos novos são criados conforme a aplicação cresce, seguindo a mesma estrutura.
 
 ## 3. Rotas
@@ -134,6 +138,7 @@ router
 - Colunas dos models vêm de `database/schema.ts`, **gerado** a cada `node ace migration:run`; nunca editar à mão. Models estendem a classe gerada (`UserSchema`) e só acrescentam relações, scopes e tipos específicos
 - Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
 - Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
+- Helpers sem regra de negócio, usados por mais de um módulo, ficam em `app/helpers/` (alias `#helpers/*`, ex.: `likeTerm` para buscas ILIKE)
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
 - Listas que podem crescer são paginadas no banco (`query.paginate`, devolvidas com `Transformer.paginate(items.all(), items.getMeta())`), com os filtros também no banco
 - Testes Japa no banco próprio `lawd_test` (`.env.test`), com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`; o `data` das respostas é lido com `responseData<T>(response)` de `tests/helpers/http.ts`
@@ -141,7 +146,7 @@ router
 ## 6. Autenticação e permissões
 
 - Access tokens (`@adonisjs/auth`, guard `api`); rotas autenticadas usam `middleware.auth()`
-- **Permissões existem só no código**: catálogo em `app/permissions/<module>.ts` (chaves `<módulo>.<recurso>.<ação>`), registrado em `app/permissions/index.ts`, e mapa cargo → permissões + escopo (`global` | `directorate`) em `app/permissions/positions.ts`. Não criar tabelas de permissões ou papéis
+- **Permissões existem só no código**: catálogo em `app/permissions/<module>.ts` (chaves `<módulo>.<recurso>.<ação>`), registrado em `app/permissions/index.ts`, e mapa cargo → permissões + escopo (`global` | `directorate`) em `app/permissions/positions.ts`, com as extras de um cargo numa diretoria específica em `directoratePositionPermissions` (ex.: diretor de Projetos gerencia projetos de todas as diretorias). Não criar tabelas de permissões ou papéis
 - Permissões efetivas = cargos dos vínculos ativos (`memberships`) do usuário, via `PermissionService`
 - Checar na rota com `middleware.can('<permissão>')`; escopo de diretoria e regras por registro são conferidos no service (`PermissionService.can/authorize`). Permissão sobre outra pessoa (ex.: diretor sobre membros da diretoria): `PermissionService.canOnUser`
 - Erros: `ForbiddenException` (403) e `BusinessRuleException` (422, com código da regra) em `app/exceptions/administration/`
