@@ -52,7 +52,7 @@ Os campos que quem consulta não pode ver saem como `null` na resposta. Junto ve
 
 ## Foto
 
-- Disco local, via `@adonisjs/drive` (disco `fs`, pasta `storage/`, fora do git), servido em `/uploads`. É a decisão definitiva para o projeto
+- Disco local, via `@adonisjs/drive` (disco `fs`, pasta `storage/`, fora do git), servido em `/api/v1/uploads` (sob o prefixo da API, para o proxy mandar `/api` ao back). É a decisão definitiva para o projeto
 - Aceita JPG, PNG e WebP de até 5 MB (validator). O `ImageCompressionService` (sharp) aplica a rotação do EXIF, recorta em quadrado 512×512 centralizado, converte para WebP qualidade 80 e descarta os metadados (EXIF pode ter localização). Arquivo que não é imagem de verdade vira `E_INVALID_IMAGE` (422)
 - Cada envio grava com nome novo (`profiles/<userId>/<uuid>.webp`) e apaga a foto anterior, então o navegador nunca mostra uma versão em cache
 - O `UserTransformer` inclui `photoUrl` quando o perfil vem carregado: listas, detalhe, organograma e `/auth/me`

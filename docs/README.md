@@ -10,6 +10,7 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
 ## Deploy
 
 - [Imagens Docker](deploy.md): como construir e rodar o back e o front em containers
+- [Implantação no Easypanel](easypanel.md): serviços, domínio único com `/api`, variáveis, bind mount das fotos e problemas conhecidos
 
 ## Backend
 

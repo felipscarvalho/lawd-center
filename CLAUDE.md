@@ -139,7 +139,7 @@ router
 - PostgreSQL (conexão `postgres`, variáveis `DB_*` validadas em `start/env.ts`)
 - Colunas dos models vêm de `database/schema.ts`, **gerado** a cada `node ace migration:run`; nunca editar à mão. Models estendem a classe gerada (`UserSchema`) e só acrescentam relações, scopes e tipos específicos
 - Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
-- Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
+- Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/api/v1/uploads`, `uploadsBasePath` de `config/drive.ts`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
 - Helpers sem regra de negócio, usados por mais de um módulo, ficam em `app/helpers/` (alias `#helpers/*`, ex.: `likeTerm` para buscas ILIKE)
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
 - Seeders têm registro como as migrations (`adonis_seeders`, `node ace db:seed:pending` a cada deploy): seeder já rodado não roda de novo, então dados novos vão num seeder novo, sem editar os antigos. Seeders de produção só criam o que falta

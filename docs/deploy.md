@@ -1,5 +1,7 @@
 # Imagens Docker
 
+Passo a passo da produção atual: [Implantação no Easypanel](easypanel.md).
+
 Cada projeto tem o próprio `Dockerfile` (`back/Dockerfile` e `front/Dockerfile`), construído a partir da pasta do projeto. Os dois usam Node 24 (`bookworm-slim`, por causa das bibliotecas nativas do `sharp`), estágios separados para dependências, build e imagem final, e rodam como o usuário `node`.
 
 ## Back (`back/Dockerfile`)
@@ -25,6 +27,7 @@ docker build --build-arg NEXT_PUBLIC_API_URL=https://api.exemplo.com/api/v1 -t l
 docker run -p 3000:3000 lawd-front
 ```
 
+- A porta vem de `PORT` (3000 na imagem); plataformas que definem `PORT` sobrepõem esse valor (o Easypanel usa 80, ver [Easypanel](easypanel.md#porta-a-do-log-não-a-da-imagem))
 - Usa a saída `standalone` do Next (`output: "standalone"` em `next.config.ts`): a imagem leva o servidor gerado, os arquivos estáticos e `public/`, sem o `node_modules` inteiro
 - **`NEXT_PUBLIC_API_URL` é definida no build** (`--build-arg`), porque variáveis `NEXT_PUBLIC_*` são embutidas no código do navegador. Trocar a URL da API exige um build novo. Sem o argumento, aponta para `http://localhost:3333/api/v1`
 - A API precisa aceitar a origem do front no CORS (`CORS_ORIGIN` do back)
