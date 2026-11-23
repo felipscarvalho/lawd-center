@@ -255,7 +255,7 @@ Se uma tarefa parecer exigir mudança nesses arquivos, parar e pedir autorizaç�
 - `components/forms/`: `FormInput` e `FormSelect`, campos já ligados ao react-hook-form (valor, validação e erro no lugar da dica); usar no lugar de `Controller` + `Input`/`Select"
 - `components/overlays/`: `FormModal` (formulário em modal) e `ConfirmModal` (confirmação de ação)
 - `components/administration/`: componentes do módulo usados em mais de uma página (ex.: `AssignMembershipModal`, `UserFormModal`, `ProfileFormFields`, `ProfilePhotoEditor`, `EndMembershipModal`, `PersonLink`/`UserAvatar`/`avatarProps` para pessoa com foto ou iniciais, `UserSearchComboBox` para escolher pessoa buscando no backend)
-- `components/projects/`: componentes do módulo projects usados em mais de uma página (`ProjectStatusBadge`/`ProjectPriorityBadge`, `ProjectFormFields`, `UserProjectsCard`)
+- `components/projects/`: componentes do módulo projects usados em mais de uma página (`ProjectStatusBadge`/`ProjectPriorityBadge`, `ProjectFormFields`, `UserProjectsCard`, `AddProjectMemberModal`)
 - `components/query_provider.tsx`: `QueryClientProvider` do TanStack Query, aplicado no layout raiz
 
 ### Locais (`app/<route>/_components/`)

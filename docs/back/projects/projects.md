@@ -27,7 +27,8 @@ Aqui a ideia é a mesma do organograma: guardar **vínculos com período** e der
 - No máximo **um coordenador ativo** por projeto e **uma participação ativa** por pessoa em cada projeto, garantidos também por índices únicos parciais no banco
 - Trocar o papel (ex.: integrante vira coordenador) encerra a participação atual e abre outra, preservando o histórico, como na troca de cargo
 - Para trocar o coordenador, primeiro ele sai da coordenação (fica como integrante ou sai), depois o novo é definido (`E_COORDINATOR_TAKEN` enquanto houver um)
-- **Finalizar o projeto encerra a equipe** na data de término (nunca antes da entrada de cada pessoa), e projeto finalizado não recebe novas pessoas (`E_PROJECT_FINISHED`)
+- **Finalizar o projeto encerra a equipe** na data de término (nunca antes da entrada de cada pessoa)
+- **Equipe travada em projetos suspensos ou finalizados**: ninguém entra nem sai (`E_PROJECT_TEAM_LOCKED`), nem pelo coordenador. Só projetos não iniciados ou em andamento mexem na equipe; para alocar num projeto suspenso, ele precisa ser retomado antes
 - Quem entra na equipe deixa de constar como interessado
 
 **`project_interests`**: interesse de uma pessoa em participar (único por pessoa e projeto). Cada um marca e desmarca o próprio; não vale para projetos finalizados nem para quem já está na equipe.
