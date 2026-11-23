@@ -16,7 +16,7 @@ Conteúdo centralizado no alto e a esfera grande subindo de baixo, cortada pela 
 
 Desenhada em **canvas 2D, sem biblioteca 3D** (o projeto não tem three.js e a ideia foi não instalar nada): os pontos são girados e projetados em perspectiva no próprio código.
 
-- **Forma**: casca roxa oca. Os traços brancos do logo são **recortes** nela; pelos recortes aparece o interior escuro, e cada recorte tem parede (a espessura da casca)
+- **Forma**: casca roxa oca. Os traços brancos do logo são **recortes** nela; pelos recortes aparece o interior da casca, e cada recorte tem parede (a espessura dela)
 - **De onde vêm os traços**: os três nós da frente foram medidos sobre `public/logo.png`. Os traços que no logo chegam à borda continuam até outros nós (quatro logo atrás da borda e um no lado oposto), formando uma rede só de oito nós, com cada traço num círculo máximo. Só um par de traços se cruza, como no logo. A primeira versão levava cada traço até o ponto oposto do seu nó: todos convergiam no lado de trás e picotavam a casca em lascas
 - **Paredes nas quinas**: onde dois recortes se emendam (traço com anel, traço com traço), a parede de cada um acaba exatamente na divisa do outro, calculada uma vez ao montar o modelo
 - **No horizonte**: onde um recorte passa para o lado de trás, o perfil da esfera fica aberto (dá para ver através) e aparece a parede do outro lado. Desenhar só a face da frente deixava a esfera com cara de geometria cortada
@@ -24,7 +24,7 @@ Desenhada em **canvas 2D, sem biblioteca 3D** (o projeto não tem three.js e a i
 - **Movimento**: gira sozinha (uma volta a cada 90 s) em torno de um eixo quase horizontal, com o desenho surgindo por trás do horizonte. Na entrada, a esfera já aparece completa: sobe um pouco, ganha opacidade e desacelera o giro, enquanto as órbitas se desenham. Abrir os recortes aos poucos foi descartado, porque deixava anéis e traços pela metade
 - **Arrastar**: mouse ou dedo giram a esfera, com um pouco de impulso ao soltar; depois o giro automático volta aos poucos. No celular, arrastar na vertical continua rolando a página (`touch-pan-y`)
 - **Sem animação** (`prefers-reduced-motion`): esfera parada e completa; só se mexe se a pessoa arrastar
-- **Tema**: a esfera é igual nos dois modos; órbitas e pontos trocam de cor para contrastar com o fundo (lidas da classe `light-mode` do `<html>`)
+- **Tema**: a casca é igual nos dois modos. O interior visto pelos recortes é escuro no tema escuro e branco no claro (como os traços brancos do logo), e órbitas e pontos trocam de cor para contrastar com o fundo. O tema é lido da classe `light-mode` do `<html>`
 - **Desempenho**: para de animar fora da tela, e o canvas tem um teto de pixels reais (`MAX_BACKING_SIZE`)
 
 As cores são os tons da paleta `brand` de `styles/lawd-theme.css`, repetidos em RGB no arquivo porque o canvas monta os degradês em código.

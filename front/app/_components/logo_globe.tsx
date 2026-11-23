@@ -63,6 +63,7 @@ const ORBITS = [
 const ORBIT_STEPS = 160;
 
 // Tons da paleta brand de styles/lawd-theme.css, em RGB porque o canvas monta os degradês em código
+const BRAND_100: Rgb = [238, 233, 255];
 const BRAND_200: Rgb = [225, 214, 255];
 const BRAND_300: Rgb = [205, 184, 255];
 const BRAND_400: Rgb = [181, 141, 255];
@@ -72,7 +73,7 @@ const BRAND_700: Rgb = [115, 48, 212];
 const BRAND_800: Rgb = [92, 41, 170];
 const BRAND_900: Rgb = [70, 34, 129];
 const BRAND_950: Rgb = [44, 20, 85];
-/** Fundo do interior da casca: o brand-950 escurecido, sem equivalente na paleta */
+/** Fundo do interior da casca no tema escuro: o brand-950 escurecido, sem equivalente na paleta */
 const INTERIOR_SHADOW: Rgb = [20, 9, 40];
 const WHITE: Rgb = [255, 255, 255];
 
@@ -387,12 +388,14 @@ function createGlow(core: Rgb, glow: Rgb): HTMLCanvasElement {
   return sprite;
 }
 
-/** Cores do que fica fora da esfera (órbitas e pontos), que precisam contrastar com o fundo da página */
+/** Cores que mudam com o tema: o que fica fora da esfera (órbitas e pontos) e o interior visto pelos recortes */
 interface Palette {
   /** No escuro os brilhos somam luz; no claro são tinta sobre o fundo */
   additive: boolean;
   line: Rgb;
   glow: HTMLCanvasElement;
+  /** Interior da casca: do ponto onde a luz que entra bate até a borda. Claro no tema claro, como os traços brancos do logo */
+  interior: readonly [Rgb, Rgb];
 }
 
 const easeOutCubic = (value: number) => 1 - (1 - value) ** 3;
@@ -415,8 +418,18 @@ export function LogoGlobe({ stageRef, className }: LogoGlobeProps) {
     if (!canvas || !context || !shellContext) return;
 
     const model = buildModel();
-    const darkPalette: Palette = { additive: true, line: BRAND_200, glow: createGlow(WHITE, BRAND_500) };
-    const lightPalette: Palette = { additive: false, line: BRAND_600, glow: createGlow(BRAND_600, BRAND_500) };
+    const darkPalette: Palette = {
+      additive: true,
+      line: BRAND_200,
+      glow: createGlow(WHITE, BRAND_500),
+      interior: [BRAND_950, INTERIOR_SHADOW],
+    };
+    const lightPalette: Palette = {
+      additive: false,
+      line: BRAND_600,
+      glow: createGlow(BRAND_600, BRAND_500),
+      interior: [WHITE, BRAND_100],
+    };
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Centro e raio da esfera dentro do canvas, recalculados a cada redimensionamento
@@ -619,7 +632,7 @@ export function LogoGlobe({ stageRef, className }: LogoGlobeProps) {
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       context.clearRect(0, 0, width, height);
 
-      // Interior da casca, visto pelos recortes: escuro, um pouco mais claro onde a luz que entra pela frente bate
+      // Interior da casca, visto pelos recortes, um pouco mais claro onde a luz que entra pela frente bate
       const inside = context.createRadialGradient(
         centerX + silhouette * 0.3,
         centerY + silhouette * 0.3,
@@ -628,8 +641,8 @@ export function LogoGlobe({ stageRef, className }: LogoGlobeProps) {
         centerY,
         silhouette,
       );
-      inside.addColorStop(0, rgba(BRAND_950));
-      inside.addColorStop(1, rgba(INTERIOR_SHADOW));
+      inside.addColorStop(0, rgba(palette.interior[0]));
+      inside.addColorStop(1, rgba(palette.interior[1]));
       context.fillStyle = inside;
       context.fill(sphere);
 
