@@ -37,8 +37,8 @@ export default class SeederRegistryService {
   }
 
   /**
-   * Executa um seeder e registra. Seeders de outro ambiente (ex.: os de demonstração fora do
-   * desenvolvimento) são ignorados sem registro, para poderem rodar se o ambiente mudar.
+   * Executa um seeder e registra. Seeders restritos a outro ambiente (`static environment`) são
+   * ignorados sem registro, para poderem rodar se o ambiente mudar.
    */
   private async run(file: FileNode<unknown>): Promise<SeederRunResult> {
     const Seeder = (await file.getSource()) as SeederConstructorContract

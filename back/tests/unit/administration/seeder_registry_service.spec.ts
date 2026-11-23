@@ -8,9 +8,7 @@ test.group('SeederRegistryService', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
   group.each.timeout(10000)
 
-  test('roda cada seeder uma vez e registra; os de outro ambiente ficam sem registro', async ({
-    assert,
-  }) => {
+  test('roda cada seeder uma vez e registra', async ({ assert }) => {
     const service = await app.container.make(SeederRegistryService)
 
     const first = await service.runPending()
@@ -21,14 +19,8 @@ test.group('SeederRegistryService', (group) => {
       'database/seeders/administration/1_directorate_seeder',
       'database/seeders/administration/2_admin_user_seeder',
     ])
-    // Demonstração só vale em desenvolvimento: ignorada nos testes e tentada de novo depois
-    assert.deepEqual(
-      second.map((result) => [result.name, result.status]),
-      [
-        ['database/seeders/administration/3_demo_members_seeder', 'ignored'],
-        ['database/seeders/projects/1_demo_projects_seeder', 'ignored'],
-      ]
-    )
+    // Tudo já registrado: a segunda execução não roda nada
+    assert.lengthOf(second, 0)
 
     const registered = await db.from('adonis_seeders').select('name')
     assert.sameMembers(

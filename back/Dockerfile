@@ -36,6 +36,6 @@ USER node
 EXPOSE 3333
 
 # A cada deploy, antes de subir o servidor: roda as migrations e os seeders ainda não executados neste
-# banco (db:seed:pending, com registro em adonis_seeders; os de demonstração só valem em desenvolvimento).
+# banco (db:seed:pending, com registro em adonis_seeders).
 # Se algum falhar, o container não sobe. Feito para uma única réplica da API.
 CMD ["sh", "-c", "node ace migration:run --force && node ace db:seed:pending && exec node bin/server.js"]

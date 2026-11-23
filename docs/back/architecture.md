@@ -44,7 +44,7 @@ Regras de dependência:
 ## Banco e ambiente
 
 - PostgreSQL, conexão `postgres` configurada pelas variáveis `DB_*` (validadas em `start/env.ts`; modelo em `.env.example`)
-- Testes (Japa) usam um banco próprio, `lawd_test` (`DB_DATABASE` em `.env.test`, que sobrescreve o `.env`), migrado no início da execução (`tests/bootstrap.ts`) e com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`). Motivo: com o banco de desenvolvimento, dados como os do seeder de demonstração (cargos únicos ocupados) quebravam os testes. Criar uma vez: `CREATE DATABASE lawd_test`. O `data` das respostas é lido com `responseData<T>(response)` (`tests/helpers/http.ts`), em vez de converter o corpo à mão em cada teste
+- Testes (Japa) usam um banco próprio, `lawd_test` (`DB_DATABASE` em `.env.test`, que sobrescreve o `.env`), migrado no início da execução (`tests/bootstrap.ts`) e com cada teste dentro de uma transação desfeita ao final (`testUtils.db().withGlobalTransaction()`). Motivo: com o banco de desenvolvimento, dados criados nele (ex.: cargos únicos ocupados) quebravam os testes. Criar uma vez: `CREATE DATABASE lawd_test`. O `data` das respostas é lido com `responseData<T>(response)` (`tests/helpers/http.ts`), em vez de converter o corpo à mão em cada teste
 
 ## Comandos
 
@@ -52,23 +52,9 @@ Regras de dependência:
 |---|---|
 | `node ace migration:run` | aplica migrations e regenera `database/schema.ts` |
 | `node ace db:seed:pending` | roda só os seeders ainda não executados neste banco e registra cada um (usado a cada deploy) |
-| `node ace db:seed` | roda todos os seeders de novo, sem olhar o registro: diretorias e primeiro administrador; em desenvolvimento, também as pessoas de demonstração |
-| `node ace db:seed --files=./database/seeders/administration/3_demo_members_seeder.ts` | só as pessoas de demonstração |
-| `node ace db:seed --files=./database/seeders/projects/1_demo_projects_seeder.ts` | só os projetos de demonstração (depois das pessoas) |
+| `node ace db:seed` | roda todos os seeders de novo, sem olhar o registro: diretorias e primeiro administrador |
 | `node ace test` | testes unitários e funcionais |
 | `npm run lint` / `npm run typecheck` | qualidade de código |
-
-## Dados de demonstração
-
-O seeder `3_demo_members_seeder.ts` popula o banco de desenvolvimento para testar as telas com a liga "cheia": vice-presidente e secretário-geral no CORP (se os cargos estiverem livres) e, em cada diretoria comum, um diretor (se não houver) e 4 membros efetivos. Cada pessoa tem o perfil todo preenchido (curso, entrada, matrícula, disponibilidade, maturidade, carreira, atributos, tecnologias, áreas de interesse e objetivo) e uma nota técnica dada pelo primeiro administrador.
-
-- Só roda com `NODE_ENV=development` (`static environment`), nunca em produção
-- Usa os services, como os demais seeders, então passa pelas mesmas regras (cargos únicos, limite de 3 escolhas, catálogos)
-- Os dados são variados, mas iguais a cada execução, e o seeder é idempotente: e-mails que já existem são pulados
-- E-mails `nome.sobrenome@demo.lawd` e senha `lawd-demo-123`, para entrar como qualquer pessoa (ex.: um diretor) e ver a tela com as permissões dela
-- Para remover: apagar os usuários `@demo.lawd` (vínculos, perfis, participações em projetos e interesses saem junto, por cascata)
-
-O seeder `projects/1_demo_projects_seeder.ts` cria em seguida 7 projetos com equipes e interessados formados por essas pessoas (ver [projetos](projects/projects.md)).
 
 ## Seeders com registro
 
@@ -76,6 +62,6 @@ O `db:seed` do Lucid roda todos os seeders sempre, sem histórico. Para rodar se
 
 - Tabela `adonis_seeders` (`name`, `ran_at`), criada por uma migration do `administration`
 - `node ace db:seed:pending` (`commands/db_seed_pending.ts` → `SeederRegistryService`): lê os seeders das pastas de `seeders.paths`, na mesma ordem do `db:seed`, roda os que não estão no registro e registra cada um logo depois de terminar. Para no primeiro que falhar (sem registrá-lo, então ele roda de novo no próximo deploy)
-- Seeders de outro ambiente (os de demonstração, `environment = ['development']`) são ignorados **sem registro**, para poderem rodar num ambiente onde valham
+- Seeders restritos a outro ambiente (`static environment`, ex.: `['development']`) são ignorados **sem registro**, para poderem rodar num ambiente onde valham
 - Consequência, como nas migrations: **seeder já rodado não roda de novo**. Para mudar ou acrescentar dados depois, cria-se um seeder novo, sem editar o antigo
 - Mesmo assim, os seeders de produção só criam o que falta (diretorias por chave, administrador só se o e-mail não existir), para quem rodar `db:seed` à mão não desfazer mudanças feitas pela tela (nome de diretoria trocado, presidência que mudou de mãos)

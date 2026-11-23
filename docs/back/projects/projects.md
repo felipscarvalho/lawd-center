@@ -84,7 +84,3 @@ Por isso os services devolvem DTOs de "visão" (`ProjectView`, `ProjectMemberVie
 | GET | `/radar` | `project.manage` em algum escopo |
 
 A busca da lista procura no nome do projeto e no nome/e-mail de quem está na equipe; `activity` (padrão) ordena por em andamento, não iniciado, suspenso e finalizado, e times maiores antes.
-
-## Dados de demonstração
-
-`database/seeders/projects/1_demo_projects_seeder.ts` (só em desenvolvimento) cria 7 projetos em diretorias diferentes e com todos os status, com equipes e interessados formados pelas pessoas `@demo.lawd` (rode antes o seeder de pessoas). Como o nome não é único, ele não reconhece projetos já criados: só roda quando ainda não há nenhum projeto.
