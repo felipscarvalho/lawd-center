@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Users01 } from "@untitledui/icons";
 import { Table, TableCard } from "@/components/application/table/table";
@@ -10,18 +10,21 @@ import { Button } from "@/components/base/buttons/button";
 import { Select } from "@/components/base/select/select";
 import { UserFormModal } from "@/components/administration/user_form_modal";
 import { ListContent } from "@/components/layout/list_content";
+import { ListPagination } from "@/components/layout/list_pagination";
 import { ListToolbar } from "@/components/layout/list_toolbar";
 import { PageHeader } from "@/components/layout/page_header";
 import { avatarProps } from "@/components/administration/person_link";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useDirectorates } from "@/hooks/administration/use_directorates";
 import { useUsers } from "@/hooks/administration/use_users";
+import { useDebouncedValue } from "@/hooks/use_debounced_value";
 import {
   courseLabels,
   maturityLabels,
   toOptions,
   weeklyAvailabilityShortLabels,
 } from "@/lib/administration";
+import type { Course } from "@/types/administration";
 
 type StatusFilter = "active" | "inactive" | "all";
 
@@ -46,40 +49,43 @@ export function UsersList() {
   const [search, setSearch] = useState("");
   const [directorateId, setDirectorateId] = useState<string>(ALL);
   const [course, setCourse] = useState<string>(ALL);
+  const [page, setPage] = useState(1);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const users = useUsers(filtersByStatus[status]);
   const directorates = useDirectorates();
+
+  // Filtros e paginação no backend; a busca espera a pessoa parar de digitar
+  const debouncedSearch = useDebouncedValue(search.trim());
+  const users = useUsers({
+    ...filtersByStatus[status],
+    search: debouncedSearch || undefined,
+    directorateId: directorateId === ALL ? undefined : Number(directorateId),
+    course: course === ALL ? undefined : (course as Course),
+    page,
+  });
+  const pageUsers = users.data?.data ?? [];
 
   const directorateOptions = [
     { id: ALL, label: "Todas as diretorias" },
     ...(directorates.data ?? []).map((directorate) => ({ id: String(directorate.id), label: directorate.name })),
   ];
 
-  // Filtros locais (a lista da liga é pequena): busca por nome ou e-mail, diretoria do cargo ativo e curso
-  const filteredUsers = useMemo(() => {
-    const term = search.trim().toLowerCase();
-
-    return (users.data ?? []).filter((user) => {
-      const matchesSearch =
-        !term || user.fullName.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
-      const matchesDirectorate =
-        directorateId === ALL ||
-        (user.memberships ?? []).some((membership) => String(membership.directorateId) === directorateId);
-      const matchesCourse = course === ALL || user.profile?.course === course;
-
-      return matchesSearch && matchesDirectorate && matchesCourse;
-    });
-  }, [users.data, search, directorateId, course]);
-
   // Filtros do painel que fogem do padrão (situação "Ativos", todas as diretorias, todos os cursos)
   const activeFilters = [status !== "active", directorateId !== ALL, course !== ALL].filter(Boolean).length;
   const hasFilters = Boolean(search.trim()) || activeFilters > 0;
+
+  // Qualquer filtro novo volta para a primeira página
+  const applyFilter = <T,>(setter: (value: T) => void, value: T) => {
+    setter(value);
+    setPage(1);
+  };
 
   const clearFilters = () => {
     setStatus("active");
     setDirectorateId(ALL);
     setCourse(ALL);
+    setPage(1);
   };
+
   // Com o filtro em Ativos ou Desativados a situação já é conhecida; a coluna só aparece em Todos
   const showStatus = status === "all";
 
@@ -98,7 +104,7 @@ export function UsersList() {
 
       <ListToolbar
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={(value) => applyFilter(setSearch, value)}
         searchPlaceholder="Buscar por nome ou e-mail"
         activeFilters={activeFilters}
         onClearFilters={clearFilters}
@@ -108,7 +114,7 @@ export function UsersList() {
               label="Situação"
               items={statusOptions}
               selectedKey={status}
-              onSelectionChange={(key) => setStatus((key ?? "active") as StatusFilter)}
+              onSelectionChange={(key) => applyFilter(setStatus, (key ?? "active") as StatusFilter)}
             >
               {(item) => <Select.Item id={item.id} label={item.label} />}
             </Select>
@@ -117,12 +123,12 @@ export function UsersList() {
               label="Diretoria"
               items={directorateOptions}
               selectedKey={directorateId}
-              onSelectionChange={(key) => setDirectorateId(String(key ?? ALL))}
+              onSelectionChange={(key) => applyFilter(setDirectorateId, String(key ?? ALL))}
             >
               {(item) => <Select.Item id={item.id} label={item.label} />}
             </Select>
 
-            <Select label="Curso" items={courseOptions} selectedKey={course} onSelectionChange={(key) => setCourse(String(key ?? ALL))}>
+            <Select label="Curso" items={courseOptions} selectedKey={course} onSelectionChange={(key) => applyFilter(setCourse, String(key ?? ALL))}>
               {(item) => <Select.Item id={item.id} label={item.label} />}
             </Select>
           </>
@@ -132,7 +138,7 @@ export function UsersList() {
       <ListContent
         isPending={users.isPending}
         error={users.error}
-        isEmpty={filteredUsers.length === 0}
+        isEmpty={pageUsers.length === 0}
         loadingLabel="Carregando usuários..."
         errorTitle="Não foi possível carregar os usuários"
         empty={{
@@ -151,7 +157,7 @@ export function UsersList() {
               <Table.Head id="availability" label="Disponibilidade" className="hidden 2xl:table-cell" />
               {showStatus && <Table.Head id="status" label="Situação" />}
             </Table.Header>
-            <Table.Body items={filteredUsers}>
+            <Table.Body items={pageUsers}>
               {(user) => (
                 <Table.Row id={user.id} className="cursor-pointer">
                   <Table.Cell>
@@ -204,6 +210,8 @@ export function UsersList() {
               )}
             </Table.Body>
           </Table>
+
+          {users.data && <ListPagination meta={users.data.metadata} onPageChange={setPage} />}
         </TableCard.Root>
       </ListContent>
 

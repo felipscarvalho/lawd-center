@@ -31,9 +31,11 @@ Duas visualizações, alternadas pelo botão **Grafo / Lista** no topo. Abre sem
 
 ## Usuários
 
-- Busca por nome ou e-mail no canto direito; o botão **Filtros** abre um painel com situação (Ativos, Desativados, Todos; padrão Ativos), diretoria (cargo ativo) e curso. O botão mostra quantos filtros fogem do padrão e o painel tem **Limpar filtros**. Busca e filtros de diretoria e curso são locais; clicar na linha abre o detalhe
+- Busca por nome ou e-mail no canto direito; o botão **Filtros** abre um painel com situação (Ativos, Desativados, Todos; padrão Ativos), diretoria (cargo ativo) e curso. O botão mostra quantos filtros fogem do padrão e o painel tem **Limpar filtros**. Busca e filtros vão para o backend (a busca espera 300 ms sem digitar, com `useDebouncedValue`); clicar na linha abre o detalhe
+- **Paginação** de 20 em 20 no backend, com o rodapé `ListPagination` na tabela (intervalo exibido, páginas e anterior/próxima; no celular, `1 / 2`). Mudar busca ou filtro volta para a página 1, e a página anterior fica na tela até a nova chegar (`keepPreviousData`), sem piscar o carregamento. A paginação some quando tudo cabe numa página
 - Colunas: nome com foto, cargos ativos (cargo · diretoria), curso com o período de entrada, maturidade e disponibilidade (as três últimas somem em telas menores). A coluna de situação só aparece com o filtro em **Todos**, já que nos outros ela é o próprio filtro
 - O `GET /users` traz, junto de cada usuário, o resumo público do perfil (`profile`: curso, entrada, disponibilidade e maturidade) e os cargos ativos com a diretoria (`memberships`); dados privados não entram na lista
+- No **Atribuir cargo**, o campo de usuário busca no backend enquanto se digita (até 20 pessoas ativas), já que a lista não vem mais inteira
 - **Novo usuário** (`user.create`): nome, e-mail e senha. O cargo é atribuído depois
 
 ### Detalhe do usuário

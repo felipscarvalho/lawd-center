@@ -79,3 +79,24 @@ export const apiPut = <T>(url: string, body?: unknown, config?: AxiosRequestConf
   unwrap<T>(api.put(url, body, config));
 
 export const apiDelete = <T>(url: string, config?: AxiosRequestConfig) => unwrap<T>(api.delete(url, config));
+
+/** Paginação das listas do backend (paginator do Lucid) */
+export interface PaginationMeta {
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+}
+
+/** Resposta paginada: os itens em `data` e a paginação em `metadata` */
+export interface Paginated<T> {
+  data: T[];
+  metadata: PaginationMeta;
+}
+
+/** Atalho para listas paginadas: devolve os itens junto com a paginação */
+export const apiGetPage = async <T>(url: string, config?: AxiosRequestConfig) => {
+  const response = await api.get<Paginated<T>>(url, config);
+
+  return response.data;
+};

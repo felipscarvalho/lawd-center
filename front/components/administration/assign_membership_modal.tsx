@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { parseDate } from "@internationalized/date";
@@ -12,6 +12,7 @@ import { Label } from "@/components/base/input/label";
 import { toast } from "@/components/feedback/toast";
 import { FormSelect } from "@/components/forms/form_select";
 import { FormModal } from "@/components/overlays/form_modal";
+import { useDebouncedValue } from "@/hooks/use_debounced_value";
 import { useOpenSession } from "@/hooks/use_open_session";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useDirectorates } from "@/hooks/administration/use_directorates";
@@ -45,7 +46,10 @@ export function AssignMembershipModal(props: AssignMembershipModalProps) {
 function AssignMembershipModalContent({ isOpen, onOpenChange, directorate, user }: AssignMembershipModalProps) {
   const { can } = usePermissions();
   const directorates = useDirectorates();
-  const users = useUsers({ active: true });
+  // A lista de usuários é paginada: a busca do campo vai ao backend e traz as primeiras pessoas encontradas
+  const [userSearch, setUserSearch] = useState("");
+  const debouncedUserSearch = useDebouncedValue(userSearch.trim());
+  const users = useUsers({ active: true, search: debouncedUserSearch || undefined, perPage: 20 });
   const assign = useAssignMembership();
 
   const { control, handleSubmit, setError, setValue } = useForm<AssignMembershipForm>({
@@ -103,7 +107,8 @@ function AssignMembershipModalContent({ isOpen, onOpenChange, directorate, user 
               label="Usuário"
               placeholder="Buscar pelo nome"
               shortcut={false}
-              items={(users.data ?? []).map((item) => ({ id: item.id, label: item.fullName, supportingText: item.email }))}
+              onInputChange={setUserSearch}
+              items={(users.data?.data ?? []).map((item) => ({ id: item.id, label: item.fullName, supportingText: item.email }))}
               selectedKey={field.value ?? null}
               onSelectionChange={(key) => field.onChange(key === null ? undefined : Number(key))}
               isInvalid={Boolean(fieldState.error)}

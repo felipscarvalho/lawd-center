@@ -54,6 +54,9 @@ Padrões que se repetiam pelas telas viraram componentes e hooks, para telas nov
 | Peça | Onde | Para quê |
 |---|---|---|
 | `apiGet`, `apiPost`, `apiPut`, `apiDelete` | `lib/api.ts` | services chamam o endpoint e recebem o `data` da resposta já tipado |
+| `apiGetPage`, `Paginated`, `PaginationMeta` | `lib/api.ts` | listas paginadas: devolvem os itens (`data`) junto com a paginação (`metadata`) |
+| `ListPagination` | `components/layout/list_pagination.tsx` | rodapé de paginação das tabelas, em português, montado sobre o `Pagination` base do Untitled UI (os prontos têm textos em inglês) |
+| `useDebouncedValue` | `hooks/use_debounced_value.ts` | busca que vai ao backend só depois que a pessoa para de digitar |
 | `FormInput`, `FormSelect` | `components/forms/` | campo ligado ao react-hook-form (valor, validação e erro no lugar da dica), sem repetir o `Controller` |
 | `useEditForm` | `hooks/use_edit_form.ts` | formulário de edição direta: carrega os dados salvos, recarrega quando mudam e oferece `discard` |
 | `useOpenSession` | `hooks/use_open_session.ts` | formulário de modal remontado a cada abertura (começa limpo) |

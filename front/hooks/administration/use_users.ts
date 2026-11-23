@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deactivateUser, getUser, getUsers, updateUser, type UserFilters } from "@/services/administration/users";
 import { membershipKeys } from "@/hooks/administration/use_memberships";
 import { useUserStore } from "@/stores/user_store";
@@ -10,10 +10,12 @@ export const userKeys = {
   detail: (id: number) => [...userKeys.all, "detail", id] as const,
 };
 
+/** Página da lista; ao trocar de página ou filtro, a página anterior continua na tela até a nova chegar */
 export function useUsers(filters: UserFilters = {}) {
   return useQuery({
     queryKey: userKeys.list(filters),
     queryFn: () => getUsers(filters),
+    placeholderData: keepPreviousData,
   });
 }
 
