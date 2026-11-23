@@ -33,7 +33,8 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Database
   DB_CONNECTION: Env.schema.enum(['postgres'] as const),
-  DB_HOST: Env.schema.string({ format: 'host' }),
+  // Sem format 'host': nomes de serviço do Docker (ex.: projeto_servico) têm _ e não são hostnames válidos
+  DB_HOST: Env.schema.string(),
   DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
