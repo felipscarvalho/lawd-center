@@ -22,3 +22,4 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
 
 - [Arquitetura](front/architecture.md): fluxo de dados, usuário autenticado (`user_store`), área logada e visual
 - [Telas do módulo administration](front/administration.md): login, organograma, usuários, diretorias e perfil
+- [Telas do módulo projects](front/projects.md): lista, detalhe com equipe e interessados, análise e radar
