@@ -26,5 +26,6 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
 ## Frontend
 
 - [Arquitetura](front/architecture.md): fluxo de dados, usuário autenticado (`user_store`), área logada e visual
+- [Página inicial](front/landing.md): landing com o logo em 3D (canvas) e o formulário de aviso do processo seletivo
 - [Telas do módulo administration](front/administration.md): login, organograma, usuários, diretorias e perfil
 - [Telas do módulo projects](front/projects.md): lista, detalhe com equipe e interessados, análise e radar

@@ -1,5 +1,5 @@
-import { UnderDevelopment } from "./_components/under_development";
+import { LandingPage } from "./_components/landing_page";
 
 export default function Home() {
-  return <UnderDevelopment />;
+  return <LandingPage />;
 }
