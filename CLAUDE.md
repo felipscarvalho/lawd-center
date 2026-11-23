@@ -140,6 +140,7 @@ router
 - Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/uploads`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
 - Helpers sem regra de negócio, usados por mais de um módulo, ficam em `app/helpers/` (alias `#helpers/*`, ex.: `likeTerm` para buscas ILIKE)
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
+- Seeders têm registro como as migrations (`adonis_seeders`, `node ace db:seed:pending` a cada deploy): seeder já rodado não roda de novo, então dados novos vão num seeder novo, sem editar os antigos. Seeders de produção só criam o que falta
 - Listas que podem crescer são paginadas no banco (`query.paginate`, devolvidas com `Transformer.paginate(items.all(), items.getMeta())`), com os filtros também no banco
 - Testes Japa no banco próprio `lawd_test` (`.env.test`), com `testUtils.db().withGlobalTransaction()` em cada grupo; helpers de cenário em `tests/helpers/<module>.ts`; o `data` das respostas é lido com `responseData<T>(response)` de `tests/helpers/http.ts`
 

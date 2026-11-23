@@ -7,6 +7,10 @@ Registro de como cada parte do sistema foi definida e por quê. Cada documento �
 
 As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` da raiz; aqui fica a explicação completa das decisões.
 
+## Deploy
+
+- [Imagens Docker](deploy.md): como construir e rodar o back e o front em containers
+
 ## Backend
 
 - [Arquitetura](back/architecture.md): camadas, módulos, rotas, respostas e erros, banco e comandos
