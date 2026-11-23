@@ -40,5 +40,8 @@ export const projectSortLabels: Record<ProjectSort, string> = {
   name: "Nome",
 };
 
+/** Equipe travada: projetos suspensos ou finalizados não recebem nem perdem integrantes (regra do backend) */
+export const isTeamLocked = (status: ProjectStatus) => status === "suspended" || status === "finished";
+
 /** Diretoria sugerida para projetos novos */
 export const defaultProjectDirectorateKey = "projects";

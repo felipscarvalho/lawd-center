@@ -29,6 +29,7 @@ export const projectSchema = z
 export type ProjectForm = z.infer<typeof projectSchema>;
 
 export const addProjectMemberSchema = z.object({
+  projectId: z.number({ error: "Selecione o projeto" }),
   userId: z.number({ error: "Selecione a pessoa" }),
   role: z.enum(["coordinator", "member"], { error: "Selecione o papel" }),
   /** YYYY-MM-DD; vazio = hoje */

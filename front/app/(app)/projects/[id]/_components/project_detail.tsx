@@ -8,14 +8,21 @@ import { toast } from "@/components/feedback/toast";
 import { PageHeader } from "@/components/layout/page_header";
 import { ErrorState, LoadingState } from "@/components/layout/query_states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
+import { AddProjectMemberModal } from "@/components/projects/add_project_member_modal";
 import { useToggleProjectInterest } from "@/hooks/projects/use_project_interests";
 import { useProject } from "@/hooks/projects/use_projects";
 import { handleApiError } from "@/lib/form_errors";
+import { isTeamLocked } from "@/lib/projects";
 import type { User } from "@/types/administration";
-import { AddProjectMemberModal } from "./add_project_member_modal";
+import { cx } from "@/utils/cx";
 import { ProjectCard } from "./project_card";
 import { ProjectInterests } from "./project_interests";
 import { ProjectTeam } from "./project_team";
+
+/** Estrela preenchida: indica que a pessoa já marcou interesse (o ! vence a cor de ícone do botão) */
+const FilledStar = ({ className }: { className?: string }) => (
+  <Star01 className={cx(className, "fill-current !text-fg-warning-secondary")} />
+);
 
 /** Modal de adicionar à equipe: fechado, aberto vazio ou aberto com a pessoa já escolhida (interessados) */
 type AddMemberState = { isOpen: false } | { isOpen: true; user?: User };
@@ -38,7 +45,7 @@ export function ProjectDetail() {
 
   const { data } = project;
   const isOpen = data.status !== "finished";
-  const canManageTeam = Boolean(data.abilities?.canManageTeam) && isOpen;
+  const canManageTeam = Boolean(data.abilities?.canManageTeam) && !isTeamLocked(data.status);
 
   const onToggleInterest = () => {
     const interested = !data.isInterested;
@@ -60,7 +67,7 @@ export function ProjectDetail() {
             {isOpen && !data.isMember && (
               <Button
                 color="secondary"
-                iconLeading={Star01}
+                iconLeading={data.isInterested ? FilledStar : Star01}
                 onClick={onToggleInterest}
                 isLoading={toggleInterest.isPending}
                 showTextWhileLoading

@@ -1,36 +1,41 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { parseDate } from "@internationalized/date";
 import { DatePicker } from "@/components/application/date-picker/date-picker";
 import { HintText } from "@/components/base/input/hint-text";
 import { Input } from "@/components/base/input/input";
 import { Label } from "@/components/base/input/label";
+import { ComboBox } from "@/components/base/select/combobox";
+import { Select } from "@/components/base/select/select";
 import { toast } from "@/components/feedback/toast";
 import { FormSelect } from "@/components/forms/form_select";
 import { UserSearchComboBox } from "@/components/administration/user_search_combobox";
 import { FormModal } from "@/components/overlays/form_modal";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useAddProjectMember } from "@/hooks/projects/use_project_team";
+import { useProjects } from "@/hooks/projects/use_projects";
 import { useOpenSession } from "@/hooks/use_open_session";
 import { handleApiError } from "@/lib/form_errors";
-import { projectRoleLabels } from "@/lib/projects";
+import { isTeamLocked, projectRoleLabels } from "@/lib/projects";
 import { addProjectMemberSchema, type AddProjectMemberForm } from "@/schemas/projects";
 import type { User } from "@/types/administration";
 import type { Project } from "@/types/projects";
 
 interface AddProjectMemberModalProps {
-  project: Project;
-  /** Pessoa já escolhida (ex.: vinda dos interessados) */
+  /** Projeto já definido (detalhe do projeto); sem ele, a pessoa escolhe entre os que pode gerenciar */
+  project?: Project;
+  /** Pessoa já definida (interessados, perfil da pessoa) */
   user?: User;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }
 
 /**
- * Coloca alguém na equipe. Definir o coordenador é só da gestão de equipes; o coordenador do projeto
- * adiciona integrantes. Se a pessoa já está no projeto com outro papel, o papel é trocado.
+ * Coloca alguém na equipe de um projeto. Definir o coordenador é só da gestão de equipes da diretoria
+ * do projeto; o coordenador do projeto adiciona integrantes. Se a pessoa já está no projeto com outro
+ * papel, o papel é trocado.
  */
 export function AddProjectMemberModal(props: AddProjectMemberModalProps) {
   const session = useOpenSession(props.isOpen);
@@ -40,43 +45,88 @@ export function AddProjectMemberModal(props: AddProjectMemberModalProps) {
 
 /** Formulário montado a cada abertura do modal (ver useOpenSession) */
 function AddProjectMemberModalContent({ project, user, isOpen, onOpenChange }: AddProjectMemberModalProps) {
-  const addMember = useAddProjectMember(project.id);
+  const addMember = useAddProjectMember();
   const { can } = usePermissions();
 
-  const canSetCoordinator = can("projects.team.manage", project.directorateId);
+  // Sem projeto definido: projetos com a equipe aberta (não iniciados ou em andamento) de diretorias
+  // onde a pessoa gerencia equipes
+  const projects = useProjects({ sort: "name", perPage: 100 }, { enabled: !project });
+  const manageableProjects = (projects.data?.data ?? []).filter(
+    (item) => !isTeamLocked(item.status) && can("projects.team.manage", item.directorateId),
+  );
+
+  const { control, handleSubmit, setError, setValue } = useForm<AddProjectMemberForm>({
+    resolver: zodResolver(addProjectMemberSchema),
+    defaultValues: { projectId: project?.id, userId: user?.id, role: "member" },
+  });
+
+  const projectId = useWatch({ control, name: "projectId" });
+  const selectedProject = project ?? manageableProjects.find((item) => item.id === projectId);
+
+  const canSetCoordinator = Boolean(selectedProject) && can("projects.team.manage", selectedProject!.directorateId);
   const roleOptions = (canSetCoordinator ? (["member", "coordinator"] as const) : (["member"] as const)).map(
     (role) => ({ id: role, label: projectRoleLabels[role] }),
   );
 
-  const { control, handleSubmit, setError } = useForm<AddProjectMemberForm>({
-    resolver: zodResolver(addProjectMemberSchema),
-    defaultValues: { userId: user?.id, role: "member" },
+  const onSubmit = handleSubmit(({ projectId: id, ...payload }) => {
+    addMember.mutate(
+      { projectId: id, payload },
+      {
+        onSuccess: (member) => {
+          toast.success("Equipe atualizada", { description: `${member.user.fullName} · ${member.roleLabel}` });
+          onOpenChange(false);
+        },
+        onError: (error) => handleApiError(error, setError),
+      },
+    );
   });
 
-  const onSubmit = handleSubmit((values) => {
-    addMember.mutate(values, {
-      onSuccess: (member) => {
-        toast.success("Equipe atualizada", { description: `${member.user.fullName} · ${member.roleLabel}` });
-        onOpenChange(false);
-      },
-      onError: (error) => handleApiError(error, setError),
-    });
-  });
+  const description = !project
+    ? "Só aparecem projetos não iniciados ou em andamento cuja equipe você gerencia."
+    : project.coordinator
+      ? "Se a pessoa já estiver na equipe com outro papel, ele é trocado e o histórico é mantido."
+      : "O projeto ainda não tem coordenador.";
 
   return (
     <FormModal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      title="Adicionar à equipe"
-      description={
-        project.coordinator
-          ? "Se a pessoa já estiver na equipe com outro papel, ele é trocado e o histórico é mantido."
-          : "O projeto ainda não tem coordenador."
-      }
+      title={project ? "Adicionar à equipe" : "Adicionar a projeto"}
+      description={description}
       onSubmit={onSubmit}
       submitLabel="Adicionar"
       isSubmitting={addMember.isPending}
     >
+      {!project && (
+        <Controller
+          control={control}
+          name="projectId"
+          render={({ field, fieldState }) => (
+            <ComboBox
+              label="Projeto"
+              placeholder="Buscar pelo nome"
+              shortcut={false}
+              items={manageableProjects.map((item) => ({
+                id: item.id,
+                label: item.name,
+                // O nome não é único: a diretoria ajuda a diferenciar
+                supportingText: item.directorate.name,
+              }))}
+              selectedKey={field.value ?? null}
+              onSelectionChange={(key) => {
+                field.onChange(key === null ? undefined : Number(key));
+                // O papel de coordenador depende do projeto escolhido
+                setValue("role", "member");
+              }}
+              isInvalid={Boolean(fieldState.error)}
+              hint={fieldState.error?.message}
+            >
+              {(item) => <Select.Item id={item.id} label={item.label} supportingText={item.supportingText} />}
+            </ComboBox>
+          )}
+        />
+      )}
+
       {user ? (
         <Input label="Pessoa" value={user.fullName} isDisabled />
       ) : (

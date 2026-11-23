@@ -22,11 +22,13 @@ export function useUserProjects(userId: number) {
   });
 }
 
-export function useAddProjectMember(projectId: number) {
+/** Coloca alguém na equipe; o projeto vai na chamada (o modal pode escolher o projeto na hora) */
+export function useAddProjectMember() {
   const invalidate = useInvalidateProjects();
 
   return useMutation({
-    mutationFn: (payload: AddProjectMemberPayload) => addProjectMember(projectId, payload),
+    mutationFn: ({ projectId, payload }: { projectId: number; payload: AddProjectMemberPayload }) =>
+      addProjectMember(projectId, payload),
     onSuccess: invalidate,
   });
 }

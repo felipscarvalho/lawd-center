@@ -13,6 +13,7 @@ import { usePermissions } from "@/hooks/administration/use_auth";
 import { useEndProjectMember, useProjectMembers } from "@/hooks/projects/use_project_team";
 import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
+import { isTeamLocked } from "@/lib/projects";
 import type { Project, ProjectMember } from "@/types/projects";
 
 /**
@@ -26,8 +27,10 @@ export function ProjectTeam({ project }: { project: Project }) {
   const [memberToEnd, setMemberToEnd] = useState<ProjectMember | null>(null);
 
   const canManageTeams = can("projects.team.manage", project.directorateId);
+  const isLocked = isTeamLocked(project.status);
   const canEnd = (member: ProjectMember) =>
     member.isActive &&
+    !isLocked &&
     Boolean(project.abilities?.canManageTeam) &&
     (member.role === "member" || canManageTeams);
 
@@ -49,7 +52,14 @@ export function ProjectTeam({ project }: { project: Project }) {
   return (
     <>
       <TableCard.Root>
-        <TableCard.Header title="Equipe" description="Quem está no projeto e quem já passou por ele." />
+        <TableCard.Header
+          title="Equipe"
+          description={
+            project.status === "suspended"
+              ? "Projeto suspenso: a equipe não muda até ele ser retomado."
+              : "Quem está no projeto e quem já passou por ele."
+          }
+        />
 
         {members.isPending && <LoadingState size="sm" />}
 

@@ -1,18 +1,17 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/page_header";
+import { ProjectPriorityBadge } from "@/components/projects/project_badges";
 import { ErrorState, LoadingState } from "@/components/layout/query_states";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useProjectsAnalytics } from "@/hooks/projects/use_project_analytics";
 import { pluralize } from "@/lib/format";
-import { projectPriorityLabels } from "@/lib/projects";
 import type { ProjectPriority } from "@/types/projects";
 import { AllocationRadar } from "./allocation_radar";
 import { RankingCard } from "./ranking_card";
 import { StatCard } from "./stat_card";
 
 const people = (count: number) => pluralize(count, "pessoa", "pessoas");
-const projects = (count: number) => pluralize(count, "projeto", "projetos");
 
 const priorityOrder: (ProjectPriority | "none")[] = ["high", "medium", "low", "none"];
 
@@ -50,42 +49,43 @@ export function ProjectsAnalytics() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <RankingCard
           title="Equipes em andamento"
-          description="Projetos em andamento, do maior time para o menor."
+          description="Do maior time para o menor."
           items={data.teamSizes.map((item) => ({
             id: item.project.id,
             label: item.project.name,
             href: `/projects/${item.project.id}`,
             value: item.value,
           }))}
-          formatValue={people}
+          unit={["pessoa", "pessoas"]}
           emptyMessage="Nenhum projeto em andamento."
         />
 
         <RankingCard
           title="Interesse por projeto"
-          description="Projetos abertos com mais gente querendo participar."
+          description="Projetos abertos mais procurados."
           items={data.interests.map((item) => ({
             id: item.project.id,
             label: item.project.name,
             href: `/projects/${item.project.id}`,
             value: item.value,
           }))}
-          formatValue={people}
+          unit={["pessoa", "pessoas"]}
           emptyMessage="Ninguém marcou interesse em projetos abertos."
         />
 
         <RankingCard
           title="Prioridade"
-          description="Projetos ainda não finalizados, por prioridade."
+          description="Projetos ainda não finalizados."
           items={priorityOrder.map((priority) => ({
             id: priority,
-            label: priority === "none" ? "Sem prioridade" : projectPriorityLabels[priority],
+            label: <ProjectPriorityBadge priority={priority === "none" ? null : priority} />,
             value: data.byPriority[priority],
           }))}
-          formatValue={projects}
+          unit={["projeto", "projetos"]}
+          showPosition={false}
           emptyMessage="Nenhum projeto aberto."
         />
       </div>

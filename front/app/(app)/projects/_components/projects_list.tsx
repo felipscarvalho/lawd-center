@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FolderClosed, Plus } from "@untitledui/icons";
+import { Folder, Plus } from "@untitledui/icons";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Button } from "@/components/base/buttons/button";
 import { Select } from "@/components/base/select/select";
@@ -142,7 +142,7 @@ export function ProjectsList() {
         loadingLabel="Carregando projetos..."
         errorTitle="Não foi possível carregar os projetos"
         empty={{
-          icon: FolderClosed,
+          icon: Folder,
           title: "Nenhum projeto encontrado",
           description: hasFilters ? "Nenhum resultado para esses filtros." : "Ainda não há projetos cadastrados.",
         }}

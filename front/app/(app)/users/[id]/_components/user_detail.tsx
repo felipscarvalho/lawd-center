@@ -80,7 +80,13 @@ export function UserDetail() {
 
       <MembershipHistory memberships={memberships} />
 
-      {can("projects.project.view") && <UserProjectsCard userId={data.id} />}
+      {can("projects.project.view") && (
+        <UserProjectsCard
+          userId={data.id}
+          // Quem gerencia equipes em alguma diretoria coloca a pessoa (ativa) em projetos dali
+          addableUser={canAnywhere("projects.team.manage") && data.isActive ? data : undefined}
+        />
+      )}
 
       <AssignMembershipModal isOpen={isAssignOpen} onOpenChange={setIsAssignOpen} user={data} />
       <ConfirmModal

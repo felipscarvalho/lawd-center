@@ -22,11 +22,12 @@ export function useInvalidateProjects() {
 }
 
 /** Página da lista; ao trocar de página ou filtro, a anterior continua na tela até a nova chegar */
-export function useProjects(filters: ProjectFilters = {}) {
+export function useProjects(filters: ProjectFilters = {}, { enabled = true }: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: projectKeys.list(filters),
     queryFn: () => getProjects(filters),
     placeholderData: keepPreviousData,
+    enabled,
   });
 }
 

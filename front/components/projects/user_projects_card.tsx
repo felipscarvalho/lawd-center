@@ -1,23 +1,45 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { Plus } from "@untitledui/icons";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
+import { Button } from "@/components/base/buttons/button";
 import { ErrorState, LoadingState } from "@/components/layout/query_states";
+import { AddProjectMemberModal } from "@/components/projects/add_project_member_modal";
 import { ProjectStatusBadge } from "@/components/projects/project_badges";
 import { useUserProjects } from "@/hooks/projects/use_project_team";
 import { formatDate } from "@/lib/moment";
+import type { User } from "@/types/administration";
+
+interface UserProjectsCardProps {
+  userId: number;
+  /** Pessoa que pode ser colocada em projetos por quem consulta (detalhe do usuário, com gestão de equipes) */
+  addableUser?: User;
+}
 
 /** Projetos de uma pessoa (Meu perfil e detalhe do usuário): participações e interesses */
-export function UserProjectsCard({ userId }: { userId: number }) {
+export function UserProjectsCard({ userId, addableUser }: UserProjectsCardProps) {
   const projects = useUserProjects(userId);
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const participations = projects.data?.participations ?? [];
   const interests = projects.data?.interests ?? [];
 
   return (
     <TableCard.Root>
-      <TableCard.Header title="Projetos" description="Equipes de que a pessoa faz ou fez parte, das atuais às antigas." />
+      <TableCard.Header
+        title="Projetos"
+        description="Equipes de que a pessoa faz ou fez parte, das atuais às antigas."
+        contentTrailing={
+          addableUser && (
+            <Button size="sm" color="secondary" iconLeading={Plus} onClick={() => setIsAddOpen(true)}>
+              Adicionar a projeto
+            </Button>
+          )
+        }
+      />
 
       {projects.isPending && <LoadingState size="sm" />}
 
@@ -83,6 +105,8 @@ export function UserProjectsCard({ userId }: { userId: number }) {
           </span>
         </div>
       )}
+
+      {addableUser && <AddProjectMemberModal user={addableUser} isOpen={isAddOpen} onOpenChange={setIsAddOpen} />}
     </TableCard.Root>
   );
 }
