@@ -19,4 +19,7 @@ export const controllers = {
     ProjectMembers: () => import('#controllers/projects/project_members_controller'),
     Projects: () => import('#controllers/projects/projects_controller'),
   },
+  recruitment: {
+    SelectionSubscribers: () => import('#controllers/recruitment/selection_subscribers_controller'),
+  },
 }

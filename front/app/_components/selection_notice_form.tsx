@@ -7,6 +7,8 @@ import { z } from "zod";
 import { Button } from "@/components/base/buttons/button";
 import { toast } from "@/components/feedback/toast";
 import { FormInput } from "@/components/forms/form_input";
+import { useSubscribeToSelection } from "@/hooks/recruitment/use_selection_subscribers";
+import { handleApiError } from "@/lib/form_errors";
 import { cx } from "@/utils/cx";
 
 const selectionNoticeSchema = z.object({
@@ -19,19 +21,23 @@ const emptyValues: SelectionNoticeForm = { email: "" };
 
 /** Pedido de aviso da abertura do processo seletivo: e-mail e botão numa barra só */
 export function SelectionNoticeForm({ className }: { className?: string }) {
-  const { control, handleSubmit, reset } = useForm<SelectionNoticeForm>({
+  const subscribe = useSubscribeToSelection();
+  const { control, handleSubmit, reset, setError } = useForm<SelectionNoticeForm>({
     resolver: zodResolver(selectionNoticeSchema),
     defaultValues: emptyValues,
   });
 
-  // MOCK: ainda não existe rota no backend para o aviso, então nada é enviado nem guardado.
-  // Quando existir, trocar por um hook de mutation (hooks/<module>/) e tratar o erro com handleApiError
   const onSubmit = handleSubmit((values) => {
-    toast.success("Você está na lista de aviso", {
-      description: `Vamos escrever para ${values.email} quando o processo seletivo abrir.`,
-    });
+    subscribe.mutate(values, {
+      onSuccess: ({ email }) => {
+        toast.success("Você está na lista de aviso", {
+          description: `Vamos escrever para ${email} quando o processo seletivo abrir.`,
+        });
 
-    reset(emptyValues);
+        reset(emptyValues);
+      },
+      onError: (error) => handleApiError(error, setError),
+    });
   });
 
   return (
@@ -56,7 +62,7 @@ export function SelectionNoticeForm({ className }: { className?: string }) {
         />
       </div>
 
-      <Button type="submit" size="lg">
+      <Button type="submit" size="lg" isLoading={subscribe.isPending} showTextWhileLoading>
         Entrar na lista de aviso
       </Button>
     </form>

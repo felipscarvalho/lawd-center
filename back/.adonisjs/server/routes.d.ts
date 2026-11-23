@@ -7,6 +7,7 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'health.live': { paramsTuple?: []; params?: {} }
     'health.ready': { paramsTuple?: []; params?: {} }
+    'recruitment.selectionSubscribers.store': { paramsTuple?: []; params?: {} }
     'administration.auth.login': { paramsTuple?: []; params?: {} }
     'administration.auth.logout': { paramsTuple?: []; params?: {} }
     'administration.auth.me': { paramsTuple?: []; params?: {} }
@@ -87,6 +88,7 @@ export type ScannedRoutes = {
     'projects.analytics.radar': { paramsTuple?: []; params?: {} }
   }
   POST: {
+    'recruitment.selectionSubscribers.store': { paramsTuple?: []; params?: {} }
     'administration.auth.login': { paramsTuple?: []; params?: {} }
     'administration.auth.logout': { paramsTuple?: []; params?: {} }
     'administration.users.store': { paramsTuple?: []; params?: {} }

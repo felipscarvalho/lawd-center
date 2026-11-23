@@ -31,6 +31,8 @@ As cores são os tons da paleta `brand` de `styles/lawd-theme.css`, repetidos em
 
 ## Formulário de aviso
 
-Só o e-mail, com validação Zod (`react-hook-form`), numa barra de vidro com o botão. Ao enviar, mostra um toast de confirmação e limpa o campo.
+Só o e-mail, com validação Zod (`react-hook-form`), numa barra de vidro com o botão. O envio segue o fluxo padrão: `useSubscribeToSelection` (`hooks/recruitment/`) → `subscribeToSelection` (`services/recruitment/`) → `POST /recruitment/selection-subscribers` ([backend](../back/recruitment/selection_subscribers.md)).
 
-**É um mock**: ainda não existe rota no backend, então nada é enviado nem guardado. Quando a rota existir, o envio vira um hook de mutation em `hooks/<module>/` (com o service correspondente) e os erros passam por `handleApiError`.
+- Enquanto envia, o botão fica carregando
+- Deu certo: toast de confirmação com o e-mail e o campo é limpo. Quem já estava na lista recebe a mesma confirmação
+- Deu errado: erro de validação do backend aparece no campo; qualquer outro vira toast (`handleApiError`)

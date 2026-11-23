@@ -188,6 +188,17 @@ export class ProjectSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class SelectionSubscriberSchema extends BaseModel {
+  static $columns = ['createdAt', 'email', 'id'] as const
+  $columns = SelectionSubscriberSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare email: string
+  @column({ isPrimary: true })
+  declare id: number
+}
+
 export class TechnologySchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'name', 'updatedAt'] as const
   $columns = TechnologySchema.$columns

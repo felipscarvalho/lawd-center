@@ -26,6 +26,12 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"health"],[0,"ready"]],
     types: placeholder as Registry['health.ready']['types'],
   },
+  'recruitment.selectionSubscribers.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/recruitment/selection-subscribers',
+    tokens: [[0,"api"],[0,"v1"],[0,"recruitment"],[0,"selection-subscribers"]],
+    types: placeholder as Registry['recruitment.selectionSubscribers.store']['types'],
+  },
   'administration.auth.login': {
     methods: ["POST"],
     pattern: '/api/v1/administration/auth/login',

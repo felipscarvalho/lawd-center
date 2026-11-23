@@ -17,6 +17,7 @@ import type ProjectsProjectTransformer from '#transformers/projects/project_tran
 import type ProjectsProjectsAnalyticsTransformer from '#transformers/projects/projects_analytics_transformer'
 import type ProjectsRadarEntryTransformer from '#transformers/projects/radar_entry_transformer'
 import type ProjectsUserProjectsTransformer from '#transformers/projects/user_projects_transformer'
+import type RecruitmentSelectionSubscriberTransformer from '#transformers/recruitment/selection_subscriber_transformer'
 
 export namespace Data {
   export namespace Administration {
@@ -69,6 +70,12 @@ export namespace Data {
     export type UserProjects = InferData<ProjectsUserProjectsTransformer>
     export namespace UserProjects {
       export type Variants = InferVariants<ProjectsUserProjectsTransformer>
+    }
+  }
+  export namespace Recruitment {
+    export type SelectionSubscriber = InferData<RecruitmentSelectionSubscriberTransformer>
+    export namespace SelectionSubscriber {
+      export type Variants = InferVariants<RecruitmentSelectionSubscriberTransformer>
     }
   }
 }

@@ -47,6 +47,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/administration/health_checks_controller').default['ready']>>>
     }
   }
+  'recruitment.selectionSubscribers.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/recruitment/selection-subscribers'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/recruitment/selection_subscriber').subscribeToSelectionValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/recruitment/selection_subscriber').subscribeToSelectionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/recruitment/selection_subscribers_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/recruitment/selection_subscribers_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/recruitment/selection_subscribers_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'administration.auth.login': {
     methods: ["POST"]
     pattern: '/api/v1/administration/auth/login'

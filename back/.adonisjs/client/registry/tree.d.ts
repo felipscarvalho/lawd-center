@@ -11,6 +11,11 @@ export interface ApiDefinition {
     live: typeof routes['health.live']
     ready: typeof routes['health.ready']
   }
+  recruitment: {
+    selectionSubscribers: {
+      store: typeof routes['recruitment.selectionSubscribers.store']
+    }
+  }
   administration: {
     auth: {
       login: typeof routes['administration.auth.login']

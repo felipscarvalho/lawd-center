@@ -11,3 +11,4 @@
 import '#start/routes/health'
 import '#start/routes/administration'
 import '#start/routes/projects'
+import '#start/routes/recruitment'

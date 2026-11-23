@@ -104,6 +104,10 @@ Primeiro módulo da aplicação. Contém tudo que é **comum a todos os módulos
 
 Projetos, equipes (com histórico) e interessados. Pessoas e diretorias vêm de `administration` pelos services de lá (`UserService.findMany/searchIds/listActiveMembers`, `DirectorateService`); os services do módulo devolvem DTOs de visão (`ProjectView`...) com esses dados montados.
 
+### Módulo `recruitment`
+
+Processo seletivo. Por enquanto só os e-mails de quem pediu o aviso de abertura na página inicial (`selection_subscribers`), por uma rota pública (sem autenticação). Não depende de outros módulos.
+
 Módulos novos são criados conforme a aplicação cresce, seguindo a mesma estrutura.
 
 ## 3. Rotas
