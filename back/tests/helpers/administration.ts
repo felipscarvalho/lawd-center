@@ -14,12 +14,13 @@ let sequence = 0
 /** Garante as diretorias usadas nos testes (idempotente, dentro da transação do teste) */
 export async function setupDirectorates() {
   const service = await app.container.make(DirectorateService)
-  const [corp, projects, events] = await service.upsertMany([
+  const [corp, projects, events, hr] = await service.upsertMany([
     { key: 'corp', name: 'CORP', kind: 'core' },
     { key: 'projects', name: 'Projetos', kind: 'standard' },
     { key: 'events', name: 'Eventos', kind: 'standard' },
+    { key: 'hr', name: 'RH', kind: 'standard' },
   ])
-  return { corp, projects, events }
+  return { corp, projects, events, hr }
 }
 
 export const TEST_PASSWORD = 'password123'

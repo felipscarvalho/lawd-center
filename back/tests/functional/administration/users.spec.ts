@@ -125,6 +125,28 @@ test.group('Users', (group) => {
     response.assertStatus(403)
   })
 
+  test('diretor de RH cadastra usuários; diretor de outra diretoria não (403)', async ({
+    client,
+    assert,
+  }) => {
+    const { events, hr } = await setupDirectorates()
+    const hrDirector = await createUserWithPosition('director', hr)
+    const eventsDirector = await createUserWithPosition('director', events)
+
+    const created = await client
+      .post('/api/v1/administration/users')
+      .json({ email: 'convidado.rh@test.lawd' })
+      .loginAs(hrDirector)
+    created.assertStatus(201)
+    assert.isTrue(responseData<{ isPending: boolean }>(created).isPending)
+
+    const forbidden = await client
+      .post('/api/v1/administration/users')
+      .json({ email: 'convidado.eventos@test.lawd' })
+      .loginAs(eventsDirector)
+    forbidden.assertStatus(403)
+  })
+
   test('sem login devolve 401', async ({ client }) => {
     const response = await client.get('/api/v1/administration/users')
     response.assertStatus(401)

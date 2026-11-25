@@ -113,4 +113,6 @@ export const directoratePositionPermissions: Partial<
 > = {
   // O diretor de Projetos gerencia os projetos de todas as diretorias
   projects: { director: global('projects.project.manage', 'projects.team.manage') },
+  // O diretor de RH cadastra usuários (convite por e-mail) e reenvia convites pendentes
+  hr: { director: global('administration.user.create') },
 }

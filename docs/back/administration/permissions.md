@@ -39,7 +39,10 @@ Não há atribuição manual de papéis: mudou o cargo, mudou o acesso; encerrou
 
 Algumas diretorias dão poderes a mais ao mesmo cargo. Em vez de um `if` no service, isso fica num segundo mapa em `positions.ts`, `directoratePositionPermissions` (key da diretoria → cargo → permissões), somado ao mapa principal. Assim a regra vale em qualquer service e chega ao front junto com as demais permissões, sem lógica repetida.
 
-Hoje: o **diretor de Projetos** (`projects`) recebe `projects.project.manage` e `projects.team.manage` em escopo global, para gerenciar projetos de todas as diretorias.
+Hoje:
+
+- o **diretor de Projetos** (`projects`) recebe `projects.project.manage` e `projects.team.manage` em escopo global, para gerenciar projetos de todas as diretorias
+- o **diretor de RH** (`hr`) recebe `administration.user.create` em escopo global, para cadastrar usuários por convite e reenviar convites pendentes (o usuário convidado ainda não tem vínculo, então a permissão não teria como ser de diretoria)
 
 ## Mapa atual
 
@@ -48,6 +51,7 @@ Hoje: o **diretor de Projetos** (`projects`) recebe `projects.project.manage` e 
 | Presidente, vice-presidente, secretário-geral, conselheiro | todas as `administration.*` e `projects.*`, global |
 | Diretor | `user.view`, `directorate.view`, `membership.view`, `profile.view`, `projects.project.view` (global) + `membership.manage`, `profile.view_private`, `profile.update`, `profile.evaluate`, `projects.project.manage`, `projects.team.manage` (diretoria) |
 | Diretor de Projetos | o mesmo do diretor + `projects.project.manage` e `projects.team.manage` globais |
+| Diretor de RH | o mesmo do diretor + `user.create` global |
 | Membro efetivo | `user.view`, `directorate.view`, `membership.view`, `profile.view`, `projects.project.view` (global) |
 
 Catálogo do `administration`: `user.view`, `user.create`, `user.update`, `user.deactivate`, `directorate.view`, `directorate.manage`, `membership.view`, `membership.manage`, `profile.view`, `profile.view_private`, `profile.update`, `profile.evaluate`. As regras do perfil estão em [profile.md](profile.md).
