@@ -42,11 +42,18 @@ test.group('PermissionService', (group) => {
     assert.isTrue(await service.canAnywhere(director.id, 'administration.membership.manage'))
   })
 
-  test('presidente, vice e secretário-geral administram tudo globalmente', async ({ assert }) => {
+  test('presidente, vice, secretário-geral e conselheiro administram tudo globalmente', async ({
+    assert,
+  }) => {
     const service = await app.container.make(PermissionService)
     const { corp, events } = await setupDirectorates()
 
-    for (const position of ['president', 'vice_president', 'general_secretary'] as const) {
+    for (const position of [
+      'president',
+      'vice_president',
+      'general_secretary',
+      'counselor',
+    ] as const) {
       const admin = await createUserWithPosition(position, corp)
       assert.isTrue(await service.can(admin.id, 'administration.user.create'), position)
       assert.isTrue(

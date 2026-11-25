@@ -7,7 +7,7 @@ import type User from '#models/administration/user'
 import DirectorateService from '#services/administration/directorate_service'
 import UserService from '#services/administration/user_service'
 import MembershipService from '#services/administration/membership_service'
-import { corePositions, type Position } from '#permissions/positions'
+import { corePositions, sharedPositions, type Position } from '#permissions/positions'
 
 let sequence = 0
 
@@ -37,14 +37,14 @@ export async function createUser(
 }
 
 /**
- * Cria um usuário com um cargo ativo na diretoria. Para cargos únicos do núcleo,
+ * Cria um usuário com um cargo ativo na diretoria. Para cargos únicos do núcleo (não o conselheiro),
  * encerra antes quem estiver ocupando (só dentro da transação do teste).
  */
 export async function createUserWithPosition(
   position: Position,
   directorate: Directorate
 ): Promise<User> {
-  if (corePositions.includes(position)) {
+  if (corePositions.includes(position) && !sharedPositions.includes(position)) {
     await Membership.query()
       .whereNull('ends_at')
       .where('position', position)

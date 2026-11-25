@@ -45,7 +45,7 @@ Hoje: o **diretor de Projetos** (`projects`) recebe `projects.project.manage` e 
 
 | Cargo | Permissões |
 |---|---|
-| Presidente, vice-presidente, secretário-geral | todas as `administration.*` e `projects.*`, global |
+| Presidente, vice-presidente, secretário-geral, conselheiro | todas as `administration.*` e `projects.*`, global |
 | Diretor | `user.view`, `directorate.view`, `membership.view`, `profile.view`, `projects.project.view` (global) + `membership.manage`, `profile.view_private`, `profile.update`, `profile.evaluate`, `projects.project.manage`, `projects.team.manage` (diretoria) |
 | Diretor de Projetos | o mesmo do diretor + `projects.project.manage` e `projects.team.manage` globais |
 | Membro efetivo | `user.view`, `directorate.view`, `membership.view`, `profile.view`, `projects.project.view` (global) |

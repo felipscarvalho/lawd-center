@@ -10,6 +10,7 @@ export const positions = [
   'president',
   'vice_president',
   'general_secretary',
+  'counselor',
   'director',
   'member',
 ] as const
@@ -20,6 +21,7 @@ export const positionLabels: Record<Position, string> = {
   president: 'Presidente',
   vice_president: 'Vice-presidente',
   general_secretary: 'Secretário-geral',
+  counselor: 'Conselheiro',
   director: 'Diretor',
   member: 'Membro efetivo',
 }
@@ -29,16 +31,24 @@ export const positionRank: Record<Position, number> = {
   president: 1,
   vice_president: 2,
   general_secretary: 3,
-  director: 4,
-  member: 5,
+  counselor: 4,
+  director: 5,
+  member: 6,
 }
 
-/** Cargos do núcleo institucional: só existem no CORP e têm um único ocupante ativo */
+/** Cargos do núcleo institucional: só existem no CORP */
 export const corePositions: readonly Position[] = [
   'president',
   'vice_president',
   'general_secretary',
+  'counselor',
 ]
+
+/**
+ * Cargos com vários ocupantes ativos ao mesmo tempo. Os demais são únicos: presidente, vice e
+ * secretário-geral (um no total) e diretor (um por diretoria)
+ */
+export const sharedPositions: readonly Position[] = ['counselor', 'member']
 
 /** Cargos das diretorias comuns */
 export const directoratePositions: readonly Position[] = ['director', 'member']
@@ -63,7 +73,7 @@ const baseView = global(
   'projects.project.view'
 )
 
-/** Administradores gerais (presidente, vice e secretário-geral): todos os módulos */
+/** Administradores gerais (presidente, vice, secretário-geral e conselheiros): todos os módulos */
 const generalAdmin = global(
   ...(Object.keys(administrationPermissions) as PermissionKey[]),
   ...(Object.keys(projectsPermissions) as PermissionKey[])
@@ -77,6 +87,8 @@ export const positionPermissions: Record<Position, PermissionGrant[]> = {
   president: generalAdmin,
   vice_president: generalAdmin,
   general_secretary: generalAdmin,
+  // Conselheiro tem as mesmas permissões do restante do CORP
+  counselor: generalAdmin,
   // Diretor gerencia os membros e os projetos da própria diretoria
   director: [
     ...baseView,

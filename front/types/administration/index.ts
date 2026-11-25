@@ -25,7 +25,7 @@ export interface EffectivePermission {
   directorateId: number | null;
 }
 
-export type Position = "president" | "vice_president" | "general_secretary" | "director" | "member";
+export type Position = "president" | "vice_president" | "general_secretary" | "counselor" | "director" | "member";
 
 export type DirectorateKind = "core" | "standard";
 

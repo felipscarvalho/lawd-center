@@ -22,7 +22,7 @@ export default class DirectorateService {
   }
 
   async create(input: CreateDirectorateInput): Promise<Directorate> {
-    // Só pode existir um núcleo institucional (onde ficam presidente, vice e secretário-geral)
+    // Só pode existir um núcleo institucional (onde ficam presidente, vice, secretário-geral e conselheiros)
     if (input.kind === 'core' && (await Directorate.findBy('kind', 'core'))) {
       throw new BusinessRuleException(
         'Já existe um núcleo institucional cadastrado',

@@ -53,7 +53,7 @@ export type CreateDirectorateForm = z.infer<typeof createDirectorateSchema>;
 export const assignMembershipSchema = z.object({
   userId: z.number({ error: "Selecione o usuário" }),
   directorateId: z.number({ error: "Selecione a diretoria" }),
-  position: z.enum(["president", "vice_president", "general_secretary", "director", "member"], {
+  position: z.enum(["president", "vice_president", "general_secretary", "counselor", "director", "member"], {
     error: "Selecione o cargo",
   }),
   /** YYYY-MM-DD; vazio = hoje */

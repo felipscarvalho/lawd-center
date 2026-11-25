@@ -13,6 +13,7 @@ import {
   directoratePositions,
   positionLabels,
   positionRank,
+  sharedPositions,
   type Position,
 } from '#permissions/positions'
 import type { AssignMembershipInput, EndMembershipInput } from '#dtos/administration/membership'
@@ -207,7 +208,8 @@ export default class MembershipService {
     replacingMembershipId: number | null,
     trx: TransactionClientContract
   ) {
-    if (position === 'member') return
+    // Conselheiro e membro efetivo aceitam vários ocupantes ativos
+    if (sharedPositions.includes(position)) return
 
     const query = Membership.query({ client: trx })
       .withScopes((scopes) => scopes.active())

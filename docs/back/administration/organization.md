@@ -1,6 +1,6 @@
 # Organização: diretorias, cargos e vínculos
 
-Modela o organograma da LAWD (o mesmo do SimMAP): um núcleo institucional (CORP) com presidente, vice-presidente e secretário-geral, e diretorias (Adm, Projetos, Ensino, Eventos, RH, Marketing), cada uma com um diretor e membros efetivos.
+Modela o organograma da LAWD (o mesmo do SimMAP): um núcleo institucional (CORP) com presidente, vice-presidente, secretário-geral e conselheiros, e diretorias (Adm, Projetos, Ensino, Eventos, RH, Marketing), cada uma com um diretor e membros efetivos.
 
 ## Por que três conceitos separados
 
@@ -29,6 +29,7 @@ As diretorias iniciais são criadas pelo seeder `database/seeders/administration
 | `president` | Presidente | núcleo (`core`) | 1 |
 | `vice_president` | Vice-presidente | núcleo | 1 |
 | `general_secretary` | Secretário-geral | núcleo | 1 |
+| `counselor` | Conselheiro | núcleo | vários |
 | `director` | Diretor | diretorias `standard` | 1 por diretoria |
 | `member` | Membro efetivo | diretorias `standard` | vários |
 
@@ -48,7 +49,7 @@ Exemplo de histórico: uma pessoa que foi membro de Projetos, depois diretora de
 ## Regras (`MembershipService`)
 
 - Cargos do núcleo só no núcleo; diretor e membro efetivo só nas diretorias comuns (`E_POSITION_NOT_ALLOWED`)
-- Cargos únicos não podem ter dois vínculos ativos (`E_POSITION_TAKEN`). O banco tem índices únicos parciais como segunda barreira
+- Cargos únicos não podem ter dois vínculos ativos (`E_POSITION_TAKEN`). O banco tem índices únicos parciais como segunda barreira. Conselheiro e membro efetivo aceitam vários ocupantes (`sharedPositions` em `positions.ts`); o conselheiro tem as mesmas permissões do restante do CORP
 - **Troca de cargo**: se a pessoa já tem vínculo ativo na mesma diretoria, ele é encerrado e um novo é criado, sem editar o anterior (o histórico nunca se perde). Repetir o mesmo cargo devolve `E_ALREADY_IN_POSITION`
 - Encerrar um vínculo já encerrado devolve `E_MEMBERSHIP_ALREADY_ENDED`; o término não pode ser anterior ao início (`E_INVALID_DATES`)
 - Usuários desativados não recebem cargos (`E_USER_INACTIVE`); desativar um usuário encerra todos os vínculos ativos dele

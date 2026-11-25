@@ -46,7 +46,7 @@ Por que assim:
 | Editar o perfil e a foto | a própria pessoa e quem tem `profile.update` sobre ela |
 | Definir a nota técnica | quem tem `profile.evaluate` sobre ela, nunca sobre si mesmo (`E_SELF_EVALUATION`, 422) |
 
-`view_private`, `update` e `evaluate` são globais para presidente, vice e secretário-geral, e de escopo `directorate` para o diretor: valem sobre quem tem vínculo ativo na diretoria dele. "Sobre ela" é conferido por `PermissionService.canOnUser(actorId, permission, targetUserId)`, que aceita a permissão global ou concedida numa diretoria onde a pessoa alvo tem vínculo ativo.
+`view_private`, `update` e `evaluate` são globais para presidente, vice, secretário-geral e conselheiros, e de escopo `directorate` para o diretor: valem sobre quem tem vínculo ativo na diretoria dele. "Sobre ela" é conferido por `PermissionService.canOnUser(actorId, permission, targetUserId)`, que aceita a permissão global ou concedida numa diretoria onde a pessoa alvo tem vínculo ativo.
 
 Os campos que quem consulta não pode ver saem como `null` na resposta. Junto vem `abilities` (`canUpdate`, `canViewPrivate`, `canEvaluate`), para o front decidir o que mostrar sem repetir a regra.
 

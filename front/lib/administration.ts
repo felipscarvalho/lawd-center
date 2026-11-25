@@ -18,13 +18,14 @@ export const positionLabels: Record<Position, string> = {
   president: "Presidente",
   vice_president: "Vice-presidente",
   general_secretary: "Secretário-geral",
+  counselor: "Conselheiro",
   director: "Diretor",
   member: "Membro efetivo",
 };
 
 /** Cargos permitidos por tipo de diretoria (núcleo institucional ou diretoria comum) */
 export const positionsByKind: Record<DirectorateKind, Position[]> = {
-  core: ["president", "vice_president", "general_secretary"],
+  core: ["president", "vice_president", "general_secretary", "counselor"],
   standard: ["director", "member"],
 };
 

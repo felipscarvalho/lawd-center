@@ -72,7 +72,7 @@ Usado no organograma e no detalhe do usuário, com a diretoria ou o usuário já
 
 - Usuário: busca entre os usuários ativos
 - Diretoria: só as que quem atribui pode gerenciar
-- Cargo: depende do tipo da diretoria (núcleo: presidente, vice, secretário-geral; demais: diretor, membro efetivo). Sem gestão global, só membro efetivo
+- Cargo: depende do tipo da diretoria (núcleo: presidente, vice, secretário-geral, conselheiro; demais: diretor, membro efetivo). Sem gestão global, só membro efetivo
 - Início: opcional; sem data o cargo começa hoje
 - Se a pessoa já tem cargo na mesma diretoria, ele é encerrado e substituído (troca de cargo)
 

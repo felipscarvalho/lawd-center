@@ -73,6 +73,37 @@ test.group('Memberships', (group) => {
     response.assertBodyContains({ errors: [{ code: 'E_POSITION_TAKEN' }] })
   })
 
+  test('CORP aceita vários conselheiros ativos ao mesmo tempo', async ({ client, assert }) => {
+    const { corp } = await setupDirectorates()
+    const admin = await createUserWithPosition('president', corp)
+    const first = await createUser()
+    const second = await createUser()
+
+    for (const user of [first, second]) {
+      const response = await client
+        .post(assign)
+        .json({ userId: user.id, directorateId: corp.id, position: 'counselor' })
+        .loginAs(admin)
+
+      response.assertStatus(201)
+      assert.equal(responseData<{ positionLabel: string }>(response).positionLabel, 'Conselheiro')
+    }
+  })
+
+  test('conselheiro só existe no CORP', async ({ client }) => {
+    const { corp, projects } = await setupDirectorates()
+    const admin = await createUserWithPosition('president', corp)
+    const user = await createUser()
+
+    const response = await client
+      .post(assign)
+      .json({ userId: user.id, directorateId: projects.id, position: 'counselor' })
+      .loginAs(admin)
+
+    response.assertStatus(422)
+    response.assertBodyContains({ errors: [{ code: 'E_POSITION_NOT_ALLOWED' }] })
+  })
+
   test('cargo do núcleo fora do CORP devolve 422', async ({ client }) => {
     const { corp, projects } = await setupDirectorates()
     const admin = await createUserWithPosition('president', corp)
