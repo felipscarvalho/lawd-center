@@ -14,7 +14,10 @@ export default class MailService {
     try {
       await mail.send(message)
     } catch (error) {
-      logger.error({ err: error }, 'Falha ao enviar e-mail')
+      // Host e porta no log: timeout de conexão costuma ser porta SMTP bloqueada pela rede do servidor
+      const smtp = `${env.get('SMTP_HOST')}:${env.get('SMTP_PORT')}`
+      logger.error({ err: error, smtp }, `Falha ao enviar e-mail por ${smtp}`)
+
       throw new MailDeliveryException()
     }
   }

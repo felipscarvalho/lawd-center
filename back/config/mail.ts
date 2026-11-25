@@ -2,7 +2,8 @@ import env from '#start/env'
 import { defineConfig, transports } from '@adonisjs/mail'
 
 const smtpUsername = env.get('SMTP_USERNAME')
-const smtpPassword = env.get('SMTP_PASSWORD')
+// Vazio (ex.: SMTP_PASSWORD="") conta como sem senha
+const smtpPassword = env.get('SMTP_PASSWORD')?.release() || undefined
 const smtpPort = env.get('SMTP_PORT')
 
 /**
@@ -27,8 +28,13 @@ const mailConfig = defineConfig({
       // Login só quando configurado: servidores locais de teste não pedem autenticação
       auth:
         smtpUsername && smtpPassword
-          ? { type: 'login', user: smtpUsername, pass: smtpPassword.release() }
+          ? { type: 'login', user: smtpUsername, pass: smtpPassword }
           : undefined,
+      // Os padrões do nodemailer esperam até 2 min pela conexão e 10 min com o socket parado: a
+      // requisição ficava pendurada (botão carregando) quando a rede bloqueia a porta do SMTP
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     }),
   },
 })
