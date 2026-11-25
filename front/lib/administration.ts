@@ -9,6 +9,9 @@ import type {
   WeeklyAvailability,
 } from "@/types/administration";
 
+/** Página aberta depois do login ou do convite aceito: Meu perfil, que todo usuário logado acessa */
+export const HOME_AFTER_LOGIN = "/profile";
+
 // Rótulos e regras de cargos, espelhando app/permissions/positions.ts do backend
 
 export const positionLabels: Record<Position, string> = {

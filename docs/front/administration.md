@@ -7,15 +7,15 @@ Telas sobre o que o backend oferece em `/api/v1/administration` (ver [docs/back/
 | Rota | Tela | Permissão para ver |
 |---|---|---|
 | `/` | página "Em desenvolvimento" com botão **Entrar** | pública |
-| `/login` | login por e-mail e senha; quem já tem sessão vai direto ao organograma | pública |
-| `/invitation/[token]` | link do e-mail de convite: nome, senha e confirmação; ao criar a senha já entra logado | pública |
+| `/login` | login por e-mail e senha; quem já tem sessão vai direto a Meu perfil | pública |
+| `/invitation/[token]` | link do e-mail de convite: nome, senha e confirmação; ao criar a senha já entra logado, em Meu perfil | pública |
 | `/organization` | organograma | `membership.view` |
 | `/users` | lista de usuários | `user.view` |
 | `/users/[id]` | detalhe do usuário (conta e perfil, editáveis direto) e histórico de cargos | `user.view` |
 | `/profile` | meu perfil | qualquer usuário logado |
 | `/directorates` | diretorias | `directorate.view` |
 
-Depois do login o usuário vai para `/organization`.
+Depois do login (ou do convite aceito) o usuário vai para Meu perfil (`/profile`, `HOME_AFTER_LOGIN` em `lib/administration.ts`): é a única tela que todo usuário logado acessa, e o organograma exige `membership.view`.
 
 ## Organograma
 

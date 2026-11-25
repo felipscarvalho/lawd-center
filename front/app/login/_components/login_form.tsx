@@ -10,12 +10,10 @@ import { Button } from "@/components/base/buttons/button";
 import { FormInput } from "@/components/forms/form_input";
 import { ThemeToggle } from "@/components/theme/theme_toggle";
 import { Card } from "@/components/layout/card";
+import { HOME_AFTER_LOGIN } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import { loginSchema, type LoginForm as LoginFormValues } from "@/schemas/administration";
 import { useUserStore } from "@/stores/user_store";
-
-/** Página para onde o usuário vai depois de entrar */
-const HOME_AFTER_LOGIN = "/organization";
 
 export function LoginForm() {
   const router = useRouter();

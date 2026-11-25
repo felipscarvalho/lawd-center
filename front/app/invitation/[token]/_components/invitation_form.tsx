@@ -13,12 +13,10 @@ import { ThemeToggle } from "@/components/theme/theme_toggle";
 import { Card } from "@/components/layout/card";
 import { LoadingState } from "@/components/layout/query_states";
 import { useAcceptInvitation, useInvitation } from "@/hooks/administration/use_invitations";
+import { HOME_AFTER_LOGIN } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import { acceptInvitationSchema, type AcceptInvitationForm } from "@/schemas/administration";
 import type { Invitation } from "@/types/administration";
-
-/** Página para onde a pessoa vai depois de criar a senha (a mesma do login) */
-const HOME_AFTER_LOGIN = "/organization";
 
 const checkingLabel = "Conferindo o convite...";
 
