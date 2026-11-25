@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,12 +20,13 @@ import type { Invitation } from "@/types/administration";
 /** Página para onde a pessoa vai depois de criar a senha (a mesma do login) */
 const HOME_AFTER_LOGIN = "/organization";
 
-/** Aceite do convite enviado por e-mail: confere o link, pede nome e senha e já entra no sistema */
-export function InvitationForm() {
-  const params = useParams<{ token: string }>();
-  const token = decodeURIComponent(params.token);
-  const invitation = useInvitation(token);
+const checkingLabel = "Conferindo o convite...";
 
+/**
+ * Aceite do convite enviado por e-mail: confere o link, pede nome e senha e já entra no sistema.
+ * Cabeçalho e card aparecem de imediato; só o conteúdo do card espera o token da URL e a API.
+ */
+export function InvitationForm() {
   return (
     <main className="flex min-h-dvh flex-col px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between">
@@ -34,22 +36,10 @@ export function InvitationForm() {
 
       <section className="flex flex-1 items-center justify-center py-12">
         <Card className="flex w-full max-w-md flex-col gap-6 p-8 sm:p-10">
-          {invitation.isPending && <LoadingState label="Conferindo o convite..." />}
-
-          {invitation.isError && (
-            <>
-              <div className="flex flex-col gap-1">
-                <h1 className="text-display-xs font-semibold text-primary">Convite indisponível</h1>
-                <p className="text-md text-tertiary">{invitation.error.message}</p>
-              </div>
-
-              <Button href="/login" size="lg">
-                Ir para o login
-              </Button>
-            </>
-          )}
-
-          {invitation.isSuccess && <AcceptInvitationFields token={token} invitation={invitation.data} />}
+          {/* O token vem da URL (useParams), que só é conhecido na requisição: precisa de um Suspense em volta */}
+          <Suspense fallback={<LoadingState label={checkingLabel} />}>
+            <InvitationContent />
+          </Suspense>
 
           <Button color="link-gray" size="sm" iconLeading={ArrowLeft} href="/" className="self-center">
             Voltar para o início
@@ -58,6 +48,33 @@ export function InvitationForm() {
       </section>
     </main>
   );
+}
+
+function InvitationContent() {
+  const params = useParams<{ token: string }>();
+  const token = decodeURIComponent(params.token);
+  const invitation = useInvitation(token);
+
+  if (invitation.isPending) {
+    return <LoadingState label={checkingLabel} />;
+  }
+
+  if (invitation.isError) {
+    return (
+      <>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-display-xs font-semibold text-primary">Convite indisponível</h1>
+          <p className="text-md text-tertiary">{invitation.error.message}</p>
+        </div>
+
+        <Button href="/login" size="lg">
+          Ir para o login
+        </Button>
+      </>
+    );
+  }
+
+  return <AcceptInvitationFields token={token} invitation={invitation.data} />;
 }
 
 function AcceptInvitationFields({ token, invitation }: { token: string; invitation: Invitation }) {
