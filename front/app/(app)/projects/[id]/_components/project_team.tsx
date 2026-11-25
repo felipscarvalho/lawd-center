@@ -15,6 +15,7 @@ import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
 import { isTeamLocked } from "@/lib/projects";
 import type { Project, ProjectMember } from "@/types/projects";
+import { displayName } from "@/lib/administration";
 
 /**
  * Equipe com o histórico (ativos primeiro, coordenador antes). Tirar alguém encerra a participação hoje:
@@ -41,7 +42,7 @@ export function ProjectTeam({ project }: { project: Project }) {
       { id: memberToEnd.id },
       {
         onSuccess: () => {
-          toast.success("Pessoa retirada da equipe", { description: memberToEnd.user.fullName });
+          toast.success("Pessoa retirada da equipe", { description: displayName(memberToEnd.user) });
           setMemberToEnd(null);
         },
         onError: (error) => handleApiError(error),

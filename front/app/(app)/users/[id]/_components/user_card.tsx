@@ -7,12 +7,14 @@ import { SplitCard } from "@/components/layout/card";
 import { DetailField } from "@/components/layout/detail_section";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useProfile } from "@/hooks/administration/use_profiles";
+import { userStatus } from "@/lib/administration";
 import { formatDate } from "@/lib/moment";
 import { useUserStore } from "@/stores/user_store";
 import type { Membership, User } from "@/types/administration";
 import { TechnicalScoreForm } from "./technical_score_form";
 import { UserPasswordForm } from "./user_password_form";
 import { UserEditForm } from "./user_edit_form";
+import { UserInvitationSection } from "./user_invitation_section";
 import { UserProfileDetails } from "./user_profile_details";
 
 interface UserCardProps {
@@ -22,7 +24,7 @@ interface UserCardProps {
 
 /**
  * Card único do detalhe do usuário, no mesmo layout de "Meu perfil". À esquerda: foto, situação,
- * cargos, cadastro, senha (gestão) e nota técnica. À direita: conta e perfil, já editáveis para quem pode editar
+ * cargos, cadastro, senha ou convite (gestão) e nota técnica. À direita: conta e perfil, já editáveis para quem pode editar
  * (sem botão "Editar") e só leitura para os demais.
  */
 export function UserCard({ user, activeMemberships }: UserCardProps) {
@@ -52,8 +54,8 @@ export function UserCard({ user, activeMemberships }: UserCardProps) {
 
           <dl className="flex flex-col gap-4">
             <DetailField label="Situação">
-              <BadgeWithDot size="md" type="modern" color={user.isActive ? "success" : "gray"}>
-                {user.isActive ? "Ativo" : `Desativado em ${formatDate(user.deactivatedAt ?? "")}`}
+              <BadgeWithDot size="md" type="modern" color={userStatus(user).color}>
+                {user.isActive ? userStatus(user).label : `Desativado em ${formatDate(user.deactivatedAt ?? "")}`}
               </BadgeWithDot>
             </DetailField>
 
@@ -76,7 +78,10 @@ export function UserCard({ user, activeMemberships }: UserCardProps) {
             </DetailField>
           </dl>
 
-          {canEditAccount && <UserPasswordForm user={user} />}
+          {/* Quem não aceitou o convite cria a própria senha pelo link: aqui só dá para reenviar */}
+          {user.isPending
+            ? can("administration.user.create") && user.isActive && <UserInvitationSection user={user} />
+            : canEditAccount && <UserPasswordForm user={user} />}
 
           {data.abilities.canViewPrivate && (
             <div className="flex flex-col gap-3 border-t border-secondary pt-6">

@@ -39,7 +39,7 @@ export function MyProfile() {
           isSelf
           personalFields={
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Nome completo" value={profile.data.user.fullName} isDisabled />
+              <Input label="Nome completo" value={profile.data.user.fullName ?? ""} isDisabled />
               <Input label="E-mail" value={profile.data.user.email} isDisabled />
             </div>
           }

@@ -7,7 +7,7 @@ import { toast } from "@/components/feedback/toast";
 import { ProfilePhotoButton } from "@/components/administration/profile_photo_button";
 import { ConfirmModal } from "@/components/overlays/confirm_modal";
 import { useRemoveProfilePhoto } from "@/hooks/administration/use_profiles";
-import { getInitials } from "@/lib/administration";
+import { displayName, getInitials } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import type { Profile } from "@/types/administration";
 
@@ -38,10 +38,10 @@ export function ProfilePhotoEditor({ profile, canEdit }: ProfilePhotoEditorProps
         {profile.photoUrl ? (
           // Foto já comprimida pelo backend (WebP 512×512); não passa pelo otimizador do Next
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.photoUrl} alt={profile.user.fullName} className="size-full object-cover" />
+          <img src={profile.photoUrl} alt={displayName(profile.user)} className="size-full object-cover" />
         ) : (
           <span className="flex size-full items-center justify-center text-display-lg font-semibold text-brand-tertiary">
-            {getInitials(profile.user.fullName)}
+            {getInitials(displayName(profile.user))}
           </span>
         )}
 

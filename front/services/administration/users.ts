@@ -35,3 +35,8 @@ export async function updateUser(id: number, payload: UpdateUserPayload): Promis
 export async function deactivateUser(id: number): Promise<User> {
   return apiPost<User>(`/administration/users/${id}/deactivate`);
 }
+
+/** Reenvia o convite por e-mail para quem ainda não criou a senha */
+export async function resendInvitation(id: number): Promise<User> {
+  return apiPost<User>(`/administration/users/${id}/invitation`);
+}

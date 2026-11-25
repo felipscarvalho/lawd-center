@@ -14,6 +14,7 @@ import { LoadingState, ErrorState } from "@/components/layout/query_states";
 import { usePermissions } from "@/hooks/administration/use_auth";
 import { useUserMemberships } from "@/hooks/administration/use_memberships";
 import { useDeactivateUser, useUser } from "@/hooks/administration/use_users";
+import { displayName } from "@/lib/administration";
 import { handleApiError } from "@/lib/form_errors";
 import { useUserStore } from "@/stores/user_store";
 import { MembershipHistory } from "./membership_history";
@@ -47,7 +48,7 @@ export function UserDetail() {
   const confirmDeactivate = () => {
     deactivate.mutate(data.id, {
       onSuccess: () => {
-        toast.success("Usuário desativado", { description: data.fullName });
+        toast.success("Usuário desativado", { description: displayName(data) });
         setIsDeactivateOpen(false);
       },
       onError: (error) => handleApiError(error),
@@ -57,7 +58,7 @@ export function UserDetail() {
   return (
     <>
       <PageHeader
-        title={data.fullName}
+        title={displayName(data)}
         actions={
           <>
             {can("administration.user.deactivate") && data.isActive && !isSelf && (
@@ -73,7 +74,7 @@ export function UserDetail() {
           </>
         }
       >
-        <Breadcrumbs items={[{ label: "Usuários", href: "/users" }, { label: data.fullName }]} />
+        <Breadcrumbs items={[{ label: "Usuários", href: "/users" }, { label: displayName(data) }]} />
       </PageHeader>
 
       <UserCard user={data} activeMemberships={activeMemberships} />
@@ -93,7 +94,7 @@ export function UserDetail() {
         isOpen={isDeactivateOpen}
         onOpenChange={setIsDeactivateOpen}
         title="Desativar usuário?"
-        description={`${data.fullName} não poderá mais entrar no sistema e todos os cargos ativos serão encerrados hoje. O histórico é mantido.`}
+        description={`${displayName(data)} não poderá mais entrar no sistema e todos os cargos ativos serão encerrados hoje. O histórico é mantido.`}
         confirmLabel="Desativar"
         onConfirm={confirmDeactivate}
         isConfirming={deactivate.isPending}

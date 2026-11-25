@@ -1,5 +1,13 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deactivateUser, getUser, getUsers, updateUser, type UserFilters } from "@/services/administration/users";
+import {
+  createUser,
+  deactivateUser,
+  getUser,
+  getUsers,
+  resendInvitation,
+  updateUser,
+  type UserFilters,
+} from "@/services/administration/users";
 import { membershipKeys } from "@/hooks/administration/use_memberships";
 import { useUserStore } from "@/stores/user_store";
 import type { UpdateUserPayload } from "@/types/administration";
@@ -60,5 +68,15 @@ export function useDeactivateUser() {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       queryClient.invalidateQueries({ queryKey: membershipKeys.all });
     },
+  });
+}
+
+/** Novo link de convite para quem ainda não criou a senha (o anterior deixa de valer) */
+export function useResendInvitation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: resendInvitation,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: userKeys.all }),
   });
 }

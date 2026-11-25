@@ -15,6 +15,7 @@ import { usePermissions } from "@/hooks/administration/use_auth";
 import { useUserStore } from "@/stores/user_store";
 import type { PermissionKey } from "@/types/administration";
 import { FullPageLoading } from "./full_page_loading";
+import { displayName } from "@/lib/administration";
 
 type NavigationItem = NavItemType & { permission?: PermissionKey };
 
@@ -114,7 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <AvatarLabelGroup
         size="md"
         {...avatarProps(user)}
-        title={user.fullName}
+        title={displayName(user)}
         subtitle={user.email}
       />
 

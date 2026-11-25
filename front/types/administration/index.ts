@@ -31,9 +31,12 @@ export type DirectorateKind = "core" | "standard";
 
 export interface User {
   id: number;
-  fullName: string;
+  /** null enquanto a pessoa não aceita o convite (o nome é informado por ela ao criar a senha) */
+  fullName: string | null;
   email: string;
   isActive: boolean;
+  /** Convite ainda não aceito: sem senha, não entra no sistema */
+  isPending: boolean;
   deactivatedAt: string | null;
   createdAt: string;
   photoUrl: string | null;
@@ -93,9 +96,20 @@ export interface LoginPayload {
   password: string;
 }
 
+/** Cadastro por convite: só o e-mail; a pessoa recebe o link para criar a senha */
 export interface CreateUserPayload {
-  fullName: string;
   email: string;
+}
+
+/** Convite visto na página pública, antes de criar a senha */
+export interface Invitation {
+  email: string;
+  /** Nome já informado pela gestão, para vir preenchido */
+  fullName: string | null;
+}
+
+export interface AcceptInvitationPayload {
+  fullName: string;
   password: string;
 }
 

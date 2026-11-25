@@ -15,13 +15,18 @@ import { useUpdateProfile } from "@/hooks/administration/use_profiles";
 import { useUpdateUser } from "@/hooks/administration/use_users";
 import { useEditForm } from "@/hooks/use_edit_form";
 import { handleApiError } from "@/lib/form_errors";
-import { userEditSchema, type ProfileForm, type UserEditForm } from "@/schemas/administration";
+import {
+  pendingUserEditSchema,
+  userEditSchema,
+  type ProfileForm,
+  type UserEditForm,
+} from "@/schemas/administration";
 import type { Profile, User } from "@/types/administration";
 
 const accountFields = ["fullName", "email"] as const;
 
 const toFormValues = (user: User, profile: Profile): UserEditForm => ({
-  fullName: user.fullName,
+  fullName: user.fullName ?? "",
   email: user.email,
   ...toProfileFormValues(profile),
 });
@@ -44,7 +49,7 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
   const updateProfile = useUpdateProfile(user.id);
 
   const { control, handleSubmit, setError, reset, formState, discard } = useEditForm<UserEditForm>({
-    resolver: zodResolver(userEditSchema),
+    resolver: zodResolver(user.isPending ? pendingUserEditSchema : userEditSchema),
     values: () => toFormValues(user, profile),
     deps: [user, profile],
   });
@@ -57,11 +62,12 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
 
     try {
       await Promise.all([
-        isAccountDirty && updateUser.mutateAsync({ fullName, email }),
+        // Nome vazio só acontece com convite pendente: fica para a pessoa informar ao aceitar
+        isAccountDirty && updateUser.mutateAsync({ fullName: fullName || undefined, email }),
         isProfileDirty && updateProfile.mutateAsync(toProfilePayload(profileValues, canEditPrivate)),
       ]);
 
-      toast.success("Alterações salvas", { description: fullName });
+      toast.success("Alterações salvas", { description: fullName || email });
       reset(values);
     } catch (error) {
       handleApiError(error, setError);
@@ -76,7 +82,7 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
           control={control as unknown as Control<ProfileForm>}
           canEditPrivate={canEditPrivate}
           showDescriptions={false}
-          personalFields={<AccountFields control={control} isDisabled={!canEditAccount} />}
+          personalFields={<AccountFields control={control} isDisabled={!canEditAccount} isPending={user.isPending} />}
         />
       </div>
 
@@ -89,13 +95,21 @@ export function UserEditForm({ user, profile, canEditAccount, canEditPrivate }: 
   );
 }
 
-function AccountFields({ control, isDisabled }: { control: Control<UserEditForm>; isDisabled: boolean }) {
+interface AccountFieldsProps {
+  control: Control<UserEditForm>;
+  isDisabled: boolean;
+  /** Convite não aceito: o nome pode ficar vazio */
+  isPending: boolean;
+}
+
+function AccountFields({ control, isDisabled, isPending }: AccountFieldsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <FormInput
         control={control}
         name="fullName"
         label="Nome completo"
+        placeholder={isPending ? "Informado pela pessoa ao aceitar o convite" : undefined}
         isDisabled={isDisabled}
       />
 

@@ -8,6 +8,7 @@ Telas sobre o que o backend oferece em `/api/v1/administration` (ver [docs/back/
 |---|---|---|
 | `/` | página "Em desenvolvimento" com botão **Entrar** | pública |
 | `/login` | login por e-mail e senha; quem já tem sessão vai direto ao organograma | pública |
+| `/invitation/[token]` | link do e-mail de convite: nome, senha e confirmação; ao criar a senha já entra logado | pública |
 | `/organization` | organograma | `membership.view` |
 | `/users` | lista de usuários | `user.view` |
 | `/users/[id]` | detalhe do usuário (conta e perfil, editáveis direto) e histórico de cargos | `user.view` |
@@ -36,13 +37,14 @@ Duas visualizações, alternadas pelo botão **Grafo / Lista** no topo. Abre sem
 - Colunas: nome com foto, cargos ativos (cargo · diretoria), curso com o período de entrada, maturidade e disponibilidade (as três últimas somem em telas menores). A coluna de situação só aparece com o filtro em **Todos**, já que nos outros ela é o próprio filtro
 - O `GET /users` traz, junto de cada usuário, o resumo público do perfil (`profile`: curso, entrada, disponibilidade e maturidade) e os cargos ativos com a diretoria (`memberships`); dados privados não entram na lista
 - No **Atribuir cargo**, o campo de usuário busca no backend enquanto se digita (até 20 pessoas ativas), já que a lista não vem mais inteira
-- **Novo usuário** (`user.create`): nome, e-mail e senha. O cargo é atribuído depois
+- **Novo usuário** (`user.create`): só o e-mail (**Enviar convite**). A pessoa recebe o link, informa o nome e cria a senha; o cargo é atribuído depois e pode ser dado antes de ela aceitar
+- **Convite pendente**: sem nome, a lista mostra o e-mail no lugar do nome e "Convite pendente" embaixo; a situação também aparece como "Convite pendente". `displayName` (`lib/administration.ts`) é o nome a exibir em qualquer tela (nome ou, sem ele, o e-mail)
 
 ### Detalhe do usuário
 
 Um único card no mesmo layout de **Meu perfil** (sem dados repetidos em cards separados):
 
-- **Esquerda**: foto (enviar e remover com `abilities.canUpdate`), situação, cargos atuais, data de cadastro, **Senha** (com `user.update`: nova senha sem pedir a atual, como a coluna de conta de Meu perfil) e, com `canViewPrivate`, a **nota técnica**. Com `canEvaluate` a nota já é um campo editável com **Salvar nota** (0 a 10, vírgula ou ponto, vazio remove); sem ela, só leitura
+- **Esquerda**: foto (enviar e remover com `abilities.canUpdate`), situação, cargos atuais, data de cadastro, **Senha** (com `user.update`: nova senha sem pedir a atual, como a coluna de conta de Meu perfil; para convite pendente, no lugar dela fica **Reenviar convite**, com `user.create`, que gera um link novo e invalida o anterior) e, com `canViewPrivate`, a **nota técnica**. Com `canEvaluate` a nota já é um campo editável com **Salvar nota** (0 a 10, vírgula ou ponto, vazio remove); sem ela, só leitura
 - **Direita**: com `abilities.canUpdate`, um formulário só (`UserEditForm`) com conta e perfil: nome e e-mail em **Dados pessoais** (editáveis com `user.update`; o diretor vê só leitura) e as seções do perfil. Um único **Salvar alterações** envia só as partes alteradas, cada uma para o seu endpoint (usuário e perfil). Sem `canUpdate`, a mesma estrutura só para leitura (`UserProfileDetails`)
 - Não há botão **Editar**: quem pode editar já entra com os campos editáveis
 - **Desativar** (`user.deactivate`, não aparece para o próprio usuário) e **Atribuir cargo** ficam no topo da página

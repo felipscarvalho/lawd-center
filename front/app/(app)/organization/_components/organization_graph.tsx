@@ -5,7 +5,7 @@ import { Plus } from "@untitledui/icons";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
 import { Card } from "@/components/layout/card";
 import { PersonLink, UserAvatar } from "@/components/administration/person_link";
-import { directorateKindLabels } from "@/lib/administration";
+import { directorateKindLabels, displayName } from "@/lib/administration";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import type { Directorate, Membership } from "@/types/administration";
 import { cx } from "@/utils/cx";
@@ -187,8 +187,8 @@ function StandardMembers({ memberships }: { memberships: Membership[] }) {
               <Link
                 key={membership.id}
                 href={`/users/${membership.userId}`}
-                title={membership.user?.fullName}
-                aria-label={`Ver perfil de ${membership.user?.fullName}`}
+                title={membership.user && displayName(membership.user)}
+                aria-label={`Ver perfil de ${membership.user ? displayName(membership.user) : ""}`}
                 className="rounded-full outline-focus-ring transition-transform hover:z-10 hover:-translate-y-0.5 focus-visible:outline-2"
               >
                 <UserAvatar person={membership.user} size="sm" className="ring-2 ring-bg-primary" />

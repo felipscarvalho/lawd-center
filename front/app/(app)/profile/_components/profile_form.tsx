@@ -14,6 +14,7 @@ import { useEditForm } from "@/hooks/use_edit_form";
 import { handleApiError } from "@/lib/form_errors";
 import { profileSchema, type ProfileForm as ProfileFormValues } from "@/schemas/administration";
 import type { Profile } from "@/types/administration";
+import { displayName } from "@/lib/administration";
 
 interface ProfileFormProps {
   profile: Profile;
@@ -39,7 +40,7 @@ export function ProfileForm({ profile, canEditPrivate, personalFields, isSelf = 
     const payload = toProfilePayload(values, canEditPrivate);
 
     updateProfile.mutate(payload, {
-      onSuccess: () => toast.success("Perfil atualizado", { description: profile.user.fullName }),
+      onSuccess: () => toast.success("Perfil atualizado", { description: displayName(profile.user) }),
       onError: (error) => handleApiError(error, setError),
     });
   });

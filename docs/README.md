@@ -17,6 +17,7 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
 - [Arquitetura](back/architecture.md): camadas, módulos, rotas, respostas e erros, banco e comandos
 - Módulo `administration`
   - [Autenticação e usuários](back/administration/auth.md)
+  - [Cadastro por convite e envio de e-mails](back/administration/invitations.md): convite por e-mail para criar a senha, SMTP do Google e o layout dos e-mails
   - [Organização: diretorias, cargos e vínculos](back/administration/organization.md)
   - [Permissões](back/administration/permissions.md)
   - [Perfil do usuário](back/administration/profile.md): dados acadêmicos, interesses, foto e nota técnica
@@ -29,5 +30,5 @@ As regras curtas que os agentes de código precisam seguir ficam no `CLAUDE.md` 
 
 - [Arquitetura](front/architecture.md): fluxo de dados, usuário autenticado (`user_store`), área logada e visual
 - [Página inicial](front/landing.md): landing com o logo em 3D (canvas) e o formulário de aviso do processo seletivo
-- [Telas do módulo administration](front/administration.md): login, organograma, usuários, diretorias e perfil
+- [Telas do módulo administration](front/administration.md): login, convite, organograma, usuários, diretorias e perfil
 - [Telas do módulo projects](front/projects.md): lista, detalhe com equipe e interessados, análise e radar

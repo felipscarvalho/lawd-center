@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { Avatar, type AvatarProps } from "@/components/base/avatar/avatar";
-import { getInitials } from "@/lib/administration";
+import { displayName, getInitials } from "@/lib/administration";
 import { cx } from "@/utils/cx";
 
 interface Person {
-  fullName: string;
+  /** null enquanto o convite não é aceito: aparece o e-mail no lugar */
+  fullName: string | null;
+  email?: string;
   photoUrl?: string | null;
 }
 
 /** Props de avatar de uma pessoa: foto quando houver, senão as iniciais (também para AvatarLabelGroup) */
 export const avatarProps = (person?: Person) => ({
   src: person?.photoUrl,
-  alt: person?.fullName,
-  initials: getInitials(person?.fullName ?? ""),
+  alt: person && displayName(person),
+  initials: getInitials(person ? displayName(person) : ""),
 });
 
 /** Avatar de uma pessoa, com foto ou iniciais */
@@ -43,7 +45,7 @@ export function PersonLink({ userId, person, subtitle, size = "sm", className }:
     >
       <UserAvatar person={person} size={size} />
       <span className="flex min-w-0 flex-col">
-        <span className="truncate text-sm font-semibold text-primary">{person?.fullName}</span>
+        <span className="truncate text-sm font-semibold text-primary">{person && displayName(person)}</span>
         {subtitle && (
           <span className={cx("truncate text-tertiary", size === "md" ? "text-sm" : "text-xs")}>{subtitle}</span>
         )}

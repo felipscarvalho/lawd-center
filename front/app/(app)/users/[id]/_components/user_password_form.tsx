@@ -9,6 +9,7 @@ import { useUpdateUser } from "@/hooks/administration/use_users";
 import { handleApiError } from "@/lib/form_errors";
 import { resetPasswordSchema, type ResetPasswordForm } from "@/schemas/administration";
 import type { User } from "@/types/administration";
+import { displayName } from "@/lib/administration";
 
 const emptyValues: ResetPasswordForm = { password: "" };
 
@@ -24,7 +25,7 @@ export function UserPasswordForm({ user }: { user: User }) {
   const onSubmit = handleSubmit((values) => {
     updateUser.mutate(values, {
       onSuccess: () => {
-        toast.success("Senha alterada", { description: user.fullName });
+        toast.success("Senha alterada", { description: displayName(user) });
         reset(emptyValues);
       },
       onError: (error) => handleApiError(error, setError),

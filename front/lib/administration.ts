@@ -5,6 +5,7 @@ import type {
   MaturityLevel,
   Position,
   SoftSkill,
+  User,
   WeeklyAvailability,
 } from "@/types/administration";
 
@@ -27,6 +28,18 @@ export const positionsByKind: Record<DirectorateKind, Position[]> = {
 export const directorateKindLabels: Record<DirectorateKind, string> = {
   core: "Núcleo institucional",
   standard: "Diretoria",
+};
+
+/** Nome para exibir: quem ainda não aceitou o convite pode estar sem nome, então aparece o e-mail */
+export const displayName = (person: { fullName: string | null; email?: string }) =>
+  person.fullName ?? person.email ?? "";
+
+/** Situação do usuário para os badges (lista e detalhe) */
+export const userStatus = (user: Pick<User, "isActive" | "isPending" | "deactivatedAt">) => {
+  if (!user.isActive) return { label: "Desativado", color: "gray" as const };
+  if (user.isPending) return { label: "Convite pendente", color: "warning" as const };
+
+  return { label: "Ativo", color: "success" as const };
 };
 
 /** Iniciais para o avatar (ex.: "Maria Souza" → "MS") */

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getCurrentUser, login as loginRequest, logout as logoutRequest } from "@/services/administration/auth";
-import type { EffectivePermission, LoginPayload, PermissionKey, User } from "@/types/administration";
+import type { EffectivePermission, LoginPayload, LoginResponse, PermissionKey, User } from "@/types/administration";
 
 type UserStatus = "idle" | "loading" | "ready" | "error";
 
@@ -18,6 +18,8 @@ interface UserState {
 
   /** Faz login, guarda o token e carrega os dados do usuário */
   login: (payload: LoginPayload) => Promise<void>;
+  /** Guarda uma sessão já aberta pelo backend (ex.: convite aceito) e carrega as permissões */
+  startSession: (session: LoginResponse) => Promise<void>;
   /** Revoga o token no backend e limpa a sessão local */
   logout: () => Promise<void>;
   /**
@@ -44,7 +46,11 @@ export const useUserStore = create<UserState>()(
       login: async (payload) => {
         const result = await loginRequest(payload);
 
-        set({ token: result.token, user: result.user });
+        await get().startSession(result);
+      },
+
+      startSession: async (session) => {
+        set({ token: session.token, user: session.user });
 
         await get().revalidate();
       },

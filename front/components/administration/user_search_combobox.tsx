@@ -5,6 +5,7 @@ import { ComboBox } from "@/components/base/select/combobox";
 import { Select } from "@/components/base/select/select";
 import { useUsers } from "@/hooks/administration/use_users";
 import { useDebouncedValue } from "@/hooks/use_debounced_value";
+import { displayName } from "@/lib/administration";
 
 interface UserSearchComboBoxProps {
   label: string;
@@ -34,7 +35,7 @@ export function UserSearchComboBox({
 
   const items = (users.data?.data ?? []).map((user) => ({
     id: user.id,
-    label: user.fullName,
+    label: displayName(user),
     supportingText: user.email,
   }));
 

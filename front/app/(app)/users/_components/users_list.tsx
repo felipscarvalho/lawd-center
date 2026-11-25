@@ -20,9 +20,11 @@ import { useUsers } from "@/hooks/administration/use_users";
 import { useDebouncedValue } from "@/hooks/use_debounced_value";
 import {
   courseLabels,
+  displayName,
   maturityLabels,
   toOptions,
   weeklyAvailabilityShortLabels,
+  userStatus,
 } from "@/lib/administration";
 import type { Course } from "@/types/administration";
 
@@ -164,8 +166,9 @@ export function UsersList() {
                     <AvatarLabelGroup
                       size="md"
                       {...avatarProps(user)}
-                      title={user.fullName}
-                      subtitle={user.email}
+                      title={displayName(user)}
+                      // Sem nome (convite pendente), o e-mail já está no título
+                      subtitle={user.fullName ? user.email : "Convite pendente"}
                     />
                   </Table.Cell>
                   <Table.Cell className="hidden md:table-cell">
@@ -201,8 +204,8 @@ export function UsersList() {
                   </Table.Cell>
                   {showStatus && (
                     <Table.Cell>
-                      <BadgeWithDot size="sm" type="modern" color={user.isActive ? "success" : "gray"}>
-                        {user.isActive ? "Ativo" : "Desativado"}
+                      <BadgeWithDot size="sm" type="modern" color={userStatus(user).color}>
+                        {userStatus(user).label}
                       </BadgeWithDot>
                     </Table.Cell>
                   )}

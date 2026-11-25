@@ -5,6 +5,7 @@ import { ConfirmModal } from "@/components/overlays/confirm_modal";
 import { useEndMembership } from "@/hooks/administration/use_memberships";
 import { handleApiError } from "@/lib/form_errors";
 import type { Membership } from "@/types/administration";
+import { displayName } from "@/lib/administration";
 
 interface EndMembershipModalProps {
   /** Vínculo a encerrar; null fecha o modal */
@@ -25,7 +26,7 @@ export function EndMembershipModal({ membership, directorateName, onClose }: End
       { id: membership.id },
       {
         onSuccess: () => {
-          toast.success("Vínculo encerrado", { description: membership.user?.fullName });
+          toast.success("Vínculo encerrado", { description: membership.user && displayName(membership.user) });
           onClose();
         },
         onError: (error) => handleApiError(error),

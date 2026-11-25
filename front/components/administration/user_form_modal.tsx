@@ -16,7 +16,7 @@ interface UserFormModalProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-/** Cadastro de usuário. A edição é feita direto no detalhe do usuário */
+/** Cadastro de usuário por convite: só o e-mail. A edição é feita direto no detalhe do usuário */
 export function UserFormModal(props: UserFormModalProps) {
   const session = useOpenSession(props.isOpen);
 
@@ -29,13 +29,13 @@ function UserFormModalContent({ isOpen, onOpenChange }: UserFormModalProps) {
 
   const { control, handleSubmit, setError } = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: { fullName: "", email: "", password: "" },
+    defaultValues: { email: "" },
   });
 
   const onSubmit = handleSubmit((values) => {
     createUser.mutate(values, {
-      onSuccess: () => {
-        toast.success("Usuário cadastrado", { description: values.fullName });
+      onSuccess: (user) => {
+        toast.success("Convite enviado", { description: `${user.email} vai receber o link para criar a senha.` });
         onOpenChange(false);
       },
       onError: (error) => handleApiError(error, setError),
@@ -47,18 +47,11 @@ function UserFormModalContent({ isOpen, onOpenChange }: UserFormModalProps) {
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       title="Novo usuário"
-      description="O cargo é atribuído depois, na página do usuário ou no organograma."
+      description="A pessoa recebe um e-mail para informar o nome e criar a senha. O cargo é atribuído depois, na página do usuário ou no organograma."
       onSubmit={onSubmit}
-      submitLabel="Cadastrar"
+      submitLabel="Enviar convite"
       isSubmitting={createUser.isPending}
     >
-      <FormInput
-        control={control}
-        name="fullName"
-        label="Nome completo"
-        placeholder="Nome e sobrenome"
-      />
-
       <FormInput
         control={control}
         name="email"
@@ -66,15 +59,6 @@ function UserFormModalContent({ isOpen, onOpenChange }: UserFormModalProps) {
         type="email"
         icon={Mail01}
         placeholder="pessoa@exemplo.com"
-      />
-
-      <FormInput
-        control={control}
-        name="password"
-        label="Senha"
-        type="password"
-        autoComplete="new-password"
-        placeholder="Pelo menos 8 caracteres"
       />
     </FormModal>
   );

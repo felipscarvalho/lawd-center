@@ -10,6 +10,7 @@ import { handleApiError } from "@/lib/form_errors";
 import { formatDate } from "@/lib/moment";
 import { technicalScoreSchema, type TechnicalScoreForm as TechnicalScoreValues } from "@/schemas/administration";
 import type { Profile } from "@/types/administration";
+import { displayName } from "@/lib/administration";
 
 const toFormValues = (profile: Profile): TechnicalScoreValues => ({
   technicalScore: profile.technicalScore === null ? "" : String(profile.technicalScore).replace(".", ","),
@@ -30,7 +31,7 @@ export function TechnicalScoreForm({ profile }: { profile: Profile }) {
     const score = technicalScore === "" ? null : Number(technicalScore.replace(",", "."));
 
     updateScore.mutate(score, {
-      onSuccess: () => toast.success("Nota técnica atualizada", { description: profile.user.fullName }),
+      onSuccess: () => toast.success("Nota técnica atualizada", { description: displayName(profile.user) }),
       onError: (error) => handleApiError(error, setError),
     });
   });

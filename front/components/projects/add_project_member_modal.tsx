@@ -22,6 +22,7 @@ import { isTeamLocked, projectRoleLabels } from "@/lib/projects";
 import { addProjectMemberSchema, type AddProjectMemberForm } from "@/schemas/projects";
 import type { User } from "@/types/administration";
 import type { Project } from "@/types/projects";
+import { displayName } from "@/lib/administration";
 
 interface AddProjectMemberModalProps {
   /** Projeto já definido (detalhe do projeto); sem ele, a pessoa escolhe entre os que pode gerenciar */
@@ -128,7 +129,7 @@ function AddProjectMemberModalContent({ project, user, isOpen, onOpenChange }: A
       )}
 
       {user ? (
-        <Input label="Pessoa" value={user.fullName} isDisabled />
+        <Input label="Pessoa" value={displayName(user)} isDisabled />
       ) : (
         <Controller
           control={control}

@@ -14,9 +14,24 @@ const fullName = z.string().trim().min(3, "Informe o nome completo").max(255);
 const email = z.email("Informe um e-mail válido").max(254);
 const password = z.string().min(8, "A senha precisa ter pelo menos 8 caracteres").max(72);
 
-export const createUserSchema = z.object({ fullName, email, password });
+/** Cadastro por convite: só o e-mail; nome e senha a pessoa informa ao aceitar */
+export const createUserSchema = z.object({ email });
 
 export type CreateUserForm = z.infer<typeof createUserSchema>;
+
+/** Aceite do convite: nome, senha e a confirmação (a confirmação fica só no front) */
+export const acceptInvitationSchema = z
+  .object({
+    fullName,
+    password,
+    passwordConfirmation: z.string().min(1, "Repita a senha"),
+  })
+  .refine((values) => values.passwordConfirmation === values.password, {
+    path: ["passwordConfirmation"],
+    message: "As senhas não conferem",
+  });
+
+export type AcceptInvitationForm = z.infer<typeof acceptInvitationSchema>;
 
 /** Senha nova definida pela gestão no detalhe do usuário (sem pedir a atual) */
 export const resetPasswordSchema = z.object({ password });
@@ -100,3 +115,6 @@ export type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
 export const userEditSchema = profileSchema.extend({ fullName, email });
 
 export type UserEditForm = z.infer<typeof userEditSchema>;
+
+/** Detalhe de quem ainda não aceitou o convite: o nome pode ficar vazio (a pessoa informa ao aceitar) */
+export const pendingUserEditSchema = profileSchema.extend({ fullName: z.union([z.literal(""), fullName]), email });
