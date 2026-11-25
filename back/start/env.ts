@@ -51,4 +51,16 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   DRIVE_DISK: Env.schema.enum(['fs'] as const),
+
+  // Front: endereço público usado nos links enviados por e-mail (ex.: convite para criar a senha)
+  FRONT_URL: Env.schema.string({ format: 'url', tld: false }),
+
+  // E-mail (SMTP). Produção: smtp.gmail.com, porta 465 ou 587, com a senha de app da conta Google
+  MAIL_MAILER: Env.schema.enum(['smtp'] as const),
+  MAIL_FROM_NAME: Env.schema.string(),
+  MAIL_FROM_ADDRESS: Env.schema.string({ format: 'email' }),
+  SMTP_HOST: Env.schema.string(),
+  SMTP_PORT: Env.schema.number(),
+  SMTP_USERNAME: Env.schema.string.optional(),
+  SMTP_PASSWORD: Env.schema.secret.optional(),
 })

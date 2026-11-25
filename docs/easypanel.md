@@ -66,6 +66,16 @@ ADMIN_NAME=
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 
+# Links dos e-mails e envio pelo SMTP do Google (senha de app da conta remetente)
+FRONT_URL=https://lawd.felipscarvalho.com.br
+MAIL_MAILER=smtp
+MAIL_FROM_NAME=Lawd Center
+MAIL_FROM_ADDRESS=        # a própria conta Google que envia
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USERNAME=            # a mesma conta Google
+SMTP_PASSWORD=            # senha de app (Conta Google > Segurança > Senhas de app)
+
 # Opcionais
 CORS_ORIGIN=https://lawd.felipscarvalho.com.br
 HEALTH_SECRET=      # se definido, /api/v1/health/ready exige o cabeçalho x-monitoring-secret
@@ -76,6 +86,7 @@ Cuidados:
 - **Não definir `HOST`** (ou usar `HOST=0.0.0.0`). Com o `HOST=localhost` do `.env.example`, a API escuta só dentro do container, o proxy não a alcança e o domínio responde **502 Bad Gateway**. `NODE_ENV` e `TZ` já vêm da imagem; `PORT`, ver [Porta](#porta-a-do-log-não-a-da-imagem)
 - **`APP_URL` completo e sem barra no fim**: é a base das URLs das fotos (`APP_URL` + `/api/v1/uploads/...`). Variáveis do Easypanel não são interpoladas, então nada de `http://${HOST}:${PORT}`
 - **`DB_HOST`** é o nome interno do serviço Postgres na rede do Docker, que costuma ter `_` (ex.: `main_lawd-center-postgresql`). O back aceita esses nomes; eles só resolvem dentro do servidor
+- **E-mail obrigatório**: sem as variáveis `FRONT_URL`, `MAIL_*` e `SMTP_*` a API não sobe. A senha do SMTP é a **senha de app** do Google, não a senha da conta. Se o envio falhar, o cadastro de usuário dá erro e não fica gravado (ver [convites](back/administration/invitations.md))
 - **`ADMIN_*` desde o primeiro deploy**: o seeder do administrador roda uma vez só. Se as variáveis faltarem nessa hora, ele apenas avisa no log, fica registrado e não roda de novo, e o administrador precisa ser criado à mão
 
 ### Fotos de perfil: bind mount

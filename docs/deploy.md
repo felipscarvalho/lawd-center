@@ -12,7 +12,7 @@ docker run --env-file back/.env.production -p 3333:3333 -v lawd-storage:/app/sto
 ```
 
 - O build roda `node ace build` e a imagem final leva só o código compilado (`build/`) e as dependências de produção (`npm ci --omit=dev`)
-- **Variáveis de ambiente na execução**, nunca na imagem: `APP_KEY`, `APP_URL`, `DB_*`, `ADMIN_*` etc. (modelo em `back/.env.example`). A imagem já define `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=3333` e `TZ=UTC`
+- **Variáveis de ambiente na execução**, nunca na imagem: `APP_KEY`, `APP_URL`, `DB_*`, `ADMIN_*`, `FRONT_URL`, `MAIL_*`, `SMTP_*` etc. (modelo em `back/.env.example`). A imagem já define `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=3333` e `TZ=UTC`
 - **CORS**: fora do desenvolvimento, a API só aceita chamadas das origens em `CORS_ORIGIN` (separadas por vírgula, com `https://`). Sem a variável, vale o front de produção, `https://lawd.felipscarvalho.com.br`
 - O `--env-file` do Docker não interpola valores: `APP_URL` precisa vir completo (ex.: `https://api.exemplo.com`), não `http://${HOST}:${PORT}` como no `.env` de desenvolvimento
 - **Fotos de perfil** ficam em `/app/storage` (disco local do Drive): montar um volume ali, senão somem a cada nova versão. Para ver os arquivos numa pasta do servidor, usar um bind mount (no Easypanel, *Add Bind Mount*: host `/srv/lawd/storage`, mount `/app/storage`) e dar a pasta ao usuário do container: `sudo chown -R 1000:1000 /srv/lawd/storage`. O backup dessa pasta fica por conta do servidor

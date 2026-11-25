@@ -28,6 +28,7 @@ export default defineConfig({
     () => import('@adonisjs/core/commands'),
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/session/commands'),
+    () => import('@adonisjs/mail/commands'),
   ],
 
   /*
@@ -55,6 +56,7 @@ export default defineConfig({
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@adonisjs/limiter/limiter_provider'),
+    () => import('@adonisjs/mail/mail_provider'),
   ],
 
   /*
@@ -105,7 +107,10 @@ export default defineConfig({
   | the production build.
   |
   */
-  metaFiles: [],
+  metaFiles: [
+    // Imagens embutidas nos e-mails (ex.: logo), lidas do disco no envio
+    { pattern: 'resources/mails/**', reloadServer: false },
+  ],
 
   hooks: {
     init: [
