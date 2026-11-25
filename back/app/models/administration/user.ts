@@ -10,8 +10,19 @@ import Profile from '#models/administration/profile'
 import Technology from '#models/administration/technology'
 import InterestArea from '#models/administration/interest_area'
 
+/** Validade do link de convite enviado por e-mail */
+export const invitationExpiresInDays = 7
+
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  /** Tokens dos convites para criar a senha (só o hash fica no banco) */
+  static invitationTokens = DbAccessTokensProvider.forModel(User, {
+    table: 'user_invitation_tokens',
+    type: 'invitation',
+    prefix: 'inv_',
+    expiresIn: `${invitationExpiresInDays} days`,
+  })
 
   @hasMany(() => Membership)
   declare memberships: HasMany<typeof Membership>
@@ -29,5 +40,23 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   /** Usuários desativados não fazem login e não têm vínculos ativos */
   get isActive() {
     return this.deactivatedAt === null
+  }
+
+  /** Convite ainda não aceito: a pessoa não definiu nome e senha e não consegue entrar */
+  get isPending() {
+    return this.password === null
+  }
+
+  /**
+   * Quem ainda não aceitou o convite não tem senha: o login responde como senha errada (o padrão
+   * do mixin lançaria erro). O hash é calculado mesmo assim para o tempo de resposta não revelar o caso.
+   */
+  async verifyPassword(plainPassword: string) {
+    if (this.password === null) {
+      await hash.make(plainPassword)
+      return false
+    }
+
+    return super.verifyPassword(plainPassword)
   }
 }

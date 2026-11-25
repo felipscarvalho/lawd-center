@@ -17,9 +17,13 @@ export const listUsersValidator = vine.create({
   perPage: vine.number().positive().withoutDecimals().max(maxUsersPerPage).optional(),
 })
 
-export const createUserValidator = vine.create({
-  fullName: vine.string().trim().minLength(3).maxLength(255),
+/** Cadastro por convite: só o e-mail; nome e senha a pessoa informa ao aceitar */
+export const inviteUserValidator = vine.create({
   email: email().unique({ table: 'users', column: 'email', caseInsensitive: true }),
+})
+
+export const acceptInvitationValidator = vine.create({
+  fullName: vine.string().trim().minLength(3).maxLength(255),
   password: password(),
 })
 

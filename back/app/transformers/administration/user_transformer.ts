@@ -11,6 +11,8 @@ export default class UserTransformer extends BaseTransformer<User> {
       fullName: this.resource.fullName,
       email: this.resource.email,
       isActive: this.resource.isActive,
+      // Convite ainda não aceito: sem senha (e talvez sem nome) até a pessoa abrir o link do e-mail
+      isPending: this.resource.isPending,
       deactivatedAt: this.resource.deactivatedAt?.toISO() ?? null,
       createdAt: this.resource.createdAt.toISO(),
       // Disponível quando o perfil é carregado junto (listas, organograma, sessão)

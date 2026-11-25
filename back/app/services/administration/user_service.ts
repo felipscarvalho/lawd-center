@@ -112,12 +112,22 @@ export default class UserService {
     return User.findBy('email', email.toLowerCase())
   }
 
+  /** Usuário já com senha, sem convite (seeder do primeiro administrador); a tela usa o convite */
   async create(input: CreateUserInput): Promise<User> {
     return User.create({ ...input, email: input.email.toLowerCase() })
   }
 
   async update(id: number, input: UpdateUserInput): Promise<User> {
     const user = await User.findOrFail(id)
+
+    // Senha de quem ainda não aceitou o convite é criada pela própria pessoa, pelo link do e-mail
+    if (input.password && user.isPending) {
+      throw new BusinessRuleException(
+        'Esta pessoa ainda não aceitou o convite. Reenvie o convite para ela criar a senha.',
+        'E_USER_PENDING',
+        'password'
+      )
+    }
 
     user.merge({ ...input, ...(input.email ? { email: input.email.toLowerCase() } : {}) })
     await user.save()

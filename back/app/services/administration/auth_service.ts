@@ -1,6 +1,5 @@
 import { inject } from '@adonisjs/core'
 import { errors as authErrors } from '@adonisjs/auth'
-import hash from '@adonisjs/core/services/hash'
 import User from '#models/administration/user'
 import PermissionService from '#services/administration/permission_service'
 import InvalidCredentialsException from '#exceptions/administration/invalid_credentials_exception'
@@ -31,6 +30,11 @@ export default class AuthService {
       throw new InvalidCredentialsException()
     }
 
+    return this.startSession(user)
+  }
+
+  /** Cria um access token para o usuário (login ou convite aceito) */
+  async startSession(user: User): Promise<LoginOutput> {
     const token = await User.accessTokens.create(user)
     await user.load('profile')
 
@@ -51,7 +55,7 @@ export default class AuthService {
     currentTokenIdentifier: string | number | BigInt,
     input: ChangePasswordInput
   ): Promise<void> {
-    const isCurrentPasswordValid = await hash.verify(user.password, input.currentPassword)
+    const isCurrentPasswordValid = await user.verifyPassword(input.currentPassword)
 
     if (!isCurrentPasswordValid) {
       throw new BusinessRuleException(

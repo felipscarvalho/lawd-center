@@ -145,6 +145,8 @@ router
 - Colunas dos models vêm de `database/schema.ts`, **gerado** a cada `node ace migration:run`; nunca editar à mão. Models estendem a classe gerada (`UserSchema`) e só acrescentam relações, scopes e tipos específicos
 - Colunas que precisam de conversão (decimal, que o Postgres devolve como texto, e `jsonb`) entram em `skipColumns` de `database/schema_rules.ts` e são declaradas no model com `prepare`/`consume`
 - Arquivos enviados: `@adonisjs/drive` com disco local (`storage/`, servido em `/api/v1/uploads`, `uploadsBasePath` de `config/drive.ts`). Imagens passam pelo `ImageCompressionService` antes de gravar; o service recebe o caminho do arquivo temporário, nunca o objeto da requisição
+- E-mails: `@adonisjs/mail` por SMTP (Google em produção). Cada e-mail é uma classe em `app/mails/<module>/` que estende `LawdMail` (layout com a identidade da LAWD; só passa o conteúdo) e sai pelo `MailService` (`send`, que converte falha do SMTP em `MailDeliveryException` 503, e `frontUrl` para links). Nos testes, `fakeMail` no setup do grupo
+- Cadastro de usuário é por convite (só e-mail; a pessoa cria nome e senha pelo link): usuário pendente tem `fullName` e `password` nulos (`isPending`); no front, nome exibido sempre via `displayName`
 - Helpers sem regra de negócio, usados por mais de um módulo, ficam em `app/helpers/` (alias `#helpers/*`, ex.: `likeTerm` para buscas ILIKE)
 - Seeders e testes também usam os services (não acessam models diretamente, exceto para preparar cenários de teste)
 - Seeders têm registro como as migrations (`adonis_seeders`, `node ace db:seed:pending` a cada deploy): seeder já rodado não roda de novo, então dados novos vão num seeder novo, sem editar os antigos. Seeders de produção só criam o que falta

@@ -3,7 +3,7 @@
 | Rotas do módulo administration
 |--------------------------------------------------------------------------
 |
-| Autenticação, usuários, diretorias e vínculos (cargos). Permissões globais
+| Autenticação, convites, usuários, diretorias e vínculos (cargos). Permissões globais
 | são exigidas aqui pelo middleware `can`; permissões com escopo de diretoria
 | são verificadas novamente nos services.
 |
@@ -12,11 +12,22 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { controllers } from '#generated/controllers'
+import { throttleInvitationAcceptance } from '#start/limiter'
 
 router
   .group(() => {
     // Autenticação
     router.post('auth/login', [controllers.administration.Auth, 'login']).as('auth.login')
+
+    // Convite (público): quem recebeu o link por e-mail confere o convite e cria a senha
+    router
+      .get('auth/invitations/:token', [controllers.administration.Invitations, 'show'])
+      .as('invitations.show')
+    router
+      .post('auth/invitations/:token/accept', [controllers.administration.Invitations, 'accept'])
+      .as('invitations.accept')
+      .use(throttleInvitationAcceptance)
+
     router
       .group(() => {
         router.post('auth/logout', [controllers.administration.Auth, 'logout']).as('auth.logout')
@@ -41,6 +52,10 @@ router
         router
           .post('users', [controllers.administration.Users, 'store'])
           .as('users.store')
+          .use(middleware.can('administration.user.create'))
+        router
+          .post('users/:id/invitation', [controllers.administration.Users, 'resendInvitation'])
+          .as('users.resendInvitation')
           .use(middleware.can('administration.user.create'))
         router
           .put('users/:id', [controllers.administration.Users, 'update'])

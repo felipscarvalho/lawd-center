@@ -41,7 +41,8 @@ export default class MembershipService {
       directorate.memberships.sort(
         (a, b) =>
           positionRank[a.position] - positionRank[b.position] ||
-          a.user.fullName.localeCompare(b.user.fullName)
+          // Convite pendente pode ainda não ter nome: entra pelo e-mail
+          (a.user.fullName ?? a.user.email).localeCompare(b.user.fullName ?? b.user.email)
       )
     }
 

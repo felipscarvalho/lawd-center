@@ -11,9 +11,27 @@ export interface ApiDefinition {
     live: typeof routes['health.live']
     ready: typeof routes['health.ready']
   }
-  recruitment: {
-    selectionSubscribers: {
-      store: typeof routes['recruitment.selectionSubscribers.store']
+  projects: {
+    projects: {
+      index: typeof routes['projects.projects.index']
+      show: typeof routes['projects.projects.show']
+      store: typeof routes['projects.projects.store']
+      update: typeof routes['projects.projects.update']
+    }
+    projectMembers: {
+      index: typeof routes['projects.projectMembers.index']
+      store: typeof routes['projects.projectMembers.store']
+      end: typeof routes['projects.projectMembers.end']
+      forUser: typeof routes['projects.projectMembers.forUser']
+    }
+    projectInterests: {
+      index: typeof routes['projects.projectInterests.index']
+      store: typeof routes['projects.projectInterests.store']
+      destroy: typeof routes['projects.projectInterests.destroy']
+    }
+    analytics: {
+      summary: typeof routes['projects.analytics.summary']
+      radar: typeof routes['projects.analytics.radar']
     }
   }
   administration: {
@@ -23,10 +41,15 @@ export interface ApiDefinition {
       me: typeof routes['administration.auth.me']
       changePassword: typeof routes['administration.auth.changePassword']
     }
+    invitations: {
+      show: typeof routes['administration.invitations.show']
+      accept: typeof routes['administration.invitations.accept']
+    }
     users: {
       index: typeof routes['administration.users.index']
       show: typeof routes['administration.users.show']
       store: typeof routes['administration.users.store']
+      resendInvitation: typeof routes['administration.users.resendInvitation']
       update: typeof routes['administration.users.update']
       deactivate: typeof routes['administration.users.deactivate']
     }
@@ -53,27 +76,9 @@ export interface ApiDefinition {
       interestAreas: typeof routes['administration.profileCatalogs.interestAreas']
     }
   }
-  projects: {
-    projects: {
-      index: typeof routes['projects.projects.index']
-      show: typeof routes['projects.projects.show']
-      store: typeof routes['projects.projects.store']
-      update: typeof routes['projects.projects.update']
-    }
-    projectMembers: {
-      index: typeof routes['projects.projectMembers.index']
-      store: typeof routes['projects.projectMembers.store']
-      end: typeof routes['projects.projectMembers.end']
-      forUser: typeof routes['projects.projectMembers.forUser']
-    }
-    projectInterests: {
-      index: typeof routes['projects.projectInterests.index']
-      store: typeof routes['projects.projectInterests.store']
-      destroy: typeof routes['projects.projectInterests.destroy']
-    }
-    analytics: {
-      summary: typeof routes['projects.analytics.summary']
-      radar: typeof routes['projects.analytics.radar']
+  recruitment: {
+    selectionSubscribers: {
+      store: typeof routes['recruitment.selectionSubscribers.store']
     }
   }
 }

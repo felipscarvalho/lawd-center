@@ -4,25 +4,32 @@ import { responseData, responsePage } from '#tests/helpers/http'
 import {
   createUser,
   createUserWithPosition,
+  fakeMail,
   setupDirectorates,
   TEST_PASSWORD,
 } from '#tests/helpers/administration'
 
 test.group('Users', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
+  group.each.setup(fakeMail)
 
-  test('administrador cadastra usuário', async ({ client, assert }) => {
+  test('administrador cadastra usuário só pelo e-mail (fica pendente)', async ({
+    client,
+    assert,
+  }) => {
     const { corp } = await setupDirectorates()
     const admin = await createUserWithPosition('president', corp)
 
     const response = await client
       .post('/api/v1/administration/users')
-      .json({ fullName: 'Novo Membro', email: 'Novo.Membro@Test.Lawd', password: 'senha12345' })
+      .json({ email: 'Novo.Membro@Test.Lawd' })
       .loginAs(admin)
 
     response.assertStatus(201)
     const created = responseData<Record<string, unknown>>(response)
     assert.equal(created.email, 'novo.membro@test.lawd')
+    assert.isNull(created.fullName)
+    assert.isTrue(created.isPending)
     assert.notProperty(created, 'password')
   })
 
@@ -112,7 +119,7 @@ test.group('Users', (group) => {
 
     const response = await client
       .post('/api/v1/administration/users')
-      .json({ fullName: 'Outro', email: 'outro@test.lawd', password: 'senha12345' })
+      .json({ email: 'outro@test.lawd' })
       .loginAs(member)
 
     response.assertStatus(403)
@@ -130,7 +137,7 @@ test.group('Users', (group) => {
 
     const response = await client
       .post('/api/v1/administration/users')
-      .json({ fullName: 'Duplicado', email: existing.email.toUpperCase(), password: 'senha12345' })
+      .json({ email: existing.email.toUpperCase() })
       .loginAs(admin)
 
     response.assertStatus(422)

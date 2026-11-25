@@ -25,3 +25,19 @@ export const throttleSelectionSubscription = limiter.define('selectionSubscripti
       error.setMessage('Muitas inscrições vindas desta rede. Tente de novo em alguns minutos.')
     })
 })
+
+/** Tentativas de aceitar convite por IP a cada janela de 15 minutos */
+export const INVITATION_ACCEPTANCES_PER_WINDOW = 10
+
+/**
+ * Aceite de convite: rota pública que grava a senha. O token já é longo demais para adivinhar;
+ * o limite só corta tentativas em massa.
+ */
+export const throttleInvitationAcceptance = limiter.define('invitationAcceptance', () => {
+  return limiter
+    .allowRequests(INVITATION_ACCEPTANCES_PER_WINDOW)
+    .every('15 minutes')
+    .limitExceeded((error) => {
+      error.setMessage('Muitas tentativas vindas desta rede. Tente de novo em alguns minutos.')
+    })
+})

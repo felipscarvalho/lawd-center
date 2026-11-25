@@ -25,14 +25,14 @@ O middleware `auth` protege as rotas autenticadas; sem token válido a resposta 
 
 | Coluna | Descrição |
 |---|---|
-| `full_name` | nome completo |
+| `full_name` | nome completo; nulo enquanto o convite não é aceito |
 | `email` | único, salvo em minúsculas |
-| `password` | hash (scrypt, via `withAuthFinder`); nunca é serializado |
+| `password` | hash (scrypt, via `withAuthFinder`); nunca é serializado. Nulo enquanto o convite não é aceito |
 | `deactivated_at` | preenchido quando o usuário é desativado |
 
 ### Cadastro
 
-Por enquanto **só administradores cadastram usuários** (não há auto-cadastro). O primeiro administrador é criado pelo seeder `2_admin_user_seeder.ts` a partir de `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`, recebendo o cargo de presidente no CORP. Sem essas variáveis o seeder só avisa e não cria nada.
+Por enquanto **só administradores cadastram usuários** (não há auto-cadastro), e **por convite**: a gestão informa só o e-mail e a pessoa cria nome e senha pelo link que recebe (ver [Cadastro por convite e envio de e-mails](invitations.md)). O primeiro administrador é criado pelo seeder `2_admin_user_seeder.ts` a partir de `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`, recebendo o cargo de presidente no CORP. Sem essas variáveis o seeder só avisa e não cria nada.
 
 ### Desativação
 
@@ -47,10 +47,11 @@ Usuários não são apagados. Desativar (`POST /users/:id/deactivate`):
 |---|---|---|
 | GET | `/users` (`?active`, `search`, `directorateId`, `course`, `page`, `perPage`) | `user.view` (paginado: `{ data, metadata }`) |
 | GET | `/users/:id` | `user.view` |
-| POST | `/users` | `user.create` |
+| POST | `/users` (só `email`; envia o convite) | `user.create` |
+| POST | `/users/:id/invitation` (reenvia o convite) | `user.create` |
 | PUT | `/users/:id` | `user.update` |
 | POST | `/users/:id/deactivate` | `user.deactivate` |
 
-Validações: nome com 3+ caracteres, e-mail válido e único (sem diferenciar maiúsculas), senha de 8 a 72 caracteres.
+Validações: nome com 3+ caracteres, e-mail válido e único (sem diferenciar maiúsculas), senha de 8 a 72 caracteres. A senha de quem ainda não aceitou o convite não pode ser definida pela gestão (`E_USER_PENDING`).
 
 Lista paginada no banco (padrão 20 por página, máximo 100), em ordem de nome. Os filtros também são aplicados no banco, para o total de páginas bater com o resultado: `search` procura no nome e no e-mail (sem diferenciar maiúsculas; `%` e `_` contam como texto), `directorateId` traz quem tem cargo ativo na diretoria e `course` filtra pelo curso do perfil. A resposta segue o paginador dos transformers: itens em `data` e `metadata` com `total`, `perPage`, `currentPage` e `lastPage`.
