@@ -67,6 +67,7 @@ Padrões que se repetiam pelas telas viraram componentes e hooks, para telas nov
 | `LoadingState`, `ErrorState`, `ListContent`, `ListToolbar` | `components/layout/` | estados de carregamento, erro e vazio; barra de filtros e busca das listas |
 | `FormActions` | `components/layout/form_actions.tsx` | Descartar/Salvar das telas editáveis |
 | `PersonLink`, `UserAvatar`, `avatarProps` | `components/administration/person_link.tsx` | pessoa com foto ou iniciais, com link para o detalhe |
+| `ImageCropModal` | `components/overlays/image_crop_modal.tsx` | recortar uma imagem antes de usar: moldura com o fora escurecido, arrastar, zoom (controle deslizante `Slider` do Untitled UI, roda, pinça, teclado) e prévias nos tamanhos em que a imagem aparece; devolve o recorte como `File` (WebP, maior lado até 1024 px). Peças soltas: `ImageCropper`/`ImageCropPreview` em `components/media/image_cropper.tsx` e `cropImage` em `lib/image_crop.ts` |
 | `EndMembershipModal`, `useCanEndMembership` | `components/administration/`, `hooks/administration/use_memberships.ts` | confirmar e autorizar o encerramento de vínculos (organograma e histórico) |
 
 A busca que vinha na sidebar do Untitled UI foi removida (alteração autorizada no componente base), porque não havia o que buscar nela.
